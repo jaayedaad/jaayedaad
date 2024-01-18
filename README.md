@@ -33,4 +33,8 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 4.  Set up your `.env` file
     - Duplicate `.env.example`to `.env`
     - Use `openssl rand -base64 32` to generate a key and add it under `NEXTAUTH_SECRET` in the `.env` file.
-5.  Quick start with `npm run dev`
+5.  Set up the database using the Prisma schema
+
+        npx prisma migrate dev
+
+6.  Quick start with `npm run dev`
