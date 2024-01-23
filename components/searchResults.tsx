@@ -58,97 +58,98 @@ const SearchResults = ({ results }: searchResultProps) => {
     setAssetBuyPrice("");
     setBuyDate("");
   };
-  return (
-    results && (
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead className="w-[100px]">Sr No.</TableHead>
-            <TableHead className="w-96">Name</TableHead>
-            <TableHead>Symbol</TableHead>
-          </TableRow>
-        </TableHeader>
-        {results.map((result, index) => {
-          return (
-            <TableBody key={index}>
-              <TableRow>
-                <TableCell className="font-medium text-center">
-                  {index + 1}
-                </TableCell>
-                <TableCell>{result?.shortname}</TableCell>
-                <TableCell>{result?.symbol}</TableCell>
-                <TableCell>
-                  <Dialog>
-                    <DialogTrigger asChild>
-                      <Button>Add</Button>
-                    </DialogTrigger>
-                    <DialogContent>
-                      <DialogHeader>
-                        <DialogTitle>Are you sure?</DialogTitle>
-                        <DialogDescription>
-                          Add{" "}
-                          <span className="text-bold text-foreground">
-                            {result?.shortname}
-                          </span>{" "}
-                          to your portfolio
-                        </DialogDescription>
-                      </DialogHeader>
-                      <div className="grid grid-cols-4 items-center gap-4">
-                        <Label htmlFor="quantity" className="text-right">
-                          Quantity
-                        </Label>
-                        <Input
-                          id="quantity"
-                          className="col-span-2 no-spinner"
-                          type="number"
-                          value={assetQuantity}
-                          onChange={(e) => {
-                            handleAssetQuantiy(e.target.value);
-                          }}
-                        />
+  return results.length > 0 ? (
+    <Table className="border">
+      <TableHeader>
+        <TableRow>
+          <TableHead className="w-[100px]">Sr No.</TableHead>
+          <TableHead>Name</TableHead>
+          <TableHead className="w-[100px]">Symbol</TableHead>
+          <TableHead className="w-[100px]"></TableHead>
+        </TableRow>
+      </TableHeader>
+      {results.map((result, index) => {
+        return (
+          <TableBody key={index} className="overflow-y-hidden">
+            <TableRow>
+              <TableCell className="font-medium text-center">
+                {index + 1}
+              </TableCell>
+              <TableCell>{result?.shortname}</TableCell>
+              <TableCell>{result?.symbol}</TableCell>
+              <TableCell>
+                <Dialog>
+                  <DialogTrigger asChild>
+                    <Button className="w-full">Add</Button>
+                  </DialogTrigger>
+                  <DialogContent>
+                    <DialogHeader>
+                      <DialogTitle>Are you sure?</DialogTitle>
+                      <DialogDescription>
+                        Add{" "}
+                        <span className="text-bold text-foreground">
+                          {result?.shortname}
+                        </span>{" "}
+                        to your portfolio
+                      </DialogDescription>
+                    </DialogHeader>
+                    <div className="grid grid-cols-4 items-center gap-4">
+                      <Label htmlFor="quantity" className="text-right">
+                        Quantity
+                      </Label>
+                      <Input
+                        id="quantity"
+                        className="col-span-2 no-spinner"
+                        type="number"
+                        value={assetQuantity}
+                        onChange={(e) => {
+                          handleAssetQuantiy(e.target.value);
+                        }}
+                      />
+                    </div>
+                    <div className="grid grid-cols-4 items-center gap-4">
+                      <Label htmlFor="Buy Price" className="text-right">
+                        Buy Price
+                      </Label>
+                      <Input
+                        id="buyPrice"
+                        className="col-span-2 no-spinner"
+                        type="number"
+                        value={assetBuyPrice}
+                        onChange={(e) => {
+                          handleAssetBuyPrice(e.target.value);
+                        }}
+                      />
+                    </div>
+                    <div className="grid grid-cols-4 items-center gap-4">
+                      <Label htmlFor="Buy Price" className="text-right">
+                        Buy Date:
+                      </Label>
+                      <div className="col-span-2">
+                        <DatePicker onSelect={handleDateSelect} />
                       </div>
-                      <div className="grid grid-cols-4 items-center gap-4">
-                        <Label htmlFor="Buy Price" className="text-right">
-                          Buy Price
-                        </Label>
-                        <Input
-                          id="buyPrice"
-                          className="col-span-2 no-spinner"
-                          type="number"
-                          value={assetBuyPrice}
-                          onChange={(e) => {
-                            handleAssetBuyPrice(e.target.value);
-                          }}
-                        />
-                      </div>
-                      <div className="grid grid-cols-4 items-center gap-4">
-                        <Label htmlFor="Buy Price" className="text-right">
-                          Buy Date:
-                        </Label>
-                        <div className="col-span-2">
-                          <DatePicker onSelect={handleDateSelect} />
-                        </div>
-                      </div>
-                      <DialogFooter>
-                        <DialogClose asChild>
-                          <Button
-                            onClick={() =>
-                              handleAddAssets(result?.shortname, result?.symbol)
-                            }
-                          >
-                            Confirm
-                          </Button>
-                        </DialogClose>
-                      </DialogFooter>
-                    </DialogContent>
-                  </Dialog>
-                </TableCell>
-              </TableRow>
-            </TableBody>
-          );
-        })}
-      </Table>
-    )
+                    </div>
+                    <DialogFooter>
+                      <DialogClose asChild>
+                        <Button
+                          onClick={() =>
+                            handleAddAssets(result?.shortname, result?.symbol)
+                          }
+                        >
+                          Confirm
+                        </Button>
+                      </DialogClose>
+                    </DialogFooter>
+                  </DialogContent>
+                </Dialog>
+              </TableCell>
+            </TableRow>
+          </TableBody>
+        );
+      })}
+    </Table>
+  ) : (
+    <div className="text-center mt-24">Search for any assets!</div>
   );
 };
 

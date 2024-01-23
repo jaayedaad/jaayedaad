@@ -70,3 +70,7 @@
     -webkit-appearance: none;
   }
 }
+
+body::-webkit-scrollbar {
+  display: none;
+}

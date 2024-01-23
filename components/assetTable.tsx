@@ -17,7 +17,7 @@ function AssetTable({ assets }: { assets: Asset[] }) {
       body: JSON.stringify({ assetId: id }),
     });
   };
-  return (
+  return assets.length > 0 ? (
     <Table>
       <TableHeader>
         <TableRow>
@@ -26,37 +26,42 @@ function AssetTable({ assets }: { assets: Asset[] }) {
           <TableHead>Symbol</TableHead>
           <TableHead className="text-right">Quantity</TableHead>
           <TableHead className="text-right">Buy Price</TableHead>
-          <TableHead>Buy Date</TableHead>
-          <TableHead>Action</TableHead>
+          <TableHead className="text-right">Buy Date</TableHead>
+          <TableHead className="w-[100px] text-right">Action</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
-        {assets &&
-          assets.map((asset, index) => {
-            return (
-              <TableRow key={index}>
-                <TableCell className="font-medium">{index + 1}</TableCell>
-                <TableCell>{asset.name}</TableCell>
-                <TableCell>{asset.symbol}</TableCell>
-                <TableCell className="text-right">{asset.quantity}</TableCell>
-                <TableCell className="text-right">{asset.buyPrice}</TableCell>
-                <TableCell>{asset.buyDate.toString().split("T")[0]}</TableCell>
-                <TableCell>
-                  <Button
-                    variant="destructive"
-                    className="w-full"
-                    onClick={() => {
-                      handleRemoveAsset(asset.id);
-                    }}
-                  >
-                    remove
-                  </Button>
-                </TableCell>
-              </TableRow>
-            );
-          })}
+        {assets.map((asset, index) => {
+          return (
+            <TableRow key={index}>
+              <TableCell className="font-medium">{index + 1}</TableCell>
+              <TableCell>{asset.name}</TableCell>
+              <TableCell>{asset.symbol}</TableCell>
+              <TableCell className="text-right">{asset.quantity}</TableCell>
+              <TableCell className="text-right">{asset.buyPrice}</TableCell>
+              <TableCell className="text-right">
+                {asset.buyDate.toString().split("T")[0]}
+              </TableCell>
+              <TableCell>
+                <Button
+                  variant="destructive"
+                  className="w-full"
+                  onClick={() => {
+                    handleRemoveAsset(asset.id);
+                  }}
+                >
+                  remove
+                </Button>
+              </TableCell>
+            </TableRow>
+          );
+        })}
       </TableBody>
     </Table>
+  ) : (
+    <div className="text-center mt-24">
+      You haven&apos;t added any assets yet!
+    </div>
   );
 }
 

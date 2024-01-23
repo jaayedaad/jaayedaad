@@ -17,7 +17,7 @@ function AssetsPage() {
     fetchAssets();
   }, []);
   return (
-    <div className="flex min-h-screen flex-col py-2 px-12">
+    <div className="flex min-h-screen w-full flex-col py-10 px-12">
       <div className="py-10">
         <h1 className="text-5xl font-bold">My Assets</h1>
         <p className="text-muted-foreground pt-1">Manage all of your assets</p>
