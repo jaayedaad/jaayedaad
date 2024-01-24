@@ -17,6 +17,7 @@ export async function POST(req: Request) {
         symbol: body.symbol,
         quantity: body.quantity,
         buyPrice: body.buyPrice,
+        buyCurrency: body.buyCurrency,
         buyDate: body.buyDate,
         userId: user.id,
       },
