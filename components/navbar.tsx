@@ -7,7 +7,7 @@ import { signIn, signOut } from "next-auth/react";
 
 function Navbar() {
   return (
-    <div className="fixed left-0 top-0 flex w-full items-center justify-between border-b border-gray-300 bg-gradient-to-b from-zinc-200 py-2 px-12 backdrop-blur-2xl dark:border-neutral-800 dark:bg-zinc-800/30 dark:from-inherit">
+    <div className="z-10 fixed left-0 top-0 flex w-full items-center justify-between border-b border-gray-300 bg-gradient-to-b from-zinc-200 py-2 px-12 backdrop-blur-2xl dark:border-neutral-800 dark:bg-zinc-800/30 dark:from-inherit">
       <div>Investment Tracker</div>
       <div>
         <SignedOut>

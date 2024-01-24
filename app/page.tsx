@@ -1,11 +1,9 @@
-import Navbar from "@/components/navbar";
 import { Button } from "@/components/ui/button";
 import React from "react";
 
 function Home() {
   return (
     <main className="flex min-h-screen flex-col items-center py-2 px-12">
-      <Navbar />
       <div className="pt-36 mx-72 text-center">
         <h1 className="text-5xl font-bold">
           Revolutionize Your Financial Journey

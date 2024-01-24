@@ -2,31 +2,38 @@
 import { useEffect, useState } from "react";
 import SearchResults from "@/components/searchResults";
 import SearchField from "@/components/searchField";
+import LoadingSpinner from "@/components/ui/loading-spinner";
 
 export default function AddAssetPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [results, setResults] = useState<Array<any>>([]);
+  const [loadingAsset, setLoadingAsset] = useState(false);
 
   // Function to handle search change
   const handleSearchChange = (value: string) => {
     setSearchQuery(value);
+    setLoadingAsset(true);
   };
 
   // Function to handle search
   const handleSearch = async () => {
-    // search API endpoint
-    const url = `https://yh-finance.p.rapidapi.com/auto-complete?q=${searchQuery}`;
-    const options = {
-      method: "GET",
-      headers: {
-        "X-RapidAPI-Key": process.env.NEXT_PUBLIC_YHFINANCE_KEY!,
-        "X-RapidAPI-Host": "yh-finance.p.rapidapi.com",
-      },
-    };
+    try {
+      // search API endpoint
+      const url = `https://yh-finance.p.rapidapi.com/auto-complete?q=${searchQuery}`;
+      const options = {
+        method: "GET",
+        headers: {
+          "X-RapidAPI-Key": process.env.NEXT_PUBLIC_YHFINANCE_KEY!,
+          "X-RapidAPI-Host": "yh-finance.p.rapidapi.com",
+        },
+      };
 
-    const res = await fetch(url, options);
-    const { quotes: results } = await res.json();
-    setResults(results);
+      const res = await fetch(url, options);
+      const { quotes: results } = await res.json();
+      setResults(results);
+    } finally {
+      setLoadingAsset(false);
+    }
   };
 
   // useEffect to trigger API call when searchQuery changes
@@ -55,9 +62,17 @@ export default function AddAssetPage() {
       />
 
       {/* Results Table */}
-      <div className="py-12">
-        {results && <SearchResults results={results} />}
-      </div>
+      {loadingAsset ? (
+        <LoadingSpinner />
+      ) : (
+        <div className="py-12">
+          {results.length > 0 ? (
+            <SearchResults results={results} />
+          ) : (
+            <div className="text-center mt-24">Search for any assets!</div>
+          )}
+        </div>
+      )}
     </div>
   );
 }

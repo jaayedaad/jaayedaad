@@ -18,7 +18,7 @@ function AssetTable({ assets }: { assets: Asset[] }) {
     });
   };
   return assets.length > 0 ? (
-    <Table>
+    <Table className="border">
       <TableHeader>
         <TableRow>
           <TableHead className="w-[100px]">Sr No.</TableHead>
@@ -26,8 +26,10 @@ function AssetTable({ assets }: { assets: Asset[] }) {
           <TableHead>Symbol</TableHead>
           <TableHead className="text-right">Quantity</TableHead>
           <TableHead className="text-right">Buy Price</TableHead>
+          <TableHead className="text-right">Value (in INR)</TableHead>
+          <TableHead className="text-right">Buy Currency</TableHead>
           <TableHead className="text-right">Buy Date</TableHead>
-          <TableHead className="w-[100px] text-right">Action</TableHead>
+          <TableHead className="w-[100px]">Action</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
@@ -37,8 +39,16 @@ function AssetTable({ assets }: { assets: Asset[] }) {
               <TableCell className="font-medium">{index + 1}</TableCell>
               <TableCell>{asset.name}</TableCell>
               <TableCell>{asset.symbol}</TableCell>
-              <TableCell className="text-right">{asset.quantity}</TableCell>
-              <TableCell className="text-right">{asset.buyPrice}</TableCell>
+              <TableCell className="text-right">
+                {asset.quantity.toLocaleString()}
+              </TableCell>
+              <TableCell className="text-right">
+                {asset.buyPrice.toLocaleString()}
+              </TableCell>
+              <TableCell className="text-right">
+                {(+asset.buyPrice * +asset.quantity).toLocaleString()}
+              </TableCell>
+              <TableCell className="text-right">{asset.buyCurrency}</TableCell>
               <TableCell className="text-right">
                 {asset.buyDate.toString().split("T")[0]}
               </TableCell>
