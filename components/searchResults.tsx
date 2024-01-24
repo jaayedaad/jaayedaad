@@ -20,7 +20,16 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { useState } from "react";
+import { currencies } from "@/constants/currency";
 
 type searchResultProps = {
   results: Array<any>;
@@ -30,6 +39,7 @@ const SearchResults = ({ results }: searchResultProps) => {
   const [assetQuantity, setAssetQuantity] = useState<string>("");
   const [assetBuyPrice, setAssetBuyPrice] = useState<string>("");
   const [buyDate, setBuyDate] = useState<string>("");
+  const [buyCurrency, setBuyCurrency] = useState("INR");
 
   const handleAssetQuantiy = (value: string) => {
     setAssetQuantity(value);
@@ -49,6 +59,7 @@ const SearchResults = ({ results }: searchResultProps) => {
       quantity: assetQuantity,
       buyPrice: assetBuyPrice,
       buyDate: buyDate,
+      buyCurrency: buyCurrency,
     };
     await fetch("/api/assets/add", {
       method: "POST",
@@ -109,25 +120,47 @@ const SearchResults = ({ results }: searchResultProps) => {
                     </div>
                     <div className="grid grid-cols-4 items-center gap-4">
                       <Label htmlFor="Buy Price" className="text-right">
+                        Buy Date:
+                      </Label>
+                      <div className="col-span-2">
+                        <DatePicker onSelect={handleDateSelect} />
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-4 items-center gap-4">
+                      <Label htmlFor="Buy Price" className="text-right">
                         Buy Price
                       </Label>
                       <Input
                         id="buyPrice"
-                        className="col-span-2 no-spinner"
+                        className="col-span-1 no-spinner"
                         type="number"
                         value={assetBuyPrice}
                         onChange={(e) => {
                           handleAssetBuyPrice(e.target.value);
                         }}
                       />
-                    </div>
-                    <div className="grid grid-cols-4 items-center gap-4">
-                      <Label htmlFor="Buy Price" className="text-right">
-                        Buy Date:
-                      </Label>
-                      <div className="col-span-2">
-                        <DatePicker onSelect={handleDateSelect} />
-                      </div>
+                      <Select
+                        onValueChange={(value) => {
+                          setBuyCurrency(value);
+                        }}
+                        defaultValue="INR"
+                      >
+                        <SelectTrigger className="w-full">
+                          <SelectValue placeholder="" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {currencies.map((currency) => {
+                            return (
+                              <SelectItem
+                                key={currency.label}
+                                value={currency.label}
+                              >
+                                {currency.value}
+                              </SelectItem>
+                            );
+                          })}
+                        </SelectContent>
+                      </Select>
                     </div>
                     <DialogFooter>
                       <DialogClose asChild>

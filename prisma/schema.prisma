@@ -55,12 +55,13 @@ model VerificationToken {
 }
 
 model Asset {
-  id       String   @id @default(cuid())
-  name     String
-  symbol   String
-  quantity String
-  buyPrice String
-  buyDate  DateTime
-  userId   String
-  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id          String   @id @default(cuid())
+  name        String
+  symbol      String
+  quantity    String
+  buyPrice    String
+  buyCurrency String   @default("INR")
+  buyDate     DateTime
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
