@@ -23,7 +23,7 @@ export default function AddAssetPage() {
       const options = {
         method: "GET",
         headers: {
-          "X-RapidAPI-Key": process.env.NEXT_PUBLIC_YHFINANCE_KEY!,
+          "X-RapidAPI-Key": process.env.NEXT_PUBLIC_YHFINANCE_KEY,
           "X-RapidAPI-Host": "yh-finance.p.rapidapi.com",
         },
       };
