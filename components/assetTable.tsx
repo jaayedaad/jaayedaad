@@ -39,8 +39,6 @@ function AssetTable({ assets }: { assets: Asset[] }) {
     )
       .then((response) => response.json())
       .then((data) => {
-        console.log(data);
-        console.log(assets);
         setConversionRate(data.inr);
       });
   }, []);
