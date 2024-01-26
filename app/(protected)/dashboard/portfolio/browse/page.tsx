@@ -1,4 +1,5 @@
 "use client";
+import { getAssets } from "@/actions/getAssetsAction";
 import AssetTable from "@/components/assetTable";
 import LoadingSpinner from "@/components/ui/loading-spinner";
 import React, { useEffect, useState } from "react";
@@ -20,53 +21,10 @@ function AssetsPage() {
   const [loadingAsset, setLoadingAsset] = useState(true);
 
   useEffect(() => {
-    async function fetchAssets() {
-      try {
-        const data = await fetch("/api/assets", {
-          method: "GET",
-        });
-        const assets: Asset[] = await data.json();
-
-        // Get symbols from the assets
-        const assetSymbols = assets.map((asset) => asset.symbol);
-        const assetSymbolsQuery = assetSymbols.join("%2C");
-
-        // Get previous close values and their currency
-        fetch(
-          `https://yh-finance.p.rapidapi.com/market/v2/get-quotes?region=US&symbols=${assetSymbolsQuery}`,
-          {
-            method: "GET",
-            headers: {
-              "X-RapidAPI-Key": process.env.NEXT_PUBLIC_YHFINANCE_KEY,
-              "X-RapidAPI-Host": "yh-finance.p.rapidapi.com",
-            },
-          }
-        )
-          .then((response) => response.json())
-          .then((responseData) => {
-            const quotes = responseData.quoteResponse.result;
-            // Update assets with relevant properties
-            const updatedAssets = assets.map((asset) => {
-              const matchingQuote = quotes.find(
-                // @ts-ignore
-                (quote) => quote.symbol === asset.symbol
-              );
-
-              if (matchingQuote) {
-                asset.prevClose = matchingQuote.regularMarketPreviousClose;
-              }
-
-              return asset;
-            });
-            setAssets(updatedAssets);
-            setLoadingAsset(false);
-          });
-      } finally {
-        return;
-      }
-    }
-
-    fetchAssets();
+    getAssets().then((assets) => {
+      setAssets(assets);
+      setLoadingAsset(false);
+    });
   }, []);
   return (
     <div className="flex min-h-screen w-full flex-col py-10 px-12">
