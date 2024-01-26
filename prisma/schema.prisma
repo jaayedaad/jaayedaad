@@ -35,15 +35,16 @@ model Session {
 }
 
 model User {
-  id            String    @id @default(cuid())
+  id            String       @id @default(cuid())
   name          String?
-  username      String    @default(cuid())
-  email         String    @unique
+  username      String       @default(cuid())
+  email         String       @unique
   emailVerified DateTime?
   image         String?
   accounts      Account[]
   sessions      Session[]
   assets        Asset[]
+  preferences   Preference[]
 }
 
 model VerificationToken {
@@ -62,6 +63,13 @@ model Asset {
   buyPrice    String
   buyCurrency String   @default("INR")
   buyDate     DateTime
-  userId      String
+  userId      String   @unique
   user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Preference {
+  id            String  @id @default(cuid())
+  publicProfile Boolean @default(false)
+  userId        String  @unique
+  user          User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 }

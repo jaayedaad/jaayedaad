@@ -10,6 +10,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
 import { ArrowDownIcon, ArrowUpIcon } from "lucide-react";
+import { getConversionRate } from "@/actions/getConversionRateAction";
 
 type Asset = {
   id: string;
@@ -34,13 +35,9 @@ function AssetTable({ assets }: { assets: Asset[] }) {
 
   // Get USD to INR conversion rate
   useEffect(() => {
-    fetch(
-      "https://cdn.jsdelivr.net/gh/fawazahmed0/currency-api@1/latest/currencies/usd/inr.json"
-    )
-      .then((response) => response.json())
-      .then((data) => {
-        setConversionRate(data.inr);
-      });
+    getConversionRate().then((conversionRate) => {
+      setConversionRate(conversionRate);
+    });
   }, []);
   return (
     assets.length > 0 && (
@@ -94,8 +91,8 @@ function AssetTable({ assets }: { assets: Asset[] }) {
                 >
                   <div className="flex flex-col">
                     {(asset.buyCurrency === "INR"
-                      ? +asset.buyPrice * +asset.quantity
-                      : +asset.buyPrice * +asset.quantity * +conversionRate
+                      ? +asset.prevClose * +asset.quantity
+                      : +asset.prevClose * +asset.quantity * +conversionRate
                     ).toLocaleString()}
                     {asset.prevClose > asset.buyPrice ? (
                       <span className="flex items-center justify-end">
