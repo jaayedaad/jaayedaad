@@ -2,40 +2,18 @@ import { User } from "@prisma/client";
 import { getCurrentUser } from "@/actions/getCurrentUser";
 import Image from "next/image";
 import { IndianRupee, Settings } from "lucide-react";
-import { Asset, getAssets } from "@/actions/getAssetsAction";
+import { getAssets } from "@/actions/getAssetsAction";
 import { getConversionRate } from "@/actions/getConversionRateAction";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-
-function calculateProfit(assets: Asset[], conversionRate: String) {
-  const amounts = assets
-    .map((asset) => {
-      const { buyCurrency, quantity, buyPrice, prevClose } = asset;
-      const conversionFactor = buyCurrency === "USD" ? +conversionRate : 1;
-
-      const buyAmount = +quantity * +buyPrice * conversionFactor;
-      const currentAmount = +quantity * +prevClose * conversionFactor;
-
-      return { buyAmount, currentAmount };
-    })
-    .reduce(
-      (accumulator, current) => {
-        accumulator.buyAmount += current.buyAmount;
-        accumulator.currentAmount += current.currentAmount;
-        return accumulator;
-      },
-      { buyAmount: 0, currentAmount: 0 }
-    );
-
-  return amounts;
-}
+import { totalAmountCalculator } from "@/helper/totalAmountCalculator";
 
 async function Profile({ params }: { params: { username: string } }) {
   const user: User = await getCurrentUser();
   const assets = await getAssets();
   const conversionRate = await getConversionRate();
-  const holdings = calculateProfit(assets, conversionRate);
+  const holdings = totalAmountCalculator(assets, conversionRate);
   const profitLoss = holdings.currentAmount - holdings.buyAmount;
   const textColorClass = profitLoss >= 0 ? "text-green-400" : "text-red-400";
 

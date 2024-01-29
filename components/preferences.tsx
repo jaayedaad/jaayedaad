@@ -15,7 +15,7 @@ function Preferences() {
     getPreferences().then((preferences: Preference) => {
       setPublicProfile(preferences.publicProfile);
     });
-  });
+  }, []);
 
   const handleSave = async () => {
     try {
