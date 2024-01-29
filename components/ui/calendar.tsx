@@ -13,7 +13,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 
 import { cn } from "@/lib/utils";
 import { buttonVariants } from "@/components/ui/button";
-import { DayPicker, DropdownProps } from "react-day-picker";
+import { DateAfter, DayPicker, DropdownProps } from "react-day-picker";
 
 export type CalendarProps = React.ComponentProps<typeof DayPicker>;
 
@@ -23,8 +23,10 @@ function Calendar({
   showOutsideDays = true,
   ...props
 }: CalendarProps) {
+  const afterMatcher: DateAfter = { after: new Date() };
   return (
     <DayPicker
+      disabled={afterMatcher}
       showOutsideDays={showOutsideDays}
       className={cn("p-3", className)}
       classNames={{
