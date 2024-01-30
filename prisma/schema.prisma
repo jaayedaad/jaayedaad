@@ -37,7 +37,7 @@ model Session {
 model User {
   id            String       @id @default(cuid())
   name          String?
-  username      String       @unique @default(cuid())
+  username      String?      @unique
   email         String       @unique
   emailVerified DateTime?
   image         String?
@@ -56,15 +56,16 @@ model VerificationToken {
 }
 
 model Asset {
-  id          String   @id @default(cuid())
-  name        String
-  symbol      String
-  quantity    String
-  buyPrice    String
-  buyCurrency String   @default("INR")
-  buyDate     DateTime
-  userId      String   @unique
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id           String        @id @default(cuid())
+  name         String
+  symbol       String
+  quantity     String
+  buyPrice     String
+  buyCurrency  String        @default("INR")
+  buyDate      DateTime
+  userId       String
+  user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  Transactions Transaction[]
 }
 
 model Preference {
@@ -72,4 +73,14 @@ model Preference {
   publicProfile Boolean @default(false)
   userId        String  @unique
   user          User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Transaction {
+  id       String   @id @default(cuid())
+  date     DateTime
+  quantity String
+  price    String
+  type     String
+  assetId  String   @unique
+  asset    Asset    @relation(fields: [assetId], references: [id], onDelete: Cascade)
 }
