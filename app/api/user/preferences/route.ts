@@ -15,23 +15,15 @@ export async function POST(req: Request) {
       },
     });
 
-    if (user?.preferences.length === 0) {
-      await prisma.preference.create({
-        data: {
-          publicProfile: preferences.publicProfile,
-          userId: user.id,
-        },
-      });
-    } else {
-      await prisma.preference.update({
-        where: {
-          userId: user?.id,
-        },
-        data: {
-          publicProfile: preferences.publicProfile,
-        },
-      });
-    }
+    await prisma.preference.update({
+      where: {
+        userId: user?.id,
+      },
+      data: {
+        publicProfile: preferences.publicProfile,
+      },
+    });
+
     return new Response("OK");
   }
 }
@@ -47,7 +39,15 @@ export async function GET() {
         preferences: true,
       },
     });
-
-    return new Response(JSON.stringify(user?.preferences[0]));
+    if (user?.preferences.length === 0) {
+      const preferences = await prisma.preference.create({
+        data: {
+          userId: user.id,
+        },
+      });
+      return new Response(JSON.stringify(preferences));
+    } else {
+      return new Response(JSON.stringify(user?.preferences[0]));
+    }
   }
 }

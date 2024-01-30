@@ -1,3 +1,5 @@
+"use client";
+
 import { Button } from "@/components/ui/button";
 import { DatePicker } from "@/components/ui/date-picker";
 import { Input } from "@/components/ui/input";
@@ -30,6 +32,7 @@ import {
 } from "@/components/ui/select";
 import { useState } from "react";
 import { currencies } from "@/constants/currency";
+import { toast } from "sonner";
 
 type searchResultProps = {
   results: Array<any>;
@@ -37,18 +40,18 @@ type searchResultProps = {
 
 const SearchResults = ({ results }: searchResultProps) => {
   const [assetQuantity, setAssetQuantity] = useState<string>("");
-  const [assetBuyPrice, setAssetBuyPrice] = useState<string>("");
-  const [buyDate, setBuyDate] = useState<string>("");
-  const [buyCurrency, setBuyCurrency] = useState("INR");
+  const [assetPrice, setAssetPrice] = useState<string>("");
+  const [date, setDate] = useState<string>("");
+  const [currency, setCurrency] = useState("INR");
 
   const handleAssetQuantiy = (value: string) => {
     setAssetQuantity(value);
   };
-  const handleAssetBuyPrice = (value: string) => {
-    setAssetBuyPrice(value);
+  const handleAssetPrice = (value: string) => {
+    setAssetPrice(value);
   };
   const handleDateSelect = (selectedDate: Date) => {
-    setBuyDate(selectedDate.toISOString());
+    setDate(selectedDate.toISOString());
   };
 
   // Add assets handler
@@ -57,20 +60,51 @@ const SearchResults = ({ results }: searchResultProps) => {
       shortname: shortname,
       symbol: symbol,
       quantity: assetQuantity,
-      buyPrice: assetBuyPrice,
-      buyDate: buyDate,
-      buyCurrency: buyCurrency,
+      buyPrice: assetPrice,
+      buyDate: date,
+      buyCurrency: currency,
     };
+
     await fetch("/api/assets/add", {
       method: "POST",
       body: JSON.stringify(asset),
     });
+
     setAssetQuantity("");
-    setAssetBuyPrice("");
-    setBuyDate("");
-    setBuyCurrency("INR");
+    setAssetPrice("");
+    setDate("");
+    setCurrency("INR");
   };
-  console.log(results);
+
+  // Sell assets handler
+  const handleSellAssets = async (shortname: string, symbol: string) => {
+    const asset = {
+      shortname: shortname,
+      symbol: symbol,
+      quantity: assetQuantity,
+      sellPrice: assetPrice,
+      sellDate: date,
+      sellCurrency: currency,
+    };
+
+    fetch("/api/assets/sell", {
+      method: "PUT",
+      body: JSON.stringify(asset),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.error) {
+          toast.error(data.error);
+        }
+        if (data.success) {
+          toast.success(data.success);
+          setAssetQuantity("");
+          setAssetPrice("");
+          setDate("");
+          setCurrency("INR");
+        }
+      });
+  };
   return (
     results.length > 0 && (
       <Table className="border">
@@ -84,7 +118,7 @@ const SearchResults = ({ results }: searchResultProps) => {
         </TableHeader>
         {results.map((result, index) => {
           return (
-            (result.shortname || result.longname) && (
+            result.shortname && (
               <TableBody key={index} className="overflow-y-hidden">
                 <TableRow>
                   <TableCell className="font-medium text-center">
@@ -134,14 +168,14 @@ const SearchResults = ({ results }: searchResultProps) => {
                             id="buyPrice"
                             className="col-span-2 no-spinner"
                             type="number"
-                            value={assetBuyPrice}
+                            value={assetPrice}
                             onChange={(e) => {
-                              handleAssetBuyPrice(e.target.value);
+                              handleAssetPrice(e.target.value);
                             }}
                           />
                           <Select
                             onValueChange={(value) => {
-                              setBuyCurrency(value);
+                              setCurrency(value);
                             }}
                             defaultValue="INR"
                           >
@@ -176,18 +210,16 @@ const SearchResults = ({ results }: searchResultProps) => {
                                 Add
                               </Button>
                             </DialogClose>
-                            <DialogClose asChild>
-                              <Button
-                                onClick={() =>
-                                  handleAddAssets(
-                                    result?.shortname,
-                                    result?.symbol
-                                  )
-                                }
-                              >
-                                Sell
-                              </Button>
-                            </DialogClose>
+                            <Button
+                              onClick={() =>
+                                handleSellAssets(
+                                  result?.shortname,
+                                  result?.symbol
+                                )
+                              }
+                            >
+                              Sell
+                            </Button>
                           </div>
                         </DialogFooter>
                       </DialogContent>
