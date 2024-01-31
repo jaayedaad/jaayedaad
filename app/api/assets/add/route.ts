@@ -19,6 +19,7 @@ export async function POST(req: Request) {
         buyPrice: body.buyPrice,
         buyCurrency: body.buyCurrency,
         buyDate: body.buyDate,
+        type: body.type,
         userId: user.id,
       },
     });

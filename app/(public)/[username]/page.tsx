@@ -2,7 +2,6 @@ import { getUserByUsername } from "@/actions/getUserByUsernameAction";
 
 async function PublicProfilePage({ params }: { params: { username: string } }) {
   const user = await getUserByUsername(params.username);
-  console.log(user);
   const publicProfile = user?.preferences[0].publicProfile;
 
   return (

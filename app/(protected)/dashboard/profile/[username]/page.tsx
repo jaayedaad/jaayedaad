@@ -12,10 +12,13 @@ import { totalAmountCalculator } from "@/helper/totalAmountCalculator";
 async function Profile({ params }: { params: { username: string } }) {
   const user: User = await getCurrentUser();
   const assets = await getAssets();
-  const conversionRate = await getConversionRate();
-  const holdings = totalAmountCalculator(assets, conversionRate);
-  const profitLoss = holdings.currentAmount - holdings.buyAmount;
-  const textColorClass = profitLoss >= 0 ? "text-green-400" : "text-red-400";
+  let holdings, profitLoss, textColorClass;
+  if (assets) {
+    const conversionRate = await getConversionRate();
+    holdings = totalAmountCalculator(assets, conversionRate);
+    profitLoss = holdings.currentAmount - holdings.buyAmount;
+    textColorClass = profitLoss >= 0 ? "text-green-400" : "text-red-400";
+  }
 
   return (
     <div className="mt-14 py-6 px-48 flex">
@@ -43,23 +46,28 @@ async function Profile({ params }: { params: { username: string } }) {
       <div className="w-full">
         <h1 className="text-5xl font-bold">Portfolio</h1>
         <div className="mt-4 grid grid-cols-3 gap-4">
-          <div className="p-4 rounded-md border w-full">
-            <p className="text-sm flex items-center justify-between mb-2">
-              Holdings <IndianRupee className="h-3 w-3" />
-            </p>
-            <div className="flex items-center gap-1">
-              <IndianRupee className="h-6 w-6" strokeWidth={3} />
-              <span className="text-2xl font-bold">
-                {holdings.currentAmount.toLocaleString()}
-              </span>
+          {assets ? (
+            <div className="p-4 rounded-md border w-full">
+              <p className="text-sm flex items-center justify-between mb-2">
+                Holdings <IndianRupee className="h-3 w-3" />
+              </p>
+              <div className="flex items-center gap-1">
+                <IndianRupee className="h-6 w-6" strokeWidth={3} />
+                <span className="text-2xl font-bold">
+                  {holdings?.currentAmount.toLocaleString()}
+                </span>
+              </div>
+              <div className="flex items-center gap-1 text-muted-foreground">
+                Income:{" "}
+                <IndianRupee className={cn("h-4 w-4", textColorClass)} />
+                <span className={textColorClass}>
+                  {profitLoss?.toLocaleString()}
+                </span>
+              </div>
             </div>
-            <div className="flex items-center gap-1 text-muted-foreground">
-              Income: <IndianRupee className={cn("h-4 w-4", textColorClass)} />
-              <span className={textColorClass}>
-                {profitLoss.toLocaleString()}
-              </span>
-            </div>
-          </div>
+          ) : (
+            <div>You haven&apos;t added any assets yet!</div>
+          )}
         </div>
       </div>
     </div>

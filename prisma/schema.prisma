@@ -63,6 +63,7 @@ model Asset {
   buyPrice     String
   buyCurrency  String        @default("INR")
   buyDate      DateTime
+  type         String
   userId       String
   user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
   transactions Transaction[]

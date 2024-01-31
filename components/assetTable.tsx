@@ -11,18 +11,7 @@ import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
 import { ArrowDownIcon, ArrowUpIcon } from "lucide-react";
 import { getConversionRate } from "@/actions/getConversionRateAction";
-
-type Asset = {
-  id: string;
-  name: string;
-  symbol: string;
-  quantity: string;
-  buyPrice: string;
-  buyCurrency: string;
-  prevClose: string;
-  buyDate: Date;
-  userId: string;
-};
+import { Asset } from "@/actions/getAssetsAction";
 
 function AssetTable({ assets }: { assets: Asset[] }) {
   const [conversionRate, setConversionRate] = useState("");
@@ -44,20 +33,19 @@ function AssetTable({ assets }: { assets: Asset[] }) {
       <Table className="border">
         <TableHeader>
           <TableRow>
-            <TableHead className="w-[100px]">Sr No.</TableHead>
+            <TableHead className="w-[72px]">Sr No.</TableHead>
             <TableHead>Name</TableHead>
             <TableHead>Symbol</TableHead>
-            <TableHead className="text-right w-[100px]">Quantity</TableHead>
-            <TableHead className="text-right">Buy Price</TableHead>
-            <TableHead className="text-center w-[100px]">
-              Buy Currency
+            <TableHead className="text-right w-[128px]">Quantity</TableHead>
+            <TableHead className="text-right w-[128px]">Buy Price</TableHead>
+            <TableHead className="text-right w-[128px]">Buy Currency</TableHead>
+            <TableHead className="text-right w-[136px]">
+              Previous Close
             </TableHead>
-            <TableHead className="text-center">Buy Date</TableHead>
-            <TableHead className="text-center">Previous Close</TableHead>
-            <TableHead className="text-center w-[125px]">
+            <TableHead className="text-right w-[128px]">
               Current Value (in INR)
             </TableHead>
-            <TableHead className="w-[100px]">Action</TableHead>
+            <TableHead className="text-center w-[128px]">Action</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -73,15 +61,10 @@ function AssetTable({ assets }: { assets: Asset[] }) {
                 <TableCell className="text-right">
                   {asset.buyPrice.toLocaleString()}
                 </TableCell>
-                <TableCell className="text-center">
+                <TableCell className="text-right">
                   {asset.buyCurrency}
                 </TableCell>
-                <TableCell className="text-center">
-                  {asset.buyDate.toString().split("T")[0]}
-                </TableCell>
-                <TableCell className="text-center">
-                  {asset?.prevClose}
-                </TableCell>
+                <TableCell className="text-right">{asset?.prevClose}</TableCell>
                 <TableCell
                   className={`text-right ${
                     asset.prevClose > asset.buyPrice
@@ -97,7 +80,10 @@ function AssetTable({ assets }: { assets: Asset[] }) {
                     {asset.prevClose > asset.buyPrice ? (
                       <span className="flex items-center justify-end">
                         (
-                        {((+asset.prevClose * 10) / +asset.buyPrice).toFixed(2)}
+                        {(
+                          ((+asset.prevClose - +asset.buyPrice) * 100) /
+                          +asset.buyPrice
+                        ).toFixed(2)}
                         %
                         <ArrowUpIcon className="h-4 w-4 ml-2" />)
                       </span>
@@ -105,8 +91,8 @@ function AssetTable({ assets }: { assets: Asset[] }) {
                       <span className="flex items-center justify-end">
                         (
                         {(
-                          100 -
-                          (+asset.prevClose * 100) / +asset.buyPrice
+                          ((+asset.buyPrice - +asset.prevClose) * 100) /
+                          +asset.buyPrice
                         ).toFixed(2)}
                         %
                         <ArrowDownIcon className="h-4 w-4 ml-2" />)

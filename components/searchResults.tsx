@@ -55,13 +55,18 @@ const SearchResults = ({ results }: searchResultProps) => {
   };
 
   // Add assets handler
-  const handleAddAssets = async (shortname: string, symbol: string) => {
+  const handleAddAssets = async (
+    shortname: string,
+    symbol: string,
+    type: string
+  ) => {
     const asset = {
       shortname: shortname,
       symbol: symbol,
       quantity: assetQuantity,
       buyPrice: assetPrice,
       buyDate: date,
+      type: type,
       buyCurrency: currency,
     };
 
@@ -203,7 +208,8 @@ const SearchResults = ({ results }: searchResultProps) => {
                                 onClick={() =>
                                   handleAddAssets(
                                     result?.shortname,
-                                    result?.symbol
+                                    result?.symbol,
+                                    result?.quoteType
                                   )
                                 }
                               >

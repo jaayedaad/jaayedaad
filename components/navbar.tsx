@@ -23,7 +23,7 @@ function Navbar() {
           <Button
             onClick={() =>
               signIn("google", {
-                callbackUrl: "http://localhost:3000/dashboard",
+                callbackUrl: "/dashboard",
               })
             }
           >
@@ -35,17 +35,19 @@ function Navbar() {
             <div className="flex gap-2">
               <Button asChild variant="link">
                 <Link href={`/dashboard/profile/${user?.username}`}>
-                  Profile
+                  My profile
                 </Link>
               </Button>
               <Button asChild variant="link">
-                <Link href="/dashboard/portfolio/add">Add assets</Link>
+                <Link href="/dashboard/portfolio/add">Add transactions</Link>
               </Button>
               <Button asChild variant="link">
                 <Link href="/dashboard/portfolio/browse">My assets</Link>
               </Button>
             </div>
-            <Button onClick={() => signOut()}>Sign Out</Button>
+            <Button onClick={() => signOut({ callbackUrl: "/" })}>
+              Sign Out
+            </Button>
           </div>
         </SignedIn>
       </div>

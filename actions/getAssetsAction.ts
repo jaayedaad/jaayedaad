@@ -9,6 +9,7 @@ export type Asset = {
   buyPrice: string;
   buyCurrency: string;
   prevClose: string;
+  type: string;
   buyDate: Date;
   userId: string;
 };
@@ -29,39 +30,41 @@ export async function getAssets() {
   });
   const assets: Asset[] = await data.json();
 
-  // Get symbols from the assets
-  const assetSymbols = assets.map((asset) => asset.symbol);
-  const assetSymbolsQuery = assetSymbols.join("%2C");
+  if (assets.length > 0) {
+    // Get symbols from the assets
+    const assetSymbols = assets.map((asset) => asset.symbol);
+    const assetSymbolsQuery = assetSymbols.join("%2C");
 
-  // Get previous close values and their currency
-  const quotes = await fetch(
-    `https://yh-finance.p.rapidapi.com/market/v2/get-quotes?region=US&symbols=${assetSymbolsQuery}`,
-    {
-      method: "GET",
-      headers: {
-        "X-RapidAPI-Key": process.env.NEXT_PUBLIC_YHFINANCE_KEY,
-        "X-RapidAPI-Host": "yh-finance.p.rapidapi.com",
-      },
-    }
-  );
-  const {
-    quoteResponse: { result: quotesData },
-  } = await quotes.json();
-
-  // Update assets with relevant properties
-  const updatedAssets = assets.map((asset) => {
-    const matchingQuote = quotesData.find(
-      // @ts-ignore
-      (quote) => quote.symbol === asset.symbol
+    // Get previous close values and their currency
+    const quotes = await fetch(
+      `https://yh-finance.p.rapidapi.com/market/v2/get-quotes?region=US&symbols=${assetSymbolsQuery}`,
+      {
+        method: "GET",
+        headers: {
+          "X-RapidAPI-Key": process.env.NEXT_PUBLIC_YHFINANCE_KEY,
+          "X-RapidAPI-Host": "yh-finance.p.rapidapi.com",
+        },
+      }
     );
+    const {
+      quoteResponse: { result: quotesData },
+    } = await quotes.json();
 
-    if (matchingQuote) {
-      asset.prevClose = matchingQuote.regularMarketPreviousClose;
-    }
+    // Update assets with relevant properties
+    const updatedAssets = assets.map((asset) => {
+      const matchingQuote = quotesData.find(
+        // @ts-ignore
+        (quote) => quote.symbol === asset.symbol
+      );
 
-    return asset;
-  });
+      if (matchingQuote) {
+        asset.prevClose = matchingQuote.regularMarketPreviousClose;
+      }
 
-  // Return updated assets
-  return updatedAssets;
+      return asset;
+    });
+
+    // Return updated assets
+    return updatedAssets;
+  }
 }

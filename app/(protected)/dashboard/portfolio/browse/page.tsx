@@ -1,20 +1,8 @@
 "use client";
-import { getAssets } from "@/actions/getAssetsAction";
+import { Asset, getAssets } from "@/actions/getAssetsAction";
 import AssetTable from "@/components/assetTable";
 import LoadingSpinner from "@/components/ui/loading-spinner";
 import React, { useEffect, useState } from "react";
-
-type Asset = {
-  id: string;
-  name: string;
-  symbol: string;
-  quantity: string;
-  buyPrice: string;
-  buyCurrency: string;
-  prevClose: string;
-  buyDate: Date;
-  userId: string;
-};
 
 function AssetsPage() {
   const [assets, setAssets] = useState<Asset[]>();
@@ -37,7 +25,57 @@ function AssetsPage() {
       ) : (
         <div>
           {assets ? (
-            <AssetTable assets={assets} />
+            // <>
+            //   <div className="my-8 text-3xl font-bold">
+            //     Equity (
+            //     {assets.filter((asset) => asset.type == "EQUITY").length})
+            //   </div>
+            //   <AssetTable
+            //     assets={assets.filter((asset) => asset.type == "EQUITY")}
+            //   />
+            //   <div className="my-8 text-3xl font-bold">
+            //     Crypto (
+            //     {
+            //       assets.filter((asset) => asset.type == "CRYPTOCURRENCY")
+            //         .length
+            //     }
+            //     )
+            //   </div>
+            //   <AssetTable
+            //     assets={assets.filter(
+            //       (asset) => asset.type == "CRYPTOCURRENCY"
+            //     )}
+            //   />
+            //   <div className="my-8 text-3xl font-bold">
+            //     Mutual Funds (
+            //     {assets.filter((asset) => asset.type == "MUTUALFUND").length})
+            //   </div>
+            //   <AssetTable
+            //     assets={assets.filter((asset) => asset.type == "MUTUALFUND")}
+            //   />
+            // </>
+            <>
+              {Array.from(new Set(assets.map((asset) => asset.type))).map(
+                (assetType) => (
+                  <>
+                    <div key={assetType} className="my-8 text-2xl font-bold">
+                      {assetType} (
+                      {
+                        assets.filter((asset) => asset.type === assetType)
+                          .length
+                      }
+                      )
+                    </div>
+                    <AssetTable
+                      key={`table-${assetType}`}
+                      assets={assets.filter(
+                        (asset) => asset.type === assetType
+                      )}
+                    />
+                  </>
+                )
+              )}
+            </>
           ) : (
             <div className="text-center mt-24">
               You haven&apos;t added any assets yet!
