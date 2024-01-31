@@ -65,7 +65,7 @@ model Asset {
   buyDate      DateTime
   userId       String
   user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
-  Transactions Transaction[]
+  transactions Transaction[]
 }
 
 model Preference {
@@ -81,6 +81,6 @@ model Transaction {
   quantity String
   price    String
   type     String
-  assetId  String   @unique
+  assetId  String
   asset    Asset    @relation(fields: [assetId], references: [id], onDelete: Cascade)
 }
