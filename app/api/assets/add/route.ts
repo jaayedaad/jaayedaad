@@ -22,6 +22,16 @@ export async function POST(req: Request) {
         userId: user.id,
       },
     });
+
+    const transaction = await prisma.transaction.create({
+      data: {
+        date: body.buyDate,
+        quantity: body.quantity,
+        price: body.buyPrice,
+        type: "buy",
+        assetId: asset.id,
+      },
+    });
   }
 
   return new Response("OK");

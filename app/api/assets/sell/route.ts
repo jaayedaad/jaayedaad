@@ -25,14 +25,40 @@ export async function PUT(req: Request) {
       for (const asset of sortedAssets) {
         // Remove asset if sell quantiy is same as asset quantity
         if (+asset.quantity - +remainingQuantity == 0) {
-          await prisma.asset.delete({
+          await prisma.asset.update({
             where: {
               id: asset.id,
+            },
+            data: {
+              quantity: "0",
+            },
+          });
+
+          // Add transaction
+          await prisma.transaction.create({
+            data: {
+              date: sellRequest.sellDate,
+              quantity: remainingQuantity,
+              price: sellRequest.sellPrice,
+              type: "sell",
+              assetId: asset.id,
             },
           });
         }
         // Update asset quantity if asset quantity is greater than sell quantity
         else if (+asset.quantity - +remainingQuantity > 0) {
+          // Add transaction
+          await prisma.transaction.create({
+            data: {
+              date: sellRequest.sellDate,
+              quantity: (+asset.quantity - +remainingQuantity).toString(),
+              price: sellRequest.sellPrice,
+              type: "sell",
+              assetId: asset.id,
+            },
+          });
+
+          // Remove assets
           await prisma.asset.update({
             where: {
               id: asset.id,
@@ -41,14 +67,29 @@ export async function PUT(req: Request) {
               quantity: (+asset.quantity - +remainingQuantity).toString(),
             },
           });
+
           return Response.json({ success: "Successfully sold asset" });
         }
         // Update sell quantity and remove current asset instance
         else {
           remainingQuantity = (+remainingQuantity - +asset.quantity).toString();
-          await prisma.asset.delete({
+          await prisma.asset.update({
             where: {
               id: asset.id,
+            },
+            data: {
+              quantity: "0",
+            },
+          });
+
+          // Add transaction
+          await prisma.transaction.create({
+            data: {
+              date: sellRequest.sellDate,
+              quantity: asset.quantity,
+              price: sellRequest.sellPrice,
+              type: "sell",
+              assetId: asset.id,
             },
           });
         }
