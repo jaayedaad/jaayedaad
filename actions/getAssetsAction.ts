@@ -10,6 +10,7 @@ export type Asset = {
   buyCurrency: string;
   prevClose: string;
   type: string;
+  exchange: string;
   buyDate: Date;
   userId: string;
 };

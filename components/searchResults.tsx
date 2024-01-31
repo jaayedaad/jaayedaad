@@ -58,7 +58,8 @@ const SearchResults = ({ results }: searchResultProps) => {
   const handleAddAssets = async (
     shortname: string,
     symbol: string,
-    type: string
+    type: string,
+    exchange: string
   ) => {
     const asset = {
       shortname: shortname,
@@ -67,6 +68,7 @@ const SearchResults = ({ results }: searchResultProps) => {
       buyPrice: assetPrice,
       buyDate: date,
       type: type,
+      exchange: exchange,
       buyCurrency: currency,
     };
 
@@ -117,7 +119,8 @@ const SearchResults = ({ results }: searchResultProps) => {
           <TableRow>
             <TableHead className="w-[100px]">Sr No.</TableHead>
             <TableHead>Name</TableHead>
-            <TableHead className="w-[100px]">Symbol</TableHead>
+            <TableHead className="w-[100px] text-right">Exchange</TableHead>
+            <TableHead className="w-[100px] text-right">Symbol</TableHead>
             <TableHead className="w-[100px]"></TableHead>
           </TableRow>
         </TableHeader>
@@ -130,7 +133,10 @@ const SearchResults = ({ results }: searchResultProps) => {
                     {index + 1}
                   </TableCell>
                   <TableCell>{result?.shortname}</TableCell>
-                  <TableCell>{result?.symbol}</TableCell>
+                  <TableCell className="text-right">
+                    {result?.exchange}
+                  </TableCell>
+                  <TableCell className="text-right">{result?.symbol}</TableCell>
                   <TableCell>
                     <Dialog>
                       <DialogTrigger asChild>
@@ -209,7 +215,8 @@ const SearchResults = ({ results }: searchResultProps) => {
                                   handleAddAssets(
                                     result?.shortname,
                                     result?.symbol,
-                                    result?.quoteType
+                                    result?.quoteType,
+                                    result?.exchange
                                   )
                                 }
                               >

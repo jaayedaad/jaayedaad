@@ -20,6 +20,7 @@ export async function POST(req: Request) {
         buyCurrency: body.buyCurrency,
         buyDate: body.buyDate,
         type: body.type,
+        exchange: body.exchange,
         userId: user.id,
       },
     });

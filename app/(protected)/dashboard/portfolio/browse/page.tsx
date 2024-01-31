@@ -25,40 +25,12 @@ function AssetsPage() {
       ) : (
         <div>
           {assets ? (
-            // <>
-            //   <div className="my-8 text-3xl font-bold">
-            //     Equity (
-            //     {assets.filter((asset) => asset.type == "EQUITY").length})
-            //   </div>
-            //   <AssetTable
-            //     assets={assets.filter((asset) => asset.type == "EQUITY")}
-            //   />
-            //   <div className="my-8 text-3xl font-bold">
-            //     Crypto (
-            //     {
-            //       assets.filter((asset) => asset.type == "CRYPTOCURRENCY")
-            //         .length
-            //     }
-            //     )
-            //   </div>
-            //   <AssetTable
-            //     assets={assets.filter(
-            //       (asset) => asset.type == "CRYPTOCURRENCY"
-            //     )}
-            //   />
-            //   <div className="my-8 text-3xl font-bold">
-            //     Mutual Funds (
-            //     {assets.filter((asset) => asset.type == "MUTUALFUND").length})
-            //   </div>
-            //   <AssetTable
-            //     assets={assets.filter((asset) => asset.type == "MUTUALFUND")}
-            //   />
-            // </>
             <>
+              <div className="font-bold text-3xl">Assets by types:</div>
               {Array.from(new Set(assets.map((asset) => asset.type))).map(
                 (assetType) => (
                   <>
-                    <div key={assetType} className="my-8 text-2xl font-bold">
+                    <div key={assetType} className="my-8 text-xl font-bold">
                       {assetType} (
                       {
                         assets.filter((asset) => asset.type === assetType)
@@ -70,6 +42,29 @@ function AssetsPage() {
                       key={`table-${assetType}`}
                       assets={assets.filter(
                         (asset) => asset.type === assetType
+                      )}
+                    />
+                  </>
+                )
+              )}
+              <div className="font-bold text-3xl mt-10">
+                Assets by exchange:
+              </div>
+              {Array.from(new Set(assets.map((asset) => asset.exchange))).map(
+                (exchange) => (
+                  <>
+                    <div key={exchange} className="my-8 text-xl font-bold">
+                      {exchange} (
+                      {
+                        assets.filter((asset) => asset.exchange === exchange)
+                          .length
+                      }
+                      )
+                    </div>
+                    <AssetTable
+                      key={`table-${exchange}`}
+                      assets={assets.filter(
+                        (asset) => asset.exchange === exchange
                       )}
                     />
                   </>
