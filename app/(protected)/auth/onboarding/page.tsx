@@ -1,4 +1,5 @@
 "use client";
+import { getCurrentUser } from "@/actions/getCurrentUser";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -8,7 +9,7 @@ import { useEffect, useState } from "react";
 function Onboarding() {
   const [username, setUsername] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
-  const [buttonState, setButtonState] = useState(true);
+  const [buttonDisabled, setButtonDisabled] = useState(true);
 
   const router = useRouter();
 
@@ -20,11 +21,9 @@ function Onboarding() {
         "Username can only contain alphanumeric characters or underscores!"
       );
       return;
-    } else {
-      if (username.length < 3) {
-        setErrorMessage("Username must be at least 3 characters!");
-        return;
-      }
+    } else if (username.length < 3) {
+      setErrorMessage("Username must be at least 3 characters!");
+      return;
     }
     const data = await fetch("/api/onboarding", {
       method: "POST",
@@ -33,7 +32,7 @@ function Onboarding() {
     const user: object[] = await data.json();
     if (user.length === 0) {
       setErrorMessage("Username available");
-      setButtonState(false);
+      setButtonDisabled(false);
     } else {
       setErrorMessage("This username is already taken!");
     }
@@ -45,30 +44,31 @@ function Onboarding() {
       method: "GET",
     });
 
-    router.push("/");
+    router.push("/dashboard");
   };
 
   // handles username field and disables button while typing
   const handleUsernameChange = (value: string) => {
     setUsername(value);
-    setButtonState(true);
+    setButtonDisabled(true);
   };
 
-  // fetches current user & accomodates live username change
+  // Fetches current user & redirects to dashboard if username is set
   useEffect(() => {
-    // fetch current user
-    fetch("/api/getcurrentuser", { method: "GET" })
-      .then(async (response) => {
-        const user = await response.json();
-        if (username !== user.id) {
-          router.push("/");
-        }
-      })
-      .catch((err) => console.log(err));
+    getCurrentUser().then((user) => {
+      if (user.username) {
+        router.push("/dashboard");
+      }
+    });
+  });
 
+  // Accomodates live username change
+  useEffect(() => {
     const timerId = setTimeout(() => {
       if (username) {
         verifyUsername(username);
+      } else {
+        setErrorMessage("Username cannot be empty!");
       }
     }, 1000);
 
@@ -94,7 +94,7 @@ function Onboarding() {
         {errorMessage}
       </p>
       <div className="pt-4 flex flex-col">
-        <Button onClick={handleSubmit} disabled={buttonState}>
+        <Button onClick={handleSubmit} disabled={buttonDisabled}>
           Submit
         </Button>
       </div>

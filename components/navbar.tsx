@@ -20,7 +20,15 @@ function Navbar() {
       <div>Investment Tracker</div>
       <div>
         <SignedOut>
-          <Button onClick={() => signIn("google")}>Sign In</Button>
+          <Button
+            onClick={() =>
+              signIn("google", {
+                callbackUrl: "http://localhost:3000/dashboard",
+              })
+            }
+          >
+            Sign In
+          </Button>
         </SignedOut>
         <SignedIn>
           <div className="flex gap-4">

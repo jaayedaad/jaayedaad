@@ -30,7 +30,8 @@ export async function GET(request: NextRequest) {
           email: user?.email,
         },
         data: {
-          username: username!,
+          username: username,
+          emailVerified: new Date().toISOString(),
         },
       });
     }
