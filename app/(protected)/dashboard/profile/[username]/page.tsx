@@ -8,10 +8,12 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { totalAmountCalculator } from "@/helper/totalAmountCalculator";
+import ProfileOverview from "@/components/profileOverview";
 
 async function Profile({ params }: { params: { username: string } }) {
   const user: User = await getCurrentUser();
   const assets = await getAssets();
+
   let holdings, profitLoss, textColorClass;
   if (assets) {
     const conversionRate = await getConversionRate();
@@ -45,30 +47,35 @@ async function Profile({ params }: { params: { username: string } }) {
       </div>
       <div className="w-full">
         <h1 className="text-5xl font-bold">Portfolio</h1>
-        <div className="mt-4 grid grid-cols-3 gap-4">
-          {assets ? (
-            <div className="p-4 rounded-md border w-full">
-              <p className="text-sm flex items-center justify-between mb-2">
-                Holdings <IndianRupee className="h-3 w-3" />
-              </p>
-              <div className="flex items-center gap-1">
-                <IndianRupee className="h-6 w-6" strokeWidth={3} />
-                <span className="text-2xl font-bold">
-                  {holdings?.currentAmount.toLocaleString()}
-                </span>
-              </div>
-              <div className="flex items-center gap-1 text-muted-foreground">
-                Income:{" "}
-                <IndianRupee className={cn("h-4 w-4", textColorClass)} />
-                <span className={textColorClass}>
-                  {profitLoss?.toLocaleString()}
-                </span>
+        {assets ? (
+          <div className="mt-4 grid grid-cols-3 gap-4">
+            <div>
+              <div className="p-4 rounded-md border w-full">
+                <p className="text-sm flex items-center justify-between mb-2">
+                  Holdings <IndianRupee className="h-3 w-3" />
+                </p>
+                <div className="flex items-center gap-1">
+                  <IndianRupee className="h-6 w-6" strokeWidth={3} />
+                  <span className="text-2xl font-bold">
+                    {holdings?.currentAmount.toLocaleString()}
+                  </span>
+                </div>
+                <div className="flex items-center gap-1 text-muted-foreground">
+                  Income:{" "}
+                  <IndianRupee className={cn("h-4 w-4", textColorClass)} />
+                  <span className={textColorClass}>
+                    {profitLoss?.toLocaleString()}
+                  </span>
+                </div>
               </div>
             </div>
-          ) : (
-            <div>You haven&apos;t added any assets yet!</div>
-          )}
-        </div>
+            <div className="col-span-3">
+              <ProfileOverview assets={assets} />
+            </div>
+          </div>
+        ) : (
+          <div>You haven&apos;t added any assets yet!</div>
+        )}
       </div>
     </div>
   );
