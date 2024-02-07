@@ -47,25 +47,31 @@ export async function getAssets() {
         },
       }
     );
-    const {
-      quoteResponse: { result: quotesData },
-    } = await quotes.json();
 
-    // Update assets with relevant properties
-    const updatedAssets = assets.map((asset) => {
-      const matchingQuote = quotesData.find(
-        // @ts-ignore
-        (quote) => quote.symbol === asset.symbol
-      );
+    const responseData = await quotes.json();
 
-      if (matchingQuote) {
-        asset.prevClose = matchingQuote.regularMarketPreviousClose;
-      }
+    if (responseData.quoteResponse !== undefined) {
+      const {
+        quoteResponse: { result: quotesData },
+      } = responseData;
+      // Proceed with quotesData
 
-      return asset;
-    });
+      // Update assets with relevant properties
+      const updatedAssets = assets.map((asset) => {
+        const matchingQuote = quotesData.find(
+          // @ts-ignore
+          (quote) => quote.symbol === asset.symbol
+        );
 
-    // Return updated assets
-    return updatedAssets;
+        if (matchingQuote) {
+          asset.prevClose = matchingQuote.regularMarketPreviousClose;
+        }
+
+        return asset;
+      });
+
+      // Return updated assets
+      return updatedAssets;
+    }
   }
 }
