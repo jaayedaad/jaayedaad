@@ -9,10 +9,16 @@ export async function GET() {
       where: {
         email: session?.user.email!,
       },
+    });
+
+    const assets = await prisma.asset.findMany({
+      where: {
+        userId: user?.id,
+      },
       include: {
-        assets: true,
+        transactions: true,
       },
     });
-    return Response.json(user?.assets);
+    return Response.json(assets);
   }
 }

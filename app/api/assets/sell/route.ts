@@ -40,6 +40,7 @@ export async function PUT(req: Request) {
               date: sellRequest.sellDate,
               quantity: remainingQuantity,
               price: sellRequest.sellPrice,
+              avgBuyPrice: asset.buyPrice,
               type: "sell",
               assetId: asset.id,
             },
@@ -51,8 +52,9 @@ export async function PUT(req: Request) {
           await prisma.transaction.create({
             data: {
               date: sellRequest.sellDate,
-              quantity: (+asset.quantity - +remainingQuantity).toString(),
+              quantity: (+remainingQuantity).toString(),
               price: sellRequest.sellPrice,
+              avgBuyPrice: asset.buyPrice,
               type: "sell",
               assetId: asset.id,
             },
@@ -88,6 +90,7 @@ export async function PUT(req: Request) {
               date: sellRequest.sellDate,
               quantity: asset.quantity,
               price: sellRequest.sellPrice,
+              avgBuyPrice: asset.buyPrice,
               type: "sell",
               assetId: asset.id,
             },
