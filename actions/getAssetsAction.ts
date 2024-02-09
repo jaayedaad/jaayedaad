@@ -1,5 +1,6 @@
 "use server";
 import { cookies } from "next/headers";
+import { getConversionRate } from "./getConversionRateAction";
 
 export type Asset = {
   id: string;
@@ -13,6 +14,16 @@ export type Asset = {
   exchange: string;
   buyDate: Date;
   userId: string;
+  currentValue: number;
+  transactions: {
+    id: string;
+    date: Date;
+    quantity: string;
+    price: string;
+    type: string;
+    assetId: string;
+    avgBuyPrice: string;
+  }[];
 };
 
 export async function getAssets() {
@@ -30,6 +41,7 @@ export async function getAssets() {
     credentials: "include",
   });
   const assets: Asset[] = await data.json();
+  const conversionRate = await getConversionRate();
 
   if (assets.length > 0) {
     // Get symbols from the assets
@@ -65,6 +77,14 @@ export async function getAssets() {
 
         if (matchingQuote) {
           asset.prevClose = matchingQuote.regularMarketPreviousClose;
+        }
+
+        // Calculate the current value of the asset
+        if (asset.buyCurrency === "USD") {
+          asset.currentValue =
+            +asset.prevClose * +asset.quantity * +conversionRate;
+        } else {
+          asset.currentValue = +asset.prevClose * +asset.quantity;
         }
 
         return asset;
