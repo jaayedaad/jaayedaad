@@ -3,7 +3,20 @@ import { Asset } from "@/actions/getAssetsAction";
 import { useState } from "react";
 import { PieChart, Pie, Sector, Cell } from "recharts";
 
-const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042"];
+const generateColors = (count: number) => {
+  const colors = [];
+  const goldenRatioConjugate = 0.618033988749895; // golden ratio to ensure even distribution
+  let hue = Math.random(); // start at a random hue
+  for (let i = 0; i < count; i++) {
+    hue += goldenRatioConjugate;
+    hue %= 1;
+    const color = `hsl(${hue * 360}, 70%, 50%)`; // generate color in HSL format
+    colors.push(color);
+  }
+  return colors;
+};
+
+const COLORS = generateColors(100);
 
 const label = (props: any) => {
   const RADIAN = Math.PI / 180;
@@ -83,7 +96,12 @@ const renderActiveShape = (props: any) => {
   );
 };
 
-function AssetPieChart({ data }: { data: Asset[] }) {
+interface PieChartProps {
+  data: Asset[];
+  view?: string; // "stocks" | "crypto" | "funds"
+}
+
+function AssetPieChart({ data, view }: PieChartProps) {
   const [activeIndex, setActiveIndex] = useState(-1);
   // Create an object to store the sum of values for each type
   const sumByType: {
@@ -91,11 +109,27 @@ function AssetPieChart({ data }: { data: Asset[] }) {
   } = {};
 
   // Iterate over each data object and sum the values for each type
-  data.forEach((item) => {
-    const type = item.type === "CRYPTOCURRENCY" ? "CRYPTO" : item.type;
-    const value = parseFloat(item.quantity);
-    sumByType[type] = (sumByType[type] || 0) + value;
-  });
+  if (!view) {
+    data.forEach((item) => {
+      const type = item.type === "CRYPTOCURRENCY" ? "CRYPTO" : item.type;
+      const value = parseFloat(item.quantity);
+      sumByType[type] = (sumByType[type] || 0) + value;
+    });
+  } else {
+    const filters: Record<string, (asset: Asset) => boolean> = {
+      stocks: (asset) => asset.type === "EQUITY",
+      crypto: (asset) => asset.type === "CRYPTOCURRENCY",
+      funds: (asset) => asset.type === "MUTUALFUND",
+    };
+
+    data = data.filter(filters[view]);
+
+    data.forEach((item) => {
+      const type = item.name;
+      const value = parseFloat(item.quantity);
+      sumByType[type] = (sumByType[type] || 0) + value;
+    });
+  }
 
   // Convert the sumByType object into the desired format
   const chartData = Object.entries(sumByType).map(([type, value]) => ({
@@ -109,7 +143,7 @@ function AssetPieChart({ data }: { data: Asset[] }) {
       <p className="text-muted-foreground text-sm">
         Visual breakdown of your investments
       </p>
-      <div className="flex justify-center mt-6">
+      <div className="flex justify-center mt-2">
         <PieChart width={400} height={160}>
           <Pie
             data={chartData}

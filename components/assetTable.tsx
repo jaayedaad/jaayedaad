@@ -11,11 +11,30 @@ import { ArrowDownIcon, ArrowUpIcon } from "lucide-react";
 import { Asset } from "@/actions/getAssetsAction";
 import { ScrollArea } from "./ui/scroll-area";
 
-function AssetTable({ assets }: { assets: Asset[] }) {
+interface AssetTableProps {
+  data: Asset[];
+  view?: string; // "stocks" | "crypto" | "funds"
+}
+
+function AssetTable({ data, view }: AssetTableProps) {
+  const filters: Record<string, (asset: Asset) => boolean> = {
+    stocks: (asset) => asset.type === "EQUITY",
+    crypto: (asset) => asset.type === "CRYPTOCURRENCY",
+    funds: (asset) => asset.type === "MUTUALFUND",
+  };
+
+  let filteredAssets = data;
+
+  if (view) {
+    filteredAssets = data.filter(filters[view]);
+  } else {
+    filteredAssets = data;
+  }
+
   return (
-    assets.length > 0 && (
+    filteredAssets.length > 0 && (
       <Table>
-        <ScrollArea className="h-60 w-full">
+        <ScrollArea className="h-[33vh] w-full">
           <TableHeader className="bg-secondary sticky top-0">
             <TableRow>
               <TableHead>Name</TableHead>
@@ -35,7 +54,7 @@ function AssetTable({ assets }: { assets: Asset[] }) {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {assets.map((asset, index) => {
+            {filteredAssets.map((asset, index) => {
               return (
                 +asset.quantity > 0 && (
                   <TableRow key={index}>

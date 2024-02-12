@@ -22,6 +22,7 @@ export async function getHistoricalData(assets: Asset[]) {
     if (data) {
       // Calculate total value of asset and add it to the data object
       data.prices.forEach((price: any) => {
+        data.assetType = asset.type;
         if (price.close) {
           if (asset.buyCurrency === "USD") {
             price.value = price.close * +conversionRate * +asset.quantity;
@@ -35,35 +36,29 @@ export async function getHistoricalData(assets: Asset[]) {
     }
   }
 
-  // Function to replace null values with the closest non-null value
-  function replaceNullsWithNearest(data: any[]) {
-    data.forEach((obj) => {
-      let prices = obj.prices;
-      let lastNonNullValue = null;
+  historicalData.forEach((obj) => {
+    let prices = obj.prices;
+    let lastNonNullValue = 0;
 
-      // Forward pass: replace null values with the nearest non-null value following them
-      for (let i = 0; i < prices.length; i++) {
-        if (prices[i].value !== null) {
-          lastNonNullValue = prices[i].value;
-        } else if (lastNonNullValue !== null) {
-          prices[i].value = lastNonNullValue;
-        }
+    // Backward pass: replace null values with the nearest non-null value preceding them
+    for (let i = prices.length - 1; i >= 0; i--) {
+      if (prices[i].value) {
+        lastNonNullValue = prices[i].value;
+      } else if (lastNonNullValue !== 0) {
+        prices[i].value = lastNonNullValue;
       }
+    }
 
-      // Backward pass: replace null values with the nearest non-null value preceding them
-      lastNonNullValue = null;
-      for (let i = prices.length - 1; i >= 0; i--) {
-        if (prices[i].value !== null) {
-          lastNonNullValue = prices[i].value;
-        } else if (lastNonNullValue !== null) {
-          prices[i].value = lastNonNullValue;
-        }
+    // Forward pass: replace null values with the nearest non-null value following them
+    lastNonNullValue = 0;
+    for (let i = 0; i < prices.length; i++) {
+      if (prices[i].value) {
+        lastNonNullValue = prices[i].value;
+      } else if (lastNonNullValue !== 0) {
+        prices[i].value = lastNonNullValue;
       }
-    });
-  }
-
-  // Call the function to replace null values with the nearest non-null values
-  replaceNullsWithNearest(historicalData);
+    }
+  });
 
   return historicalData;
 }

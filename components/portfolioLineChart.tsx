@@ -4,7 +4,11 @@ import ChangeInterval, { Interval } from "./changeInterval";
 import { IndianRupee } from "lucide-react";
 import { prepareLineChartData } from "@/helper/lineChartDataAccumulator";
 
-function PortfolioLineChart({ data }: { data: any[] }) {
+interface FilterMap {
+  [key: string]: () => { name: string; amt: number }[];
+}
+
+function PortfolioLineChart({ data, view }: { data: any[]; view: string }) {
   const [dataToShow, setDataToShow] = useState<
     {
       name: string;
@@ -12,8 +16,30 @@ function PortfolioLineChart({ data }: { data: any[] }) {
     }[]
   >();
 
-  const accumulatedData = prepareLineChartData(data);
-  console.log(accumulatedData);
+  let accumulatedData: {
+    name: string;
+    amt: number;
+  }[];
+
+  const filterMap: FilterMap = {
+    dashboard: () => prepareLineChartData(data),
+    stocks: () =>
+      prepareLineChartData(data.filter((item) => item.assetType === "EQUITY")),
+    crypto: () =>
+      prepareLineChartData(
+        data.filter((item) => item.assetType === "CRYPTOCURRENCY")
+      ),
+    funds: () =>
+      prepareLineChartData(
+        data.filter((item) => item.assetType === "MUTUALFUND")
+      ),
+  };
+
+  if (filterMap.hasOwnProperty(view)) {
+    accumulatedData = filterMap[view]();
+  } else {
+    // Handle case where view is not recognized
+  }
 
   function prepareData(timeRange: Interval) {
     // Calculate start and end dates based on the selected time range
@@ -21,8 +47,8 @@ function PortfolioLineChart({ data }: { data: any[] }) {
 
     let startDate: Date, endDate: Date;
     if (timeRange === "1d") {
-      startDate = new Date(today);
-      startDate.setDate(today.getDate() - 1);
+      startDate = new Date(accumulatedData[1].name);
+      startDate.setDate(startDate.getDate());
       endDate = today;
     } else if (timeRange === "1w") {
       startDate = new Date(today);
@@ -63,7 +89,7 @@ function PortfolioLineChart({ data }: { data: any[] }) {
         </div>
         <ChangeInterval onChange={onChange} />
       </div>
-      <div className="flex justify-center mt-6">
+      <div className="flex justify-center mt-2">
         {dataToShow && (
           <AreaChart
             width={720}

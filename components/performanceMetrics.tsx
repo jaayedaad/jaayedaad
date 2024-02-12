@@ -27,7 +27,7 @@ function PerformanceMetrics({
           </div>
         </div>
       </div>
-      <div className="flex flex-col gap-3">
+      <div className="flex flex-col gap-4">
         <div className="p-3 rounded-md border w-full">
           <p className="text-sm flex items-center justify-between mb-2">
             Unrealised Profit / Loss <IndianRupee className="h-4 w-4" />

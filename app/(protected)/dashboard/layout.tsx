@@ -1,5 +1,6 @@
 import { getCurrentUser } from "@/actions/getCurrentUser";
 import Sidebar from "@/components/sidebar";
+import DataProvider from "@/contexts/historicalData-context";
 import { redirect } from "next/navigation";
 import React from "react";
 
@@ -11,7 +12,7 @@ async function DashboardLayout({ children }: { children: React.ReactNode }) {
   return (
     <main className="flex">
       <Sidebar />
-      {children}
+      <DataProvider>{children}</DataProvider>
     </main>
   );
 }

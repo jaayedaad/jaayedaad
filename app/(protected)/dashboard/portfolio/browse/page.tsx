@@ -1,19 +1,16 @@
 "use client";
-import { Asset, getAssets } from "@/actions/getAssetsAction";
 import AssetTable from "@/components/assetTable";
 import LoadingSpinner from "@/components/ui/loading-spinner";
+import { useHistoricalData } from "@/contexts/historicalData-context";
 import React, { useEffect, useState } from "react";
 
 function AssetsPage() {
-  const [assets, setAssets] = useState<Asset[]>();
+  const { assets } = useHistoricalData();
   const [loadingAsset, setLoadingAsset] = useState(true);
 
   useEffect(() => {
-    getAssets().then((assets) => {
-      setAssets(assets);
-      setLoadingAsset(false);
-    });
-  }, []);
+    setLoadingAsset(false);
+  }, [assets]);
   return (
     <div className="flex min-h-screen w-full flex-col py-10 px-12">
       <div className="py-10">
@@ -40,9 +37,7 @@ function AssetsPage() {
                     </div>
                     <AssetTable
                       key={`table-${assetType}`}
-                      assets={assets.filter(
-                        (asset) => asset.type === assetType
-                      )}
+                      data={assets.filter((asset) => asset.type === assetType)}
                     />
                   </>
                 )
@@ -63,7 +58,7 @@ function AssetsPage() {
                     </div>
                     <AssetTable
                       key={`table-${exchange}`}
-                      assets={assets.filter(
+                      data={assets.filter(
                         (asset) => asset.exchange === exchange
                       )}
                     />
