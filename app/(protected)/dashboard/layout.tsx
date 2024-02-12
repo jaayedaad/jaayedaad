@@ -1,4 +1,5 @@
 import { getCurrentUser } from "@/actions/getCurrentUser";
+import Sidebar from "@/components/sidebar";
 import { redirect } from "next/navigation";
 import React from "react";
 
@@ -7,7 +8,12 @@ async function DashboardLayout({ children }: { children: React.ReactNode }) {
   if (!user.username) {
     redirect("/auth/onboarding");
   }
-  return <main>{children}</main>;
+  return (
+    <main className="flex">
+      <Sidebar />
+      {children}
+    </main>
+  );
 }
 
 export default DashboardLayout;

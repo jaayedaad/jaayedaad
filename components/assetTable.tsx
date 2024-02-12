@@ -15,7 +15,7 @@ function AssetTable({ assets }: { assets: Asset[] }) {
   return (
     assets.length > 0 && (
       <Table>
-        <ScrollArea className="h-64 w-full">
+        <ScrollArea className="h-60 w-full">
           <TableHeader className="bg-secondary sticky top-0">
             <TableRow>
               <TableHead>Name</TableHead>

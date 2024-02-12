@@ -13,7 +13,7 @@ function PerformanceMetrics({
   realisedProfitLoss: number | undefined;
 }) {
   return (
-    <div className="mt-6">
+    <div className="mt-4">
       <div className="flex justify-between items-center mb-6">
         <div>
           <p className="text-muted-foreground text-xs">Current Value</p>

@@ -3,7 +3,6 @@ import { getCurrentUser } from "@/actions/getCurrentUser";
 import Image from "next/image";
 import { IndianRupee, Settings } from "lucide-react";
 import { getAssets } from "@/actions/getAssetsAction";
-import { getConversionRate } from "@/actions/getConversionRateAction";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
@@ -16,8 +15,7 @@ async function Profile({ params }: { params: { username: string } }) {
 
   let holdings, profitLoss, textColorClass;
   if (assets) {
-    const conversionRate = await getConversionRate();
-    holdings = totalAmountCalculator(assets, conversionRate);
+    holdings = totalAmountCalculator(assets);
     profitLoss = holdings.currentAmount - holdings.buyAmount;
     textColorClass = profitLoss >= 0 ? "text-green-400" : "text-red-400";
   }
@@ -69,9 +67,9 @@ async function Profile({ params }: { params: { username: string } }) {
                 </div>
               </div>
             </div>
-            <div className="col-span-3">
+            {/* <div className="col-span-3">
               <ProfileOverview assets={assets} />
-            </div>
+            </div> */}
           </div>
         ) : (
           <div>You haven&apos;t added any assets yet!</div>
