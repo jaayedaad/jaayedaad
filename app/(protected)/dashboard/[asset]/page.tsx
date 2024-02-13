@@ -30,7 +30,13 @@ function Page({ params }: { params: { asset: string } }) {
             {historicalData ? (
               <PortfolioLineChart data={historicalData} view={params.asset} />
             ) : (
-              <LoadingSpinner />
+              <div>
+                <h3 className="font-semibold">Portfolio Performance</h3>
+                <p className="text-muted-foreground text-sm">
+                  Insight into your portfolio&apos;s value dynamics
+                </p>
+                <LoadingSpinner />
+              </div>
             )}
           </div>
           <div className="row-span-4 flex flex-col col-span-3 border rounded-xl p-4">

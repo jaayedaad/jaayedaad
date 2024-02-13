@@ -37,7 +37,13 @@ function Dashboard() {
           {historicalData ? (
             <PortfolioLineChart data={historicalData} view="dashboard" />
           ) : (
-            <LoadingSpinner />
+            <div>
+              <h3 className="font-semibold">Portfolio Performance</h3>
+              <p className="text-muted-foreground text-sm">
+                Insight into your portfolio&apos;s value dynamics
+              </p>
+              <LoadingSpinner />
+            </div>
           )}
         </div>
         {/* Asset Table */}
