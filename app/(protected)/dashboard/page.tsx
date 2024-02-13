@@ -4,7 +4,7 @@ import AssetTable from "@/components/assetTable";
 import PerformanceMetrics from "@/components/performanceMetrics";
 import PortfolioLineChart from "@/components/portfolioLineChart";
 import LoadingSpinner from "@/components/ui/loading-spinner";
-import { useHistoricalData } from "@/contexts/data-context";
+import { useData } from "@/contexts/data-context";
 import { calculateRealisedProfitLoss } from "@/helper/realisedValueCalculator";
 import { calculateUnrealisedProfitLoss } from "@/helper/unrealisedValueCalculator";
 import { useEffect, useState } from "react";
@@ -13,7 +13,7 @@ function Dashboard() {
   const [unrealisedProfitLoss, setUnrealisedProfitLoss] = useState<number>();
   const [realisedProfitLoss, setRealisedProfitLoss] = useState<number>();
   const [loadingAsset, setLoadingAsset] = useState(true);
-  const { assets, historicalData } = useHistoricalData();
+  const { assets, historicalData } = useData();
 
   useEffect(() => {
     if (assets) {
