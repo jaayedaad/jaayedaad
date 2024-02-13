@@ -5,10 +5,11 @@ import { getHistoricalData } from "@/actions/getHistoricalData";
 import React, { createContext, useContext, useEffect, useState } from "react";
 
 export const DataContext = createContext<{
-  assets: any[] | undefined;
+  assets: Asset[] | undefined;
   setAssets: React.Dispatch<React.SetStateAction<Asset[] | undefined>>;
   historicalData: any[] | undefined;
   setHistoricalData: React.Dispatch<React.SetStateAction<any[] | undefined>>;
+  updateData: () => void;
 } | null>(null);
 
 export default function DataProvider({
@@ -18,22 +19,33 @@ export default function DataProvider({
 }) {
   const [historicalData, setHistoricalData] = useState<any[]>();
   const [assets, setAssets] = useState<Asset[]>();
-  useEffect(() => {
-    const fetchData = async () => {
-      const assets = await getAssets();
-      setAssets(assets);
-      if (assets) {
-        const data = await getHistoricalData(assets);
-        setHistoricalData(data.reverse());
-      }
-    };
 
+  const fetchData = async () => {
+    const assets = await getAssets();
+    setAssets(assets);
+    if (assets) {
+      const data = await getHistoricalData(assets);
+      setHistoricalData(data.reverse());
+    }
+  };
+
+  const updateData = () => {
+    fetchData();
+  };
+
+  useEffect(() => {
     fetchData();
   }, []);
 
   return (
     <DataContext.Provider
-      value={{ assets, setAssets, historicalData, setHistoricalData }}
+      value={{
+        assets,
+        setAssets,
+        historicalData,
+        setHistoricalData,
+        updateData,
+      }}
     >
       {children}
     </DataContext.Provider>
