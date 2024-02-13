@@ -1,11 +1,11 @@
 "use client";
 import AssetTable from "@/components/assetTable";
 import LoadingSpinner from "@/components/ui/loading-spinner";
-import { useHistoricalData } from "@/contexts/historicalData-context";
+import { useData } from "@/contexts/data-context";
 import React, { useEffect, useState } from "react";
 
 function AssetsPage() {
-  const { assets } = useHistoricalData();
+  const { assets } = useData();
   const [loadingAsset, setLoadingAsset] = useState(true);
 
   useEffect(() => {

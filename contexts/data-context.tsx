@@ -40,7 +40,7 @@ export default function DataProvider({
   );
 }
 
-export function useHistoricalData() {
+export function useData() {
   const context = useContext(DataContext);
   if (!context) {
     throw new Error("Data Error");

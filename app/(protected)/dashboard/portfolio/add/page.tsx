@@ -50,10 +50,9 @@ export default function AddAssetPage() {
   }, [searchQuery]);
 
   return (
-    <div className="flex min-h-screen w-full flex-col py-10 px-12">
-      <div className="py-10">
-        <h1 className="text-5xl font-bold">My Assets</h1>
-        <p className="text-muted-foreground pt-1">Manage all of your assets</p>
+    <div className="flex min-h-screen w-full flex-col py-6 px-6">
+      <div className="pb-6">
+        <h1 className="text-5xl font-bold">Add transaction</h1>
       </div>
       {/* Search Field */}
       <SearchField

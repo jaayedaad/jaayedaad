@@ -1,6 +1,6 @@
 import { getCurrentUser } from "@/actions/getCurrentUser";
 import Sidebar from "@/components/sidebar";
-import DataProvider from "@/contexts/historicalData-context";
+import DataProvider from "@/contexts/data-context";
 import { redirect } from "next/navigation";
 import React from "react";
 

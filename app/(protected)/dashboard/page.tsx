@@ -4,7 +4,7 @@ import AssetTable from "@/components/assetTable";
 import PerformanceMetrics from "@/components/performanceMetrics";
 import PortfolioLineChart from "@/components/portfolioLineChart";
 import LoadingSpinner from "@/components/ui/loading-spinner";
-import { useHistoricalData } from "@/contexts/historicalData-context";
+import { useHistoricalData } from "@/contexts/data-context";
 import { calculateRealisedProfitLoss } from "@/helper/realisedValueCalculator";
 import { calculateUnrealisedProfitLoss } from "@/helper/unrealisedValueCalculator";
 import { useEffect, useState } from "react";
