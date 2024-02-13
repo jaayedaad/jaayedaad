@@ -15,6 +15,7 @@ export type Asset = {
   buyDate: Date;
   userId: string;
   currentValue: number;
+  compareValue: number;
   transactions: {
     id: string;
     date: Date;
@@ -81,9 +82,12 @@ export async function getAssets() {
 
         // Calculate the current value of the asset
         if (asset.buyCurrency === "USD") {
+          asset.compareValue =
+            +asset.buyPrice * +asset.quantity * +conversionRate;
           asset.currentValue =
             +asset.prevClose * +asset.quantity * +conversionRate;
         } else {
+          asset.compareValue = +asset.buyPrice * +asset.quantity;
           asset.currentValue = +asset.prevClose * +asset.quantity;
         }
 
