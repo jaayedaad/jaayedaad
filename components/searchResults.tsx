@@ -33,12 +33,14 @@ import {
 import { useState } from "react";
 import { currencies } from "@/constants/currency";
 import { toast } from "sonner";
+import { useData } from "@/contexts/data-context";
 
 type searchResultProps = {
   results: Array<any>;
 };
 
 const SearchResults = ({ results }: searchResultProps) => {
+  const { updateData } = useData();
   const [assetQuantity, setAssetQuantity] = useState<string>("");
   const [assetPrice, setAssetPrice] = useState<string>("");
   const [date, setDate] = useState<string>("");
@@ -81,6 +83,7 @@ const SearchResults = ({ results }: searchResultProps) => {
     setAssetPrice("");
     setDate("");
     setCurrency("INR");
+    updateData();
   };
 
   // Sell assets handler
@@ -109,6 +112,7 @@ const SearchResults = ({ results }: searchResultProps) => {
           setAssetPrice("");
           setDate("");
           setCurrency("INR");
+          updateData();
         }
       });
   };

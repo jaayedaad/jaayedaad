@@ -24,15 +24,13 @@ function Page({ params }: { params: { asset: string } }) {
       <div className="min-h-[85vh] h-full mt-4">
         <div className="grid grid-rows-7 grid-cols-3 gap-4 h-full">
           <div className="row-span-3 col-span-1 border rounded-xl p-4">
-            {assets ? (
-              <AssetPieChart data={assets} view={params.asset} />
-            ) : (
-              <LoadingSpinner />
-            )}
+            <AssetPieChart view={params.asset} />
           </div>
           <div className="row-span-3 col-span-2 border rounded-xl p-4">
-            {historicalData && (
+            {historicalData ? (
               <PortfolioLineChart data={historicalData} view={params.asset} />
+            ) : (
+              <LoadingSpinner />
             )}
           </div>
           <div className="row-span-4 flex flex-col col-span-3 border rounded-xl p-4">

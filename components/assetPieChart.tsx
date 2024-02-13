@@ -1,7 +1,10 @@
 "use client";
 import { Asset } from "@/actions/getAssetsAction";
+import { useData } from "@/contexts/data-context";
+import { IndianRupee } from "lucide-react";
 import { useState } from "react";
-import { PieChart, Pie, Sector, Cell } from "recharts";
+import { PieChart, Pie, Sector, Cell, Tooltip } from "recharts";
+import LoadingSpinner from "./ui/loading-spinner";
 
 const generateColors = (count: number) => {
   const colors = [];
@@ -67,22 +70,11 @@ const label = (props: any) => {
 };
 
 const renderActiveShape = (props: any) => {
-  const {
-    cx,
-    cy,
-    innerRadius,
-    outerRadius,
-    startAngle,
-    endAngle,
-    fill,
-    payload,
-  } = props;
+  const { cx, cy, innerRadius, outerRadius, startAngle, endAngle, fill } =
+    props;
 
   return (
     <g>
-      <text x={cx} y={cy} dy={8} textAnchor="middle" fill={fill}>
-        {payload.value}
-      </text>
       <Sector
         cx={cx}
         cy={cy}
@@ -97,11 +89,11 @@ const renderActiveShape = (props: any) => {
 };
 
 interface PieChartProps {
-  data: Asset[];
-  view?: string; // "stocks" | "crypto" | "funds"
+  view: string; // "stocks" | "crypto" | "funds" | "dashboard"
 }
 
-function AssetPieChart({ data, view }: PieChartProps) {
+function AssetPieChart({ view }: PieChartProps) {
+  let { assets: data } = useData();
   const [activeIndex, setActiveIndex] = useState(-1);
   // Create an object to store the sum of values for each type
   const sumByType: {
@@ -109,10 +101,10 @@ function AssetPieChart({ data, view }: PieChartProps) {
   } = {};
 
   // Iterate over each data object and sum the values for each type
-  if (!view) {
-    data.forEach((item) => {
+  if (view === "dashboard") {
+    data?.forEach((item) => {
       const type = item.type === "CRYPTOCURRENCY" ? "CRYPTO" : item.type;
-      const value = parseFloat(item.quantity);
+      const value = item.currentValue;
       sumByType[type] = (sumByType[type] || 0) + value;
     });
   } else {
@@ -122,11 +114,11 @@ function AssetPieChart({ data, view }: PieChartProps) {
       funds: (asset) => asset.type === "MUTUALFUND",
     };
 
-    data = data.filter(filters[view]);
+    data = data?.filter(filters[view]);
 
-    data.forEach((item) => {
+    data?.forEach((item) => {
       const type = item.name;
-      const value = parseFloat(item.quantity);
+      const value = item.currentValue;
       sumByType[type] = (sumByType[type] || 0) + value;
     });
   }
@@ -144,32 +136,57 @@ function AssetPieChart({ data, view }: PieChartProps) {
         Visual breakdown of your investments
       </p>
       <div className="flex justify-center mt-2">
-        <PieChart width={400} height={160}>
-          <Pie
-            data={chartData}
-            cx="50%"
-            cy="50%"
-            activeIndex={activeIndex}
-            activeShape={renderActiveShape}
-            label={label}
-            labelLine={false}
-            startAngle={90}
-            endAngle={-360}
-            innerRadius={40}
-            outerRadius={60}
-            paddingAngle={5}
-            stroke="none"
-            dataKey="value"
-            onMouseEnter={(_, index) => setActiveIndex(index)}
-          >
-            {data.map((entry, index) => (
-              <Cell
-                key={`cell-${index}`}
-                fill={COLORS[index % COLORS.length]}
-              />
-            ))}
-          </Pie>
-        </PieChart>
+        {data ? (
+          <PieChart width={400} height={160}>
+            <Pie
+              data={chartData}
+              cx="50%"
+              cy="50%"
+              activeIndex={activeIndex}
+              activeShape={renderActiveShape}
+              label={label}
+              labelLine={false}
+              startAngle={90}
+              endAngle={-360}
+              innerRadius={40}
+              outerRadius={60}
+              paddingAngle={5}
+              stroke="none"
+              dataKey="value"
+              onMouseEnter={(_, index) => setActiveIndex(index)}
+            >
+              {data?.map((entry, index) => (
+                <Cell
+                  key={`cell-${index}`}
+                  fill={COLORS[index % COLORS.length]}
+                />
+              ))}
+            </Pie>
+            <Tooltip
+              content={({ active, payload }) => {
+                if (active && payload && payload.length) {
+                  const value = payload[0].value?.toString();
+                  return (
+                    <div className="rounded-lg border bg-background p-2 shadow-sm">
+                      <div className="flex flex-col">
+                        <span className="font-bold flex items-center">
+                          <IndianRupee className="h-4 w-4" />
+                          {parseFloat(
+                            parseFloat(value!).toFixed(2)
+                          ).toLocaleString("en-IN")}
+                        </span>
+                      </div>
+                    </div>
+                  );
+                }
+
+                return null;
+              }}
+            />
+          </PieChart>
+        ) : (
+          <LoadingSpinner />
+        )}
       </div>
     </>
   );

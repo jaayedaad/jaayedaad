@@ -30,12 +30,14 @@ function Dashboard() {
       <div className="grid grid-cols-6 grid-row-5 gap-4 h-full text-foreground">
         {/* Asset distribution pie chart */}
         <div className="col-span-2 row-span-2 bg-card border rounded-xl p-4">
-          {assets && <AssetPieChart data={assets} />}
+          <AssetPieChart view="dashboard" />
         </div>
         {/* Portfolio line chart */}
         <div className="col-span-4 row-span-2 bg-card border rounded-xl p-4">
-          {historicalData && (
+          {historicalData ? (
             <PortfolioLineChart data={historicalData} view="dashboard" />
+          ) : (
+            <LoadingSpinner />
           )}
         </div>
         {/* Asset Table */}

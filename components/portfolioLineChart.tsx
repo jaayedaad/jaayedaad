@@ -8,6 +8,18 @@ interface FilterMap {
   [key: string]: () => { name: string; amt: number }[];
 }
 
+function formatIndianNumber(number: number) {
+  if (number >= 10000000) {
+    return number / 10000000 + "Cr";
+  } else if (number >= 100000) {
+    return number / 100000 + "L";
+  } else if (number >= 1000) {
+    return number / 1000 + "k";
+  } else {
+    return number.toString();
+  }
+}
+
 function PortfolioLineChart({ data, view }: { data: any[]; view: string }) {
   const [dataToShow, setDataToShow] = useState<
     {
@@ -70,7 +82,27 @@ function PortfolioLineChart({ data, view }: { data: any[]; view: string }) {
       return itemDate >= startDate && itemDate <= endDate;
     });
 
-    setDataToShow(fetchedData.reverse());
+    // Adjust date format if timeRange is not "1d"
+    const formattedData = fetchedData.map((item) => {
+      const itemDate = new Date(item.name);
+      if (timeRange === "1y") {
+        const month = (itemDate.getMonth() + 1).toString().padStart(2, "0");
+        const year = itemDate.getFullYear().toString().slice(-2);
+        return {
+          ...item,
+          name: `${month}-${year}`,
+        };
+      } else {
+        const day = itemDate.getDate().toString().padStart(2, "0");
+        const month = (itemDate.getMonth() + 1).toString().padStart(2, "0");
+        return {
+          ...item,
+          name: `${day}-${month}`,
+        };
+      }
+    });
+
+    setDataToShow(formattedData.reverse());
   }
 
   // Handle change in interval
@@ -98,7 +130,7 @@ function PortfolioLineChart({ data, view }: { data: any[]; view: string }) {
             margin={{
               top: 20,
               right: 30,
-              left: 20,
+              left: 0,
               bottom: 0,
             }}
           >
@@ -112,34 +144,27 @@ function PortfolioLineChart({ data, view }: { data: any[]; view: string }) {
               dataKey="name"
               tickLine={false}
               axisLine={false}
-              padding={{ left: 16, right: 16 }}
+              minTickGap={10}
+              padding={{ left: 30 }}
             />
-            <YAxis tickLine={false} axisLine={false} />
+            <YAxis
+              tickLine={false}
+              axisLine={false}
+              tickFormatter={(tick) => formatIndianNumber(tick)}
+            />
             <Tooltip
               content={({ active, payload }) => {
                 if (active && payload && payload.length) {
+                  const value = payload[0].value?.toString();
                   return (
                     <div className="rounded-lg border bg-background p-2 shadow-sm">
-                      <div className="grid grid-cols-2 gap-2">
-                        <div className="flex flex-col">
-                          <span className="text-[0.70rem] uppercase text-muted-foreground">
-                            Value
-                          </span>
-                          <span className="font-bold text-muted-foreground flex items-center">
-                            <IndianRupee className="h-4 w-4" />
-                            {parseFloat(payload[0].value?.toString()!).toFixed(
-                              2
-                            )}
-                          </span>
-                        </div>
-                        <div className="flex flex-col">
-                          <span className="text-[0.70rem] uppercase text-muted-foreground">
-                            Date
-                          </span>
-                          <span className="font-bold text-muted-foreground flex items-center">
-                            {payload[0].payload.name}
-                          </span>
-                        </div>
+                      <div className="flex flex-col">
+                        <span className="font-bold text-muted-foreground flex items-center">
+                          <IndianRupee className="h-4 w-4" />
+                          {parseFloat(
+                            parseFloat(value!).toFixed(2)
+                          ).toLocaleString("en-IN")}
+                        </span>
                       </div>
                     </div>
                   );
