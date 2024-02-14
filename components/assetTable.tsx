@@ -59,7 +59,7 @@ function AssetTable({ data, view }: AssetTableProps) {
   return (
     filteredAssets.length > 0 && (
       <Table>
-        <ScrollArea className="h-[33vh] w-full">
+        <ScrollArea className={cn("w-full", view ? "h-[33vh]" : "h-[40vh]")}>
           <TableHeader className="bg-secondary sticky top-0">
             {view ? (
               <TableRow>

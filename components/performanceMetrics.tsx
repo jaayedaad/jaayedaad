@@ -1,7 +1,7 @@
 import { Asset } from "@/actions/getAssetsAction";
 import { useVisibility } from "@/contexts/visibility-context";
 import { cn } from "@/lib/utils";
-import { IndianRupee } from "lucide-react";
+import { ArrowDown, ArrowUp, IndianRupee } from "lucide-react";
 import React from "react";
 
 function PerformanceMetrics({
@@ -51,13 +51,27 @@ function PerformanceMetrics({
                 : "text-green-400"
             )}
           >
-            <IndianRupee className="h-6 w-6" strokeWidth={3} />
-            <span className="text-2xl font-bold">
-              {unrealisedProfitLoss &&
-                (visible
-                  ? unrealisedProfitLoss?.toFixed(2)?.toLocaleString()
-                  : "*".repeat(unrealisedProfitLoss.toFixed(2).length))}
-            </span>
+            <div className="text-2xl font-bold">
+              {unrealisedProfitLoss && (
+                <div className="flex items-center">
+                  {(
+                    (unrealisedProfitLoss * 100) /
+                    +assets.reduce(
+                      (acc, asset) => acc + (asset.compareValue || 0),
+                      0
+                    )
+                  ).toFixed(2) + "%"}
+                  {unrealisedProfitLoss > 0 ? <ArrowUp /> : <ArrowDown />}
+                </div>
+              )}
+              <div className="text-sm flex items-center">
+                <IndianRupee className="h-3 w-3" />
+                {unrealisedProfitLoss &&
+                  (visible
+                    ? unrealisedProfitLoss.toLocaleString("en-IN")
+                    : "*".repeat(unrealisedProfitLoss.toString().length))}
+              </div>
+            </div>
           </div>
         </div>
         <div className="p-3 rounded-md border w-full">
