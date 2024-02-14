@@ -11,6 +11,7 @@ import { ArrowDownIcon, ArrowUpIcon } from "lucide-react";
 import { Asset } from "@/actions/getAssetsAction";
 import { ScrollArea } from "./ui/scroll-area";
 import { cn } from "@/lib/utils";
+import { useVisibility } from "@/contexts/visibility-context";
 
 interface AssetTableProps {
   data: Asset[];
@@ -18,6 +19,7 @@ interface AssetTableProps {
 }
 
 function AssetTable({ data, view }: AssetTableProps) {
+  const { visible } = useVisibility();
   const filters: Record<string, (asset: Asset) => boolean> = {
     stocks: (asset) => asset.type === "EQUITY",
     crypto: (asset) => asset.type === "CRYPTOCURRENCY",
@@ -115,7 +117,11 @@ function AssetTable({ data, view }: AssetTableProps) {
                           }`}
                         >
                           <div className="flex flex-col">
-                            {asset.currentValue.toLocaleString()}
+                            {visible
+                              ? asset.currentValue.toLocaleString()
+                              : "*".repeat(
+                                  asset.currentValue.toString().length
+                                )}
                             {asset.prevClose > asset.buyPrice ? (
                               <span className="flex items-center justify-end">
                                 (
@@ -148,9 +154,11 @@ function AssetTable({ data, view }: AssetTableProps) {
                     <TableRow key={index}>
                       <TableCell>{asset.type}</TableCell>
                       <TableCell className="text-right">
-                        {parseFloat(
-                          asset.compareValue.toFixed(2)
-                        ).toLocaleString("en-IN")}
+                        {visible
+                          ? parseFloat(
+                              asset.compareValue.toFixed(2)
+                            ).toLocaleString("en-IN")
+                          : "*".repeat(asset.compareValue.toFixed(2).length)}
                       </TableCell>
                       <TableCell
                         className={cn(
@@ -161,9 +169,11 @@ function AssetTable({ data, view }: AssetTableProps) {
                         )}
                       >
                         <div className="">
-                          {parseFloat(
-                            asset.currentValue.toFixed(2)
-                          ).toLocaleString("en-IN")}
+                          {visible
+                            ? parseFloat(
+                                asset.currentValue.toFixed(2)
+                              ).toLocaleString("en-IN")
+                            : "*".repeat(asset.currentValue.toFixed(2).length)}
                           {asset.currentValue > asset.compareValue ? (
                             <div className="flex justify-end items-center">
                               (

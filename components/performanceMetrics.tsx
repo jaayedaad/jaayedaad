@@ -1,4 +1,5 @@
 import { Asset } from "@/actions/getAssetsAction";
+import { useVisibility } from "@/contexts/visibility-context";
 import { cn } from "@/lib/utils";
 import { IndianRupee } from "lucide-react";
 import React from "react";
@@ -12,6 +13,7 @@ function PerformanceMetrics({
   unrealisedProfitLoss: number | undefined;
   realisedProfitLoss: number | undefined;
 }) {
+  const { visible } = useVisibility();
   return (
     <div className="mt-4">
       <div className="flex justify-between items-center mb-6">
@@ -20,9 +22,18 @@ function PerformanceMetrics({
           <div className="flex items-center gap-1">
             <IndianRupee className="h-6 w-6" strokeWidth={3} />
             <span className="text-2xl font-bold">
-              {assets
-                ?.reduce((acc, asset) => acc + (asset.currentValue || 0), 0)
-                .toFixed(2)}
+              {visible
+                ? assets
+                    ?.reduce((acc, asset) => acc + (asset.currentValue || 0), 0)
+                    .toFixed(2)
+                : "*".repeat(
+                    assets
+                      ?.reduce(
+                        (acc, asset) => acc + (asset.currentValue || 0),
+                        0
+                      )
+                      .toFixed(2).length
+                  )}
             </span>
           </div>
         </div>
@@ -42,7 +53,10 @@ function PerformanceMetrics({
           >
             <IndianRupee className="h-6 w-6" strokeWidth={3} />
             <span className="text-2xl font-bold">
-              {unrealisedProfitLoss?.toFixed(2)?.toLocaleString()}
+              {unrealisedProfitLoss &&
+                (visible
+                  ? unrealisedProfitLoss?.toFixed(2)?.toLocaleString()
+                  : "*".repeat(unrealisedProfitLoss.toFixed(2).length))}
             </span>
           </div>
         </div>

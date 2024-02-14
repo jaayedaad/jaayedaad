@@ -5,6 +5,7 @@ import { IndianRupee } from "lucide-react";
 import { useState } from "react";
 import { PieChart, Pie, Sector, Cell, Tooltip } from "recharts";
 import LoadingSpinner from "./ui/loading-spinner";
+import { useVisibility } from "@/contexts/visibility-context";
 
 const generateColors = (count: number) => {
   const colors = [];
@@ -93,6 +94,7 @@ interface PieChartProps {
 }
 
 function AssetPieChart({ view }: PieChartProps) {
+  const { visible } = useVisibility();
   let { assets: data } = useData();
   const [activeIndex, setActiveIndex] = useState(-1);
   // Create an object to store the sum of values for each type
@@ -171,9 +173,11 @@ function AssetPieChart({ view }: PieChartProps) {
                       <div className="flex flex-col">
                         <span className="font-bold flex items-center">
                           <IndianRupee className="h-4 w-4" />
-                          {parseFloat(
-                            parseFloat(value!).toFixed(2)
-                          ).toLocaleString("en-IN")}
+                          {visible
+                            ? parseFloat(
+                                parseFloat(value!).toFixed(2)
+                              ).toLocaleString("en-IN")
+                            : "*".repeat(parseFloat(value!).toFixed(2).length)}
                         </span>
                       </div>
                     </div>

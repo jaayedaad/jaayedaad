@@ -3,6 +3,7 @@ import { Area, AreaChart, Tooltip, XAxis, YAxis } from "recharts";
 import ChangeInterval, { Interval } from "./changeInterval";
 import { IndianRupee } from "lucide-react";
 import { prepareLineChartData } from "@/helper/lineChartDataAccumulator";
+import { useVisibility } from "@/contexts/visibility-context";
 
 interface FilterMap {
   [key: string]: () => { name: string; amt: number }[];
@@ -21,6 +22,7 @@ function formatIndianNumber(number: number) {
 }
 
 function PortfolioLineChart({ data, view }: { data: any[]; view: string }) {
+  const { visible } = useVisibility();
   const [dataToShow, setDataToShow] = useState<
     {
       name: string;
@@ -161,9 +163,11 @@ function PortfolioLineChart({ data, view }: { data: any[]; view: string }) {
                       <div className="flex flex-col">
                         <span className="font-bold text-muted-foreground flex items-center">
                           <IndianRupee className="h-4 w-4" />
-                          {parseFloat(
-                            parseFloat(value!).toFixed(2)
-                          ).toLocaleString("en-IN")}
+                          {visible
+                            ? parseFloat(
+                                parseFloat(value!).toFixed(2)
+                              ).toLocaleString("en-IN")
+                            : "*".repeat(parseFloat(value!).toFixed(2).length)}
                         </span>
                       </div>
                     </div>

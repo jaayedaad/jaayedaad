@@ -5,6 +5,8 @@ import { signOut } from "next-auth/react";
 import {
   Bitcoin,
   CandlestickChart,
+  EyeIcon,
+  EyeOffIcon,
   Home,
   LogOut,
   SquareStack,
@@ -15,9 +17,12 @@ import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { getCurrentUser } from "@/actions/getCurrentUser";
 import { User } from "@prisma/client";
+import { Toggle } from "./ui/toggle";
+import { useVisibility } from "@/contexts/visibility-context";
 
 function Sidebar() {
   const currentTab = usePathname();
+  const { visible, setVisible } = useVisibility();
   const [user, setUser] = useState<User>();
 
   useEffect(() => {
@@ -97,7 +102,17 @@ function Sidebar() {
             </Link>
           </Button>
         </div>
-        <div>
+        <div className="flex flex-col gap-6">
+          <div className="flex items-center justify-between">
+            Safe mode
+            <Toggle onPressedChange={() => setVisible(!visible)}>
+              {visible ? (
+                <EyeIcon className="h-4 w-4" />
+              ) : (
+                <EyeOffIcon className="h-4 w-4" />
+              )}
+            </Toggle>
+          </div>
           <Button
             className="w-full justify-start"
             onClick={() => signOut({ callbackUrl: "/" })}
