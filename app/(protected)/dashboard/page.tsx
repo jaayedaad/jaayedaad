@@ -25,6 +25,13 @@ function Dashboard() {
     }
   }, [assets]);
 
+  // Get today's date
+  const today = new Date();
+
+  // Subtract one day
+  const yesterday = new Date(today);
+  yesterday.setDate(today.getDate() - 1);
+
   return assets ? (
     <div className="px-6 py-6 w-full h-screen flex flex-col">
       <div className="grid grid-cols-6 grid-row-5 gap-4 h-full text-foreground">
@@ -48,10 +55,19 @@ function Dashboard() {
         </div>
         {/* Asset Table */}
         <div className="col-span-4 row-span-3 bg-card border rounded-xl p-4">
-          <h3 className="font-semibold">Asset Overview</h3>
-          <p className="text-muted-foreground text-sm">
-            Comprehensive list of your owned assets
-          </p>
+          <div className="flex justify-between">
+            <div>
+              <h3 className="font-semibold">Asset Overview</h3>
+              <p className="text-muted-foreground text-sm">
+                Comprehensive list of your owned assets
+              </p>
+            </div>
+            <div>
+              <p className="text-muted-foreground text-sm">
+                Last update on ({yesterday.toLocaleDateString()})
+              </p>
+            </div>
+          </div>
           <div className="mt-6">
             {loadingAsset ? (
               <LoadingSpinner />

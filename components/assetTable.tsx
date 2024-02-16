@@ -202,20 +202,6 @@ function AssetTable({ data, view }: AssetTableProps) {
                               asset.currentValue - asset.compareValue
                             ).toFixed(2)).toLocaleString("en-IN")
                           : "* ".repeat(5)}
-                        {asset.currentValue > asset.compareValue ? (
-                          <div className="flex justify-end items-center">
-                            (
-                            {(
-                              ((asset.currentValue - asset.compareValue) *
-                                100) /
-                              asset.compareValue
-                            ).toFixed(2)}
-                            %
-                            <ArrowUpIcon className="h-4 w-4 ml-2" />)
-                          </div>
-                        ) : (
-                          <ArrowDownIcon className="h-4 w-4 ml-2" />
-                        )}
                       </TableCell>
                     </TableRow>
                   );
