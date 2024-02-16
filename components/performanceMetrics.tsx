@@ -23,17 +23,15 @@ function PerformanceMetrics({
             <IndianRupee className="h-6 w-6" strokeWidth={3} />
             <span className="text-2xl font-bold">
               {visible
-                ? assets
-                    ?.reduce((acc, asset) => acc + (asset.currentValue || 0), 0)
-                    .toFixed(2)
-                : "*".repeat(
+                ? parseFloat(
                     assets
                       ?.reduce(
                         (acc, asset) => acc + (asset.currentValue || 0),
                         0
                       )
-                      .toFixed(2).length
-                  )}
+                      .toFixed(2)
+                  ).toLocaleString("en-IN")
+                : "* ".repeat(5)}
             </span>
           </div>
         </div>
@@ -69,7 +67,7 @@ function PerformanceMetrics({
                 {unrealisedProfitLoss &&
                   (visible
                     ? unrealisedProfitLoss.toLocaleString("en-IN")
-                    : "*".repeat(unrealisedProfitLoss.toString().length))}
+                    : "* ".repeat(5))}
               </div>
             </div>
           </div>
@@ -88,7 +86,12 @@ function PerformanceMetrics({
           >
             <IndianRupee className="h-6 w-6" strokeWidth={3} />
             <span className="text-2xl font-bold">
-              {realisedProfitLoss?.toFixed(2)?.toLocaleString()}
+              {visible
+                ? realisedProfitLoss &&
+                  parseFloat(realisedProfitLoss.toFixed(2)).toLocaleString(
+                    "en-IN"
+                  )
+                : "* ".repeat(5)}
             </span>
           </div>
         </div>

@@ -54,14 +54,14 @@ async function Profile({ params }: { params: { username: string } }) {
                 <div className="flex items-center gap-1">
                   <IndianRupee className="h-6 w-6" strokeWidth={3} />
                   <span className="text-2xl font-bold">
-                    {holdings?.currentAmount.toLocaleString()}
+                    {holdings?.currentAmount.toLocaleString("en-IN")}
                   </span>
                 </div>
                 <div className="flex items-center gap-1 text-muted-foreground">
                   Income:{" "}
                   <IndianRupee className={cn("h-4 w-4", textColorClass)} />
                   <span className={textColorClass}>
-                    {profitLoss?.toLocaleString()}
+                    {profitLoss?.toLocaleString("en-IN")}
                   </span>
                 </div>
               </div>

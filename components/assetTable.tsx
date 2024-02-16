@@ -87,6 +87,9 @@ function AssetTable({ data, view }: AssetTableProps) {
                 <TableHead className="text-right">
                   Current Value (in INR)
                 </TableHead>
+                <TableHead className="text-right">
+                  Net Profit/Loss (in INR)
+                </TableHead>
               </TableRow>
             )}
           </TableHeader>
@@ -98,7 +101,7 @@ function AssetTable({ data, view }: AssetTableProps) {
                       <TableRow key={index}>
                         <TableCell>{asset.name}</TableCell>
                         <TableCell className="text-right">
-                          {asset.quantity.toLocaleString()}
+                          {parseFloat(asset.quantity).toLocaleString("en-IN")}
                         </TableCell>
                         <TableCell className="text-right">
                           {parseFloat(asset.buyPrice).toFixed(2)}
@@ -118,10 +121,8 @@ function AssetTable({ data, view }: AssetTableProps) {
                         >
                           <div className="flex flex-col">
                             {visible
-                              ? asset.currentValue.toLocaleString()
-                              : "*".repeat(
-                                  asset.currentValue.toString().length
-                                )}
+                              ? asset.currentValue.toLocaleString("en-IN")
+                              : "* ".repeat(5)}
                             {asset.prevClose > asset.buyPrice ? (
                               <span className="flex items-center justify-end">
                                 (
@@ -158,7 +159,7 @@ function AssetTable({ data, view }: AssetTableProps) {
                           ? parseFloat(
                               asset.compareValue.toFixed(2)
                             ).toLocaleString("en-IN")
-                          : "*".repeat(asset.compareValue.toFixed(2).length)}
+                          : "* ".repeat(5)}
                       </TableCell>
                       <TableCell
                         className={cn(
@@ -168,27 +169,53 @@ function AssetTable({ data, view }: AssetTableProps) {
                             : "text-red-400"
                         )}
                       >
-                        <div className="">
-                          {visible
-                            ? parseFloat(
-                                asset.currentValue.toFixed(2)
-                              ).toLocaleString("en-IN")
-                            : "*".repeat(asset.currentValue.toFixed(2).length)}
-                          {asset.currentValue > asset.compareValue ? (
-                            <div className="flex justify-end items-center">
-                              (
-                              {(
-                                ((asset.currentValue - asset.compareValue) *
-                                  100) /
-                                asset.compareValue
-                              ).toFixed(2)}
-                              %
-                              <ArrowUpIcon className="h-4 w-4 ml-2" />)
-                            </div>
-                          ) : (
-                            <ArrowDownIcon className="h-4 w-4 ml-2" />
-                          )}
-                        </div>
+                        {visible
+                          ? parseFloat(
+                              asset.currentValue.toFixed(2)
+                            ).toLocaleString("en-IN")
+                          : "* ".repeat(5)}
+                        {asset.currentValue > asset.compareValue ? (
+                          <div className="flex justify-end items-center">
+                            (
+                            {(
+                              ((asset.currentValue - asset.compareValue) *
+                                100) /
+                              asset.compareValue
+                            ).toFixed(2)}
+                            %
+                            <ArrowUpIcon className="h-4 w-4 ml-2" />)
+                          </div>
+                        ) : (
+                          <ArrowDownIcon className="h-4 w-4 ml-2" />
+                        )}
+                      </TableCell>
+                      <TableCell
+                        className={cn(
+                          "text-right",
+                          asset.currentValue > asset.compareValue
+                            ? "text-green-400"
+                            : "text-red-400"
+                        )}
+                      >
+                        {visible
+                          ? (+Math.abs(
+                              asset.currentValue - asset.compareValue
+                            ).toFixed(2)).toLocaleString("en-IN")
+                          : "* ".repeat(5)}
+                        {asset.currentValue > asset.compareValue ? (
+                          <div className="flex justify-end items-center">
+                            (
+                            {(
+                              ((asset.currentValue - asset.compareValue) *
+                                100) /
+                              asset.compareValue
+                            ).toFixed(2)}
+                            %
+                            <ArrowUpIcon className="h-4 w-4 ml-2" />)
+                          </div>
+                        ) : (
+                          <ArrowDownIcon className="h-4 w-4 ml-2" />
+                        )}
                       </TableCell>
                     </TableRow>
                   );

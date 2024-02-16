@@ -167,7 +167,7 @@ function PortfolioLineChart({ data, view }: { data: any[]; view: string }) {
                             ? parseFloat(
                                 parseFloat(value!).toFixed(2)
                               ).toLocaleString("en-IN")
-                            : "*".repeat(parseFloat(value!).toFixed(2).length)}
+                            : "* ".repeat(5)}
                         </span>
                       </div>
                     </div>
