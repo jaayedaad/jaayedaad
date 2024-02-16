@@ -7,7 +7,6 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { totalAmountCalculator } from "@/helper/totalAmountCalculator";
-import ProfileOverview from "@/components/profileOverview";
 
 async function Profile({ params }: { params: { username: string } }) {
   const user: User = await getCurrentUser();
@@ -21,7 +20,7 @@ async function Profile({ params }: { params: { username: string } }) {
   }
 
   return (
-    <div className="mt-14 py-6 px-48 flex">
+    <div className="my-6 px-6 w-full flex">
       <div className="min-w-[160px] mr-12">
         <div className="fixed">
           <Image
@@ -67,9 +66,6 @@ async function Profile({ params }: { params: { username: string } }) {
                 </div>
               </div>
             </div>
-            {/* <div className="col-span-3">
-              <ProfileOverview assets={assets} />
-            </div> */}
           </div>
         ) : (
           <div>You haven&apos;t added any assets yet!</div>

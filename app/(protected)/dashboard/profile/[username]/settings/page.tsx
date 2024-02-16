@@ -12,7 +12,7 @@ function SettingsPage() {
   const { data: session } = useSession();
   return (
     session && (
-      <div className="mt-14 py-6 px-12">
+      <div className="py-6 px-6 w-full">
         <div className="text-5xl font-bold flex items-center gap-4 py-4">
           Settings <Asterisk />
           <Image

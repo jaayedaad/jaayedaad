@@ -21,6 +21,7 @@ export async function POST(req: Request) {
       },
       data: {
         publicProfile: preferences.publicProfile,
+        defaultCurrency: preferences.defaultCurrency,
       },
     });
 
