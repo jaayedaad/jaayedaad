@@ -6,18 +6,11 @@ import { getAssets } from "@/actions/getAssetsAction";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { totalAmountCalculator } from "@/helper/totalAmountCalculator";
+import { calculateUnrealisedProfitLoss } from "@/helper/unrealisedValueCalculator";
 
 async function Profile({ params }: { params: { username: string } }) {
   const user: User = await getCurrentUser();
   const assets = await getAssets();
-
-  let holdings, profitLoss, textColorClass;
-  if (assets) {
-    holdings = totalAmountCalculator(assets);
-    profitLoss = holdings.currentAmount - holdings.buyAmount;
-    textColorClass = profitLoss >= 0 ? "text-green-400" : "text-red-400";
-  }
 
   return (
     <div className="my-6 px-6 w-full flex">
@@ -54,14 +47,36 @@ async function Profile({ params }: { params: { username: string } }) {
                 <div className="flex items-center gap-1">
                   <IndianRupee className="h-6 w-6" strokeWidth={3} />
                   <span className="text-2xl font-bold">
-                    {holdings?.currentAmount.toLocaleString("en-IN")}
+                    {parseFloat(
+                      assets
+                        ?.reduce(
+                          (acc, asset) => acc + (asset.currentValue || 0),
+                          0
+                        )
+                        .toFixed(2)
+                    ).toLocaleString("en-IN")}
                   </span>
                 </div>
                 <div className="flex items-center gap-1 text-muted-foreground">
                   Income:{" "}
-                  <IndianRupee className={cn("h-4 w-4", textColorClass)} />
-                  <span className={textColorClass}>
-                    {profitLoss?.toLocaleString("en-IN")}
+                  <IndianRupee
+                    className={cn(
+                      "h-4 w-4",
+                      calculateUnrealisedProfitLoss(assets) > 0
+                        ? "text-green-400"
+                        : "text-red-400"
+                    )}
+                  />
+                  <span
+                    className={
+                      calculateUnrealisedProfitLoss(assets) > 0
+                        ? "text-green-400"
+                        : "text-red-400"
+                    }
+                  >
+                    {calculateUnrealisedProfitLoss(assets)?.toLocaleString(
+                      "en-IN"
+                    )}
                   </span>
                 </div>
               </div>
