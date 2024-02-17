@@ -1,6 +1,6 @@
 import { getServerSession } from "next-auth";
 import { prisma } from "@/lib/prisma";
-import { authOptions } from "../../auth/[...nextauth]/route";
+import { authOptions } from "@/utils/authOptions";
 import { canSellAssets } from "@/helper/canSellAssets";
 
 export async function PUT(req: Request) {
