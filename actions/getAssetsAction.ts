@@ -14,6 +14,8 @@ export type Asset = {
   exchange: string;
   buyDate: Date;
   userId: string;
+  currentPrice: string;
+  isManualEntry: boolean;
   currentValue: number;
   compareValue: number;
   transactions: {
@@ -84,11 +86,14 @@ export async function getAssets() {
         if (asset.buyCurrency === "USD") {
           asset.compareValue =
             +asset.buyPrice * +asset.quantity * +conversionRate;
-          asset.currentValue =
-            +asset.prevClose * +asset.quantity * +conversionRate;
+          asset.currentValue = asset.isManualEntry
+            ? +asset.currentPrice * +asset.quantity * +conversionRate
+            : +asset.prevClose * +asset.quantity * +conversionRate;
         } else {
           asset.compareValue = +asset.buyPrice * +asset.quantity;
-          asset.currentValue = +asset.prevClose * +asset.quantity;
+          asset.currentValue = asset.isManualEntry
+            ? +asset.currentPrice * +asset.quantity
+            : +asset.prevClose * +asset.quantity;
         }
 
         return asset;

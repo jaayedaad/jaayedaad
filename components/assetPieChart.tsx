@@ -116,9 +116,11 @@ function AssetPieChart({ view }: PieChartProps) {
   // Iterate over each data object and sum the values for each type
   if (view === "dashboard") {
     data?.forEach((item) => {
-      const type = item.type === "CRYPTOCURRENCY" ? "CRYPTO" : item.type;
-      const value = item.currentValue;
-      sumByType[type] = (sumByType[type] || 0) + value;
+      if (item.quantity !== "0") {
+        const type = item.type === "CRYPTOCURRENCY" ? "CRYPTO" : item.type;
+        const value = item.symbol ? item.currentValue : +item.currentPrice;
+        sumByType[type] = (sumByType[type] || 0) + value;
+      }
     });
   } else {
     const filters: Record<string, (asset: Asset) => boolean> = {
@@ -131,7 +133,7 @@ function AssetPieChart({ view }: PieChartProps) {
 
     data?.forEach((item) => {
       const type = item.name;
-      const value = item.currentValue;
+      const value = item.symbol ? item.currentValue : +item.currentPrice;
       sumByType[type] = (sumByType[type] || 0) + value;
     });
   }

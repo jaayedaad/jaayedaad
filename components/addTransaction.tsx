@@ -5,7 +5,7 @@ import SearchField from "@/components/searchField";
 import LoadingSpinner from "@/components/ui/loading-spinner";
 import ManualTransactionModal from "@/components/manualTransactionModal";
 
-export default function AddAssetPage() {
+export default function AddTransaction() {
   const [searchQuery, setSearchQuery] = useState("");
   const [results, setResults] = useState<Array<any>>([]);
   const [loadingAsset, setLoadingAsset] = useState(false);
@@ -51,28 +51,27 @@ export default function AddAssetPage() {
   }, [searchQuery]);
 
   return (
-    <div className="flex min-h-screen w-full flex-col py-6 px-6">
-      <div className="pb-6">
-        <h1 className="text-5xl font-bold">Add transaction</h1>
-      </div>
-      <div className="flex gap-24">
+    <div className="flex w-full flex-col mt-4">
+      <div className="flex gap-6 items-center">
         {/* Search Field */}
         <SearchField
           searchQuery={searchQuery}
           handleSearchChange={handleSearchChange}
         />
-        OR
+        <p className="text-muted-foreground">Or</p>
         <ManualTransactionModal />
       </div>
       {/* Results Table */}
       {loadingAsset ? (
-        <LoadingSpinner />
+        <div className="mb-16">
+          <LoadingSpinner />
+        </div>
       ) : (
-        <div className="py-12">
+        <div className="pt-4">
           {results.length > 0 ? (
             <SearchResults results={results} />
           ) : (
-            <div className="text-center mt-24">Search for any assets!</div>
+            <div className="text-center my-12">Search for any assets!</div>
           )}
         </div>
       )}

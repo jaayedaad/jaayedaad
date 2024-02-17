@@ -37,19 +37,23 @@ function AssetTable({ data, view }: AssetTableProps) {
     filteredAssets = data.filter(filters[view]);
   } else {
     data.forEach((asset) => {
-      const existingType = groupedAsset.find(
-        (data) => data.type === asset.type
-      );
+      if (asset.quantity !== "0") {
+        const existingType = groupedAsset.find(
+          (data) => data.type === asset.type
+        );
 
-      if (existingType) {
-        existingType.currentValue += asset.currentValue;
-        existingType.compareValue += asset.compareValue;
-      } else {
-        groupedAsset.push({
-          type: asset.type,
-          currentValue: asset.currentValue,
-          compareValue: asset.compareValue,
-        });
+        if (existingType) {
+          existingType.currentValue += asset.currentValue;
+          existingType.compareValue += asset.compareValue;
+        } else {
+          groupedAsset.push({
+            type: asset.type,
+            currentValue: asset.symbol
+              ? asset.currentValue
+              : parseFloat(asset.currentPrice),
+            compareValue: asset.compareValue,
+          });
+        }
       }
     });
 

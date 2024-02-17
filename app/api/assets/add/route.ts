@@ -20,14 +20,7 @@ export async function POST(req: Request) {
     if (!existingAsset) {
       const asset = await prisma.asset.create({
         data: {
-          name: body.shortname,
-          symbol: body.symbol,
-          quantity: body.quantity,
-          buyPrice: body.buyPrice,
-          buyCurrency: body.buyCurrency,
-          buyDate: body.buyDate,
-          type: body.type,
-          exchange: body.exchange,
+          ...body,
           userId: user.id,
         },
       });

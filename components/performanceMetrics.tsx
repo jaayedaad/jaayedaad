@@ -26,7 +26,13 @@ function PerformanceMetrics({
                 ? parseFloat(
                     assets
                       ?.reduce(
-                        (acc, asset) => acc + (asset.currentValue || 0),
+                        (acc, asset) =>
+                          acc +
+                          (asset.quantity > "0"
+                            ? asset.symbol
+                              ? asset.currentValue
+                              : +asset.currentPrice || 0
+                            : 0),
                         0
                       )
                       .toFixed(2)

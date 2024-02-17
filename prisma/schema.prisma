@@ -56,18 +56,20 @@ model VerificationToken {
 }
 
 model Asset {
-  id           String        @id @default(cuid())
-  name         String
-  symbol       String
-  quantity     String
-  buyPrice     String
-  buyCurrency  String        @default("INR")
-  buyDate      DateTime
-  type         String
-  exchange     String
-  userId       String
-  user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
-  transactions Transaction[]
+  id            String        @id @default(cuid())
+  name          String
+  symbol        String?
+  quantity      String
+  buyPrice      String
+  currentPrice  String?
+  isManualEntry Boolean       @default(false)
+  buyCurrency   String        @default("INR")
+  buyDate       DateTime
+  type          String
+  exchange      String?
+  userId        String
+  user          User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  transactions  Transaction[]
 }
 
 model Preference {

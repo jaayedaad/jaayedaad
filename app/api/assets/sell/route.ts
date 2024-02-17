@@ -11,7 +11,7 @@ export async function PUT(req: Request) {
     // Get the required asset
     const assets = await prisma.asset.findMany({
       where: {
-        name: sellRequest.shortname,
+        name: sellRequest.name,
       },
     });
 
@@ -37,9 +37,9 @@ export async function PUT(req: Request) {
           // Add transaction
           await prisma.transaction.create({
             data: {
-              date: sellRequest.sellDate,
+              date: sellRequest.date,
               quantity: remainingQuantity,
-              price: sellRequest.sellPrice,
+              price: sellRequest.price,
               avgBuyPrice: asset.buyPrice,
               type: "sell",
               assetId: asset.id,
@@ -51,9 +51,9 @@ export async function PUT(req: Request) {
           // Add transaction
           await prisma.transaction.create({
             data: {
-              date: sellRequest.sellDate,
+              date: sellRequest.date,
               quantity: (+remainingQuantity).toString(),
-              price: sellRequest.sellPrice,
+              price: sellRequest.price,
               avgBuyPrice: asset.buyPrice,
               type: "sell",
               assetId: asset.id,
@@ -87,9 +87,9 @@ export async function PUT(req: Request) {
           // Add transaction
           await prisma.transaction.create({
             data: {
-              date: sellRequest.sellDate,
+              date: sellRequest.date,
               quantity: asset.quantity,
-              price: sellRequest.sellPrice,
+              price: sellRequest.price,
               avgBuyPrice: asset.buyPrice,
               type: "sell",
               assetId: asset.id,

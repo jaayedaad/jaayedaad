@@ -1,10 +1,20 @@
 "use client";
+import AddTransaction from "@/components/addTransaction";
 import AssetPieChart from "@/components/assetPieChart";
 import AssetTable from "@/components/assetTable";
 import PortfolioLineChart from "@/components/portfolioLineChart";
 import { Button } from "@/components/ui/button";
+import {
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import LoadingSpinner from "@/components/ui/loading-spinner";
 import { useData } from "@/contexts/data-context";
+import { Dialog } from "@radix-ui/react-dialog";
 import { Plus } from "lucide-react";
 import Link from "next/link";
 import React from "react";
@@ -22,11 +32,22 @@ function Page({ params }: { params: { asset: string } }) {
   return (
     <div className="px-6 py-6 w-full h-screen flex flex-col">
       <div className="h-[6vh]">
-        <Button className="justify-start w-fit" asChild>
-          <Link href="/dashboard/portfolio/add">
-            <Plus className="mr-2" size={20} /> Add {params.asset}
-          </Link>
-        </Button>
+        <Dialog>
+          <DialogTrigger asChild>
+            <Button className="justify-start w-fit">
+              <Plus className="mr-2" size={20} /> Add {params.asset}
+            </Button>
+          </DialogTrigger>
+          <DialogContent className="max-w-[50vw] max-h-[80vh]">
+            <DialogHeader>
+              <DialogTitle>Make transactions</DialogTitle>
+              <DialogDescription>
+                Add transactions to your portfolio
+              </DialogDescription>
+            </DialogHeader>
+            <AddTransaction />
+          </DialogContent>
+        </Dialog>
       </div>
       <div className="min-h-[85vh] h-full mt-4">
         <div className="grid grid-rows-7 grid-cols-3 gap-4 h-full">

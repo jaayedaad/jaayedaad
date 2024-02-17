@@ -7,32 +7,34 @@ export async function getHistoricalData(assets: Asset[]) {
   const conversionRate = await getConversionRate();
   let historicalData = [];
   for (const asset of assets) {
-    const { symbol } = asset;
-    const res = await fetch(
-      `https://yh-finance.p.rapidapi.com/stock/v3/get-historical-data?symbol=${symbol}`,
-      {
-        method: "GET",
-        headers: {
-          "X-RapidAPI-Key": process.env.NEXT_PUBLIC_YHFINANCE_KEY,
-          "X-RapidAPI-Host": "yh-finance.p.rapidapi.com",
-        },
-      }
-    );
-    const data = await res.json();
-    if (data) {
-      // Calculate total value of asset and add it to the data object
-      data.prices.forEach((price: any) => {
-        data.assetType = asset.type;
-        if (price.close) {
-          if (asset.buyCurrency === "USD") {
-            price.value = price.close * +conversionRate * +asset.quantity;
-          } else {
-            price.value = price.close * +asset.quantity;
-          }
+    if (asset.symbol) {
+      const { symbol } = asset;
+      const res = await fetch(
+        `https://yh-finance.p.rapidapi.com/stock/v3/get-historical-data?symbol=${symbol}&region=US`,
+        {
+          method: "GET",
+          headers: {
+            "X-RapidAPI-Key": process.env.NEXT_PUBLIC_YHFINANCE_KEY,
+            "X-RapidAPI-Host": "yh-finance.p.rapidapi.com",
+          },
         }
-      });
+      );
+      const data = await res.json();
+      if (data) {
+        // Calculate total value of asset and add it to the data object
+        data.prices.forEach((price: any) => {
+          data.assetType = asset.type;
+          if (price.close) {
+            if (asset.buyCurrency === "USD") {
+              price.value = price.close * +conversionRate * +asset.quantity;
+            } else {
+              price.value = price.close * +asset.quantity;
+            }
+          }
+        });
 
-      historicalData.push(data);
+        historicalData.push(data);
+      }
     }
   }
 

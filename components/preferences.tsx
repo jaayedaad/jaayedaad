@@ -27,8 +27,6 @@ function Preferences() {
     });
   }, []);
 
-  console.log(defaultCurrency);
-
   const handleSave = async () => {
     try {
       setLoading(true);

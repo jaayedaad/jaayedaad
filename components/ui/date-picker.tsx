@@ -22,6 +22,10 @@ export function DatePicker({ onSelect }: DatePickerProps) {
   const [date, setDate] = React.useState<Date>();
 
   useEffect(() => {
+    setDate(new Date());
+  }, []);
+
+  useEffect(() => {
     if (date) {
       // Notify parent component about the selected date
       onSelect(date);
