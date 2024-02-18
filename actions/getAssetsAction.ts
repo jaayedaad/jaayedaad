@@ -36,7 +36,7 @@ export async function getAssets() {
     .map((cookie) => `${cookie.name}=${cookie.value}`)
     .join(";");
 
-  const data = await fetch("http://localhost:3000/api/assets", {
+  const data = await fetch(`${process.env.NEXT_PUBLIC_APP_URL}/api/assets`, {
     method: "GET",
     headers: {
       Cookie: cookiesString,

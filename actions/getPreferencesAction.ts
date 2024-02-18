@@ -8,13 +8,16 @@ export async function getPreferences() {
     .map((cookie) => `${cookie.name}=${cookie.value}`)
     .join(";");
 
-  const res = await fetch("http://localhost:3000/api/user/preferences", {
-    method: "GET",
-    headers: {
-      Cookie: cookiesString,
-    },
-    credentials: "include",
-  });
+  const res = await fetch(
+    `${process.env.NEXT_PUBLIC_APP_URL}/api/user/preferences`,
+    {
+      method: "GET",
+      headers: {
+        Cookie: cookiesString,
+      },
+      credentials: "include",
+    }
+  );
 
   const preferences = await res.json();
   return preferences;

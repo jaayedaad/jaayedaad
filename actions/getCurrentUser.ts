@@ -12,13 +12,16 @@ export async function getCurrentUser() {
       .map((cookie) => `${cookie.name}=${cookie.value}`)
       .join(";");
 
-    const res = await fetch("http://localhost:3000/api/getcurrentuser", {
-      method: "GET",
-      headers: {
-        Cookie: cookiesString,
-      },
-      credentials: "include",
-    });
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_APP_URL}/api/getcurrentuser`,
+      {
+        method: "GET",
+        headers: {
+          Cookie: cookiesString,
+        },
+        credentials: "include",
+      }
+    );
 
     return res.json();
   }

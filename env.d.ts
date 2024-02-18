@@ -6,6 +6,10 @@ declare global {
       GOOGLE_CLIENT_SECRET: string;
       NEXTAUTH_SECRET: string;
 
+      // Deployment environment
+      NODE_ENV: string;
+      NEXT_PUBLIC_APP_URL: string;
+
       // Prisma
       DATABASE_URL: string;
 
