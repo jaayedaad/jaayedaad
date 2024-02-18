@@ -2,7 +2,7 @@ import React from "react";
 
 function LoadingSpinner() {
   return (
-    <div className="w-full text-center mt-24">
+    <div className="w-full text-center">
       <svg
         aria-hidden="true"
         className="inline w-12 h-12 animate-spin dark:text-accent dark:fill-foreground"

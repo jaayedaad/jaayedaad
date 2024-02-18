@@ -49,7 +49,9 @@ function Dashboard() {
               <p className="text-muted-foreground text-sm">
                 Insight into your portfolio&apos;s value dynamics
               </p>
-              <LoadingSpinner />
+              <div className="h-40 flex items-center">
+                <LoadingSpinner />
+              </div>
             </div>
           )}
         </div>
@@ -69,10 +71,12 @@ function Dashboard() {
             </div>
           </div>
           <div className="mt-6">
-            {loadingAsset ? (
-              <LoadingSpinner />
+            {assets ? (
+              <AssetTable data={assets} />
             ) : (
-              assets && <AssetTable data={assets} />
+              <div className="h-64 flex items-center">
+                <LoadingSpinner />
+              </div>
             )}
           </div>
         </div>
@@ -89,7 +93,9 @@ function Dashboard() {
               unrealisedProfitLoss={unrealisedProfitLoss}
             />
           ) : (
-            <LoadingSpinner />
+            <div className="h-72 w-full flex items-center">
+              <LoadingSpinner />
+            </div>
           )}
         </div>
       </div>

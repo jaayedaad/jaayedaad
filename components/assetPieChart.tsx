@@ -202,7 +202,9 @@ function AssetPieChart({ view }: PieChartProps) {
             />
           </PieChart>
         ) : (
-          <LoadingSpinner />
+          <div className="h-40 w-full flex items-center">
+            <LoadingSpinner />
+          </div>
         )}
       </div>
     </>

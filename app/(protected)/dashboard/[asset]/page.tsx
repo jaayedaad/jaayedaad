@@ -63,7 +63,9 @@ function Page({ params }: { params: { asset: string } }) {
                 <p className="text-muted-foreground text-sm">
                   Insight into your portfolio&apos;s value dynamics
                 </p>
-                <LoadingSpinner />
+                <div className="h-40 flex items-center">
+                  <LoadingSpinner />
+                </div>
               </div>
             )}
           </div>
@@ -85,7 +87,9 @@ function Page({ params }: { params: { asset: string } }) {
               {assets ? (
                 <AssetTable data={assets} view={params.asset} />
               ) : (
-                <LoadingSpinner />
+                <div className="h-56 flex items-center">
+                  <LoadingSpinner />
+                </div>
               )}
             </div>
           </div>
