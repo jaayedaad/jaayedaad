@@ -3,9 +3,14 @@ import { useEffect, useState } from "react";
 import SearchResults from "@/components/searchResults";
 import SearchField from "@/components/searchField";
 import LoadingSpinner from "@/components/ui/loading-spinner";
-import ManualTransactionModal from "@/components/manualTransactionModal";
 
-export default function AddTransaction() {
+interface AddTransactionPropsType {
+  handleModalState: React.Dispatch<React.SetStateAction<boolean>>;
+}
+
+export default function AddTransaction({
+  handleModalState,
+}: AddTransactionPropsType) {
   const [searchQuery, setSearchQuery] = useState("");
   const [results, setResults] = useState<Array<any>>([]);
   const [loadingAsset, setLoadingAsset] = useState(false);
@@ -51,25 +56,26 @@ export default function AddTransaction() {
   }, [searchQuery]);
 
   return (
-    <div className="flex w-full flex-col mt-4">
+    <div className="flex w-full flex-col">
       <div className="flex gap-6 items-center">
         {/* Search Field */}
         <SearchField
           searchQuery={searchQuery}
           handleSearchChange={handleSearchChange}
         />
-        <p className="text-muted-foreground">Or</p>
-        <ManualTransactionModal />
       </div>
       {/* Results Table */}
       {loadingAsset ? (
-        <div className="mb-16">
+        <div className="my-12">
           <LoadingSpinner />
         </div>
       ) : (
         <div className="pt-4">
           {results.length > 0 ? (
-            <SearchResults results={results} />
+            <SearchResults
+              results={results}
+              handleModalState={handleModalState}
+            />
           ) : (
             <div className="text-center my-12">Search for any assets!</div>
           )}

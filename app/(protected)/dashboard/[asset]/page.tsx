@@ -7,7 +7,6 @@ import { Button } from "@/components/ui/button";
 import {
   DialogContent,
   DialogDescription,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -16,11 +15,11 @@ import LoadingSpinner from "@/components/ui/loading-spinner";
 import { useData } from "@/contexts/data-context";
 import { Dialog } from "@radix-ui/react-dialog";
 import { Plus } from "lucide-react";
-import Link from "next/link";
-import React from "react";
+import React, { useState } from "react";
 
 function Page({ params }: { params: { asset: string } }) {
   const { assets, historicalData } = useData();
+  const [open, setOpen] = useState(false);
 
   // Get today's date
   const today = new Date();
@@ -32,7 +31,7 @@ function Page({ params }: { params: { asset: string } }) {
   return (
     <div className="px-6 py-6 w-full h-screen flex flex-col">
       <div className="h-[6vh]">
-        <Dialog>
+        <Dialog open={open} onOpenChange={setOpen}>
           <DialogTrigger asChild>
             <Button className="justify-start w-fit">
               <Plus className="mr-2" size={20} /> Add {params.asset}
@@ -45,7 +44,7 @@ function Page({ params }: { params: { asset: string } }) {
                 Add transactions to your portfolio
               </DialogDescription>
             </DialogHeader>
-            <AddTransaction />
+            <AddTransaction handleModalState={setOpen} />
           </DialogContent>
         </Dialog>
       </div>
