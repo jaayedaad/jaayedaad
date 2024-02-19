@@ -152,7 +152,9 @@ function PortfolioLineChart({ data, view }: { data: any[]; view: string }) {
             <YAxis
               tickLine={false}
               axisLine={false}
-              tickFormatter={(tick) => formatIndianNumber(tick)}
+              tickFormatter={(tick) =>
+                visible ? formatIndianNumber(tick) : "**"
+              }
             />
             <Tooltip
               content={({ active, payload }) => {

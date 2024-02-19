@@ -6,32 +6,9 @@ import { useState } from "react";
 import { PieChart, Pie, Sector, Cell, Tooltip } from "recharts";
 import LoadingSpinner from "./ui/loading-spinner";
 import { useVisibility } from "@/contexts/visibility-context";
+import colors from "@/constants/colors";
 
-const generateColors = (count: number) => {
-  const colors = [];
-  const goldenRatioConjugate = 0.618033988749895; // golden ratio to ensure even distribution
-  let hue = Math.random(); // start at a random hue
-  const hueRangesToAvoid = [
-    { min: 0, max: 30 }, // Red and its shades
-    { min: 80, max: 140 }, // Yellow-green and its shades
-    { min: 150, max: 180 }, // Green and its shades
-  ];
-  for (let i = 0; i < count; i++) {
-    let valid = false;
-    while (!valid) {
-      hue += goldenRatioConjugate;
-      hue %= 1;
-      valid = !hueRangesToAvoid.some((range) => {
-        return hue * 360 >= range.min && hue * 360 <= range.max;
-      });
-    }
-    const color = `hsl(${hue * 360}, 70%, 50%)`; // generate color in HSL format
-    colors.push(color);
-  }
-  return colors;
-};
-
-const COLORS = generateColors(100);
+const COLORS = colors;
 
 const label = (props: any) => {
   const RADIAN = Math.PI / 180;
