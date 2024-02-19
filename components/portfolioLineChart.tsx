@@ -146,6 +146,7 @@ function PortfolioLineChart({ data, view }: { data: any[]; view: string }) {
               dataKey="name"
               tickLine={false}
               axisLine={false}
+              angle={-30}
               minTickGap={10}
               padding={{ left: 30 }}
             />
