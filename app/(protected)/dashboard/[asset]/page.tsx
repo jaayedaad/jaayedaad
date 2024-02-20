@@ -78,7 +78,7 @@ function Page({ params }: { params: { asset: string } }) {
               </div>
               <div>
                 <p className="text-muted-foreground text-sm">
-                  Last update on ({yesterday.toLocaleDateString()})
+                  Last update on ({yesterday.toLocaleDateString("en-GB")})
                 </p>
               </div>
             </div>

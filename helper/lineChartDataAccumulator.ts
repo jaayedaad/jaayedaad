@@ -1,4 +1,4 @@
-export function prepareLineChartData(historicalData: any[]) {
+export function accumulateLineChartData(historicalData: any[]) {
   // Function to format timestamp to human-readable date
   function formatTimestamp(timestamp: number) {
     const date = new Date(timestamp * 1000);

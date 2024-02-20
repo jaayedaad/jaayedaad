@@ -23,7 +23,7 @@ const label = (props: any) => {
   const ey = my;
   const textAnchor = cos >= 0 ? "start" : "end";
 
-  return (
+  return percent > 0 ? (
     <g>
       <path
         d={`M${sx},${sy}L${mx},${my < cy ? my + 15 : my - 18}L${ex},${
@@ -55,7 +55,7 @@ const label = (props: any) => {
         fontSize={10}
       >{`(${(percent * 100).toFixed(2)}%)`}</text>
     </g>
-  );
+  ) : null;
 };
 
 const renderActiveShape = (props: any) => {
