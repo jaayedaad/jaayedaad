@@ -7,7 +7,7 @@ export async function getHistoricalData(assets: Asset[]) {
   const conversionRate = await getConversionRate();
   let historicalData = [];
   for (const asset of assets) {
-    if (asset.symbol) {
+    if (asset.symbol && parseFloat(asset.quantity) > 0) {
       const { symbol } = asset;
       const res = await fetch(
         `https://yh-finance.p.rapidapi.com/stock/v3/get-historical-data?symbol=${symbol}&region=US`,
@@ -24,6 +24,7 @@ export async function getHistoricalData(assets: Asset[]) {
         // Calculate total value of asset and add it to the data object
         data.prices.forEach((price: any) => {
           data.assetType = asset.type;
+          data.assetSymbol = asset.symbol;
           if (price.close) {
             if (asset.buyCurrency === "USD") {
               price.value = price.close * +conversionRate * +asset.quantity;

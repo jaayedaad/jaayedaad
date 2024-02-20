@@ -79,7 +79,7 @@ export async function getAssets() {
         );
 
         if (matchingQuote) {
-          asset.prevClose = matchingQuote.regularMarketPreviousClose;
+          asset.prevClose = matchingQuote.regularMarketPreviousClose.toFixed(2);
         }
 
         // Calculate the current value of the asset
