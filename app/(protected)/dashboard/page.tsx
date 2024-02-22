@@ -58,10 +58,10 @@ function Dashboard() {
         {/* Asset Table */}
         <div className="col-span-4 row-span-3 bg-card border rounded-xl p-4">
           <div className="flex justify-between">
-            <div>
+            <div className="flex items-center gap-1">
               <h3 className="font-semibold">Asset Overview</h3>
               <p className="text-muted-foreground text-sm">
-                Comprehensive list of your owned assets
+                (Comprehensive list of your owned assets)
               </p>
             </div>
             <div>
