@@ -25,7 +25,6 @@ export type Asset = {
     price: string;
     type: string;
     assetId: string;
-    avgBuyPrice: string;
   }[];
 };
 

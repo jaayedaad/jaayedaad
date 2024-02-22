@@ -81,12 +81,11 @@ model Preference {
 }
 
 model Transaction {
-  id          String   @id @default(cuid())
-  date        DateTime
-  quantity    String
-  avgBuyPrice String
-  price       String
-  type        String
-  assetId     String
-  asset       Asset    @relation(fields: [assetId], references: [id], onDelete: Cascade)
+  id       String   @id @default(cuid())
+  date     DateTime
+  quantity String
+  price    String
+  type     String
+  assetId  String
+  asset    Asset    @relation(fields: [assetId], references: [id], onDelete: Cascade)
 }
