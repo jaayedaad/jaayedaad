@@ -16,13 +16,20 @@ import { useEffect } from "react";
 
 type DatePickerProps = {
   onSelect: (selectedDate: Date) => void;
+  defaultDate?: Date;
 };
 
-export function DatePicker({ onSelect }: DatePickerProps) {
+export function DatePicker({ onSelect, defaultDate }: DatePickerProps) {
   const [date, setDate] = React.useState<Date>();
 
   useEffect(() => {
-    setDate(new Date());
+    if (defaultDate) {
+      let d = new Date(defaultDate);
+      const correctedDate = d.setDate(d.getDate() - 1);
+      setDate(new Date(correctedDate));
+    } else {
+      setDate(new Date());
+    }
   }, []);
 
   useEffect(() => {
