@@ -7,14 +7,15 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { ArrowDownIcon, ArrowUpIcon } from "lucide-react";
+import { ArrowDownIcon, ArrowUpDown, ArrowUpIcon } from "lucide-react";
 import { Asset } from "@/actions/getAssetsAction";
 import { ScrollArea } from "./ui/scroll-area";
 import { cn } from "@/lib/utils";
 import { useVisibility } from "@/contexts/visibility-context";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useData } from "@/contexts/data-context";
 import ViewAsset from "./viewAsset";
+import { Button } from "./ui/button";
 
 interface AssetTableProps {
   data: Asset[];
@@ -35,6 +36,15 @@ function AssetTable({ data, view }: AssetTableProps) {
     buyPrice: "",
     buyCurrency: "",
   });
+  const [groupedAsset, setGroupedAsset] = useState<
+    {
+      type: string;
+      currentValue: number;
+      compareValue: number;
+    }[]
+  >();
+  const [filteredAsset, setFilteredAsset] = useState<Asset[]>();
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
 
   const filters: Record<string, (asset: Asset) => boolean> = {
     stocks: (asset) => asset.type === "EQUITY",
@@ -42,42 +52,103 @@ function AssetTable({ data, view }: AssetTableProps) {
     funds: (asset) => asset.type === "MUTUALFUND",
   };
 
-  let filteredAssets = data;
-  let groupedAsset: {
-    type: string;
-    currentValue: number;
-    compareValue: number;
-  }[] = [];
+  //
+  useEffect(() => {
+    if (view) {
+      setFilteredAsset(data.filter(filters[view]));
+    } else {
+      let groupedAssets: {
+        type: string;
+        currentValue: number;
+        compareValue: number;
+      }[] = [];
 
-  if (view) {
-    filteredAssets = data.filter(filters[view]);
-  } else {
-    data.forEach((asset) => {
-      if (asset.quantity !== "0") {
-        const existingType = groupedAsset.find(
-          (data) => data.type === asset.type
-        );
+      data.forEach((asset) => {
+        if (asset.quantity !== "0") {
+          const existingType = groupedAssets.find(
+            (data) => data.type === asset.type
+          );
 
-        if (existingType) {
-          existingType.currentValue += asset.currentValue;
-          existingType.compareValue += asset.compareValue;
-        } else {
-          groupedAsset.push({
-            type: asset.type,
-            currentValue: asset.symbol
-              ? asset.currentValue
-              : parseFloat(asset.currentPrice),
-            compareValue: asset.compareValue,
-          });
+          if (existingType) {
+            existingType.currentValue += asset.currentValue;
+            existingType.compareValue += asset.compareValue;
+          } else {
+            groupedAssets.push({
+              type: asset.type,
+              currentValue: asset.symbol
+                ? asset.currentValue
+                : parseFloat(asset.currentPrice),
+              compareValue: asset.compareValue,
+            });
+          }
         }
-      }
-    });
+      });
+      setGroupedAsset(groupedAssets);
+      setFilteredAsset(data);
+    }
+  }, []);
 
-    filteredAssets = data;
-  }
+  const handleSort = (sortBy: string) => {
+    if (!view) {
+      if (sortBy === "Invested Amount") {
+        setGroupedAsset(
+          groupedAsset?.sort((a, b) =>
+            sortOrder === "asc"
+              ? a.compareValue - b.compareValue
+              : b.compareValue - a.compareValue
+          )
+        );
+      } else if (sortBy === "Current Value") {
+        setGroupedAsset(
+          groupedAsset?.sort((a, b) =>
+            sortOrder === "asc"
+              ? a.currentValue - b.currentValue
+              : b.currentValue - a.currentValue
+          )
+        );
+      } else if (sortBy === "Profit/Loss") {
+        setGroupedAsset(
+          groupedAsset?.sort((a, b) =>
+            sortOrder === "asc"
+              ? ((a.currentValue - a.compareValue) * 100) / a.compareValue -
+                ((b.currentValue - b.compareValue) * 100) / b.compareValue
+              : ((b.currentValue - b.compareValue) * 100) / b.compareValue -
+                ((a.currentValue - a.compareValue) * 100) / a.compareValue
+          )
+        );
+      }
+    } else {
+      if (sortBy === "Quantity") {
+        setFilteredAsset(
+          filteredAsset?.sort((a, b) =>
+            sortOrder === "asc"
+              ? +a.quantity - +b.quantity
+              : +b.quantity - +a.quantity
+          )
+        );
+      } else if (sortBy === "Invested Value") {
+        setFilteredAsset(
+          filteredAsset?.sort((a, b) =>
+            sortOrder === "asc"
+              ? a.compareValue - b.compareValue
+              : b.compareValue - a.compareValue
+          )
+        );
+      } else if (sortBy === "Current Value") {
+        setFilteredAsset(
+          filteredAsset?.sort((a, b) =>
+            sortOrder === "asc"
+              ? a.currentValue - b.currentValue
+              : b.currentValue - a.currentValue
+          )
+        );
+      }
+    }
+  };
 
   return (
-    filteredAssets.length > 0 && (
+    filteredAsset &&
+    filteredAsset.length > 0 && (
       <>
         <Table>
           <ScrollArea className={cn("w-full", view ? "h-[33vh]" : "h-[40vh]")}>
@@ -86,7 +157,16 @@ function AssetTable({ data, view }: AssetTableProps) {
                 <TableRow>
                   <TableHead>Name</TableHead>
                   <TableHead className="text-right w-[128px]">
-                    Quantity
+                    <Button
+                      variant="ghost"
+                      onClick={() => {
+                        setSortOrder(sortOrder === "asc" ? "desc" : "asc");
+                        handleSort("Quantity");
+                      }}
+                    >
+                      Quantity
+                      <ArrowUpDown className="ml-4 h-4 w-4" />
+                    </Button>
                   </TableHead>
                   <TableHead className="text-right w-[128px]">
                     Buying Price
@@ -98,27 +178,75 @@ function AssetTable({ data, view }: AssetTableProps) {
                     Previous Close
                   </TableHead>
                   <TableHead className="text-right w-[128px]">
-                    Current Value (in INR)
+                    <Button
+                      variant="ghost"
+                      onClick={() => {
+                        setSortOrder(sortOrder === "asc" ? "desc" : "asc");
+                        handleSort("Invested Value");
+                      }}
+                    >
+                      Invested Value
+                      <ArrowUpDown className="ml-4 h-4 w-4" />
+                    </Button>
+                  </TableHead>
+                  <TableHead className="text-right w-[128px]">
+                    <Button
+                      variant="ghost"
+                      onClick={() => {
+                        setSortOrder(sortOrder === "asc" ? "desc" : "asc");
+                        handleSort("Current Value");
+                      }}
+                    >
+                      Current Value
+                      <ArrowUpDown className="ml-4 h-4 w-4" />
+                    </Button>
                   </TableHead>
                 </TableRow>
               ) : (
                 <TableRow>
                   <TableHead>Category</TableHead>
                   <TableHead className="text-right">
-                    Invested Amount (in INR)
+                    <Button
+                      variant="ghost"
+                      onClick={() => {
+                        setSortOrder(sortOrder === "asc" ? "desc" : "asc");
+                        handleSort("Invested Amount");
+                      }}
+                    >
+                      Invested Amount
+                      <ArrowUpDown className="ml-4 h-4 w-4" />
+                    </Button>
                   </TableHead>
                   <TableHead className="text-right">
-                    Current Value (in INR)
+                    <Button
+                      variant="ghost"
+                      onClick={() => {
+                        setSortOrder(sortOrder === "asc" ? "desc" : "asc");
+                        handleSort("Current Value");
+                      }}
+                    >
+                      Current Value
+                      <ArrowUpDown className="ml-4 h-4 w-4" />
+                    </Button>
                   </TableHead>
                   <TableHead className="text-right">
-                    Net Profit/Loss (in INR)
+                    <Button
+                      variant="ghost"
+                      onClick={() => {
+                        setSortOrder(sortOrder === "asc" ? "desc" : "asc");
+                        handleSort("Profit/Loss");
+                      }}
+                    >
+                      Profit/Loss %
+                      <ArrowUpDown className="ml-2 h-4 w-4" />
+                    </Button>
                   </TableHead>
                 </TableRow>
               )}
             </TableHeader>
             <TableBody>
               {view
-                ? filteredAssets.map((asset, index) => {
+                ? filteredAsset.map((asset, index) => {
                     return (
                       +asset.quantity > 0 && (
                         <TableRow
@@ -140,8 +268,12 @@ function AssetTable({ data, view }: AssetTableProps) {
                           }}
                         >
                           <TableCell>{asset.name}</TableCell>
-                          <TableCell className="text-right">
-                            {parseFloat(asset.quantity).toLocaleString("en-IN")}
+                          <TableCell className="text-right px-8">
+                            {visible
+                              ? parseFloat(asset.quantity).toLocaleString(
+                                  "en-IN"
+                                )
+                              : "* ".repeat(5)}
                           </TableCell>
                           <TableCell className="text-right">
                             {parseFloat(asset.buyPrice).toFixed(2)}
@@ -152,8 +284,15 @@ function AssetTable({ data, view }: AssetTableProps) {
                           <TableCell className="text-right">
                             {asset?.prevClose}
                           </TableCell>
+                          <TableCell className="text-right px-8">
+                            <div className="flex flex-col">
+                              {visible
+                                ? asset.compareValue.toLocaleString("en-IN")
+                                : "* ".repeat(5)}
+                            </div>
+                          </TableCell>
                           <TableCell
-                            className={`text-right ${
+                            className={`text-right px-8 ${
                               asset.prevClose > asset.buyPrice
                                 ? "text-green-400"
                                 : "text-red-400"
@@ -192,58 +331,66 @@ function AssetTable({ data, view }: AssetTableProps) {
                       )
                     );
                   })
-                : groupedAsset.map((asset, index) => {
+                : groupedAsset &&
+                  groupedAsset.map((asset, index) => {
                     return (
                       <TableRow key={index}>
-                        <TableCell>{asset.type}</TableCell>
-                        <TableCell className="text-right">
+                        <TableCell>
+                          {asset.type === "EQUITY" ? "STOCKS" : asset.type}
+                        </TableCell>
+                        <TableCell className="text-right px-8">
                           {visible
                             ? parseFloat(
                                 asset.compareValue.toFixed(2)
                               ).toLocaleString("en-IN")
                             : "* ".repeat(5)}
                         </TableCell>
-                        <TableCell
-                          className={cn(
-                            "text-right",
-                            asset.currentValue > asset.compareValue
-                              ? "text-green-400"
-                              : "text-red-400"
-                          )}
-                        >
+                        <TableCell className="text-right px-8">
                           {visible
                             ? parseFloat(
                                 asset.currentValue.toFixed(2)
                               ).toLocaleString("en-IN")
                             : "* ".repeat(5)}
-                          {asset.currentValue > asset.compareValue ? (
-                            <div className="flex justify-end items-center">
-                              (
-                              {(
-                                ((asset.currentValue - asset.compareValue) *
-                                  100) /
-                                asset.compareValue
-                              ).toFixed(2)}
-                              %
-                              <ArrowUpIcon className="h-4 w-4 ml-2" />)
-                            </div>
-                          ) : (
-                            <ArrowDownIcon className="h-4 w-4 ml-2" />
-                          )}
+                          <div
+                            className={cn(
+                              "flex justify-end items-center",
+                              asset.currentValue > asset.compareValue
+                                ? "text-green-400"
+                                : "text-red-400"
+                            )}
+                          >
+                            (
+                            {visible
+                              ? (+(
+                                  asset.currentValue - asset.compareValue
+                                ).toFixed(2)).toLocaleString("en-IN")
+                              : "* ".repeat(5)}
+                            )
+                          </div>
                         </TableCell>
                         <TableCell
                           className={cn(
-                            "text-right",
+                            "text-right px-8",
                             asset.currentValue > asset.compareValue
                               ? "text-green-400"
                               : "text-red-400"
                           )}
                         >
-                          {visible
-                            ? (+Math.abs(
-                                asset.currentValue - asset.compareValue
-                              ).toFixed(2)).toLocaleString("en-IN")
-                            : "* ".repeat(5)}
+                          <div className="flex justify-end items-center">
+                            (
+                            {(
+                              ((asset.currentValue - asset.compareValue) *
+                                100) /
+                              asset.compareValue
+                            ).toFixed(2)}
+                            %
+                            {asset.currentValue > asset.compareValue ? (
+                              <ArrowUpIcon className="h-4 w-4 ml-2" />
+                            ) : (
+                              <ArrowDownIcon className="h-4 w-4 ml-2" />
+                            )}
+                            )
+                          </div>
                         </TableCell>
                       </TableRow>
                     );
