@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/utils/authOptions";
+import { calculateAvgBuyPrice } from "@/helper/transactionValueCalculator";
 
 export async function POST(req: Request) {
   const body = await req.json();
@@ -9,14 +10,22 @@ export async function POST(req: Request) {
   const user = await prisma.user.findUnique({
     where: { email: session?.user?.email! },
     include: {
-      assets: true,
+      assets: {
+        include: {
+          transactions: true,
+        },
+      },
     },
   });
 
   if (user) {
-    const existingAsset = user?.assets.find(
-      (asset) => asset.symbol === body.symbol
-    );
+    const existingAsset = user?.assets.find((asset) => {
+      if (asset.symbol) {
+        return asset.symbol === body.symbol;
+      } else {
+        return asset.name === body.name;
+      }
+    });
     if (!existingAsset) {
       const asset = await prisma.asset.create({
         data: {
@@ -35,10 +44,20 @@ export async function POST(req: Request) {
       });
     } else {
       const updatedQuantity = +existingAsset.quantity + +body.quantity;
-      const totalValue =
-        +existingAsset.buyPrice * +existingAsset.quantity +
-        +body.quantity * +body.buyPrice;
-      const avgBuyPrice = totalValue / updatedQuantity;
+
+      const newTransaction = await prisma.transaction.create({
+        data: {
+          date: body.buyDate,
+          quantity: body.quantity,
+          price: body.buyPrice,
+          type: "buy",
+          assetId: existingAsset.id,
+        },
+      });
+
+      // Calculate avg buy price after new transaction
+      existingAsset.transactions.push(newTransaction);
+      const avgBuyPrice = calculateAvgBuyPrice(existingAsset.transactions);
 
       await prisma.asset.update({
         where: {
@@ -47,15 +66,6 @@ export async function POST(req: Request) {
         data: {
           quantity: updatedQuantity.toString(),
           buyPrice: avgBuyPrice.toString(),
-        },
-      });
-      await prisma.transaction.create({
-        data: {
-          date: body.buyDate,
-          quantity: body.quantity,
-          price: body.buyPrice,
-          type: "buy",
-          assetId: existingAsset.id,
         },
       });
     }

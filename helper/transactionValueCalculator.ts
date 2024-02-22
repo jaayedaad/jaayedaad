@@ -2,6 +2,9 @@ import { Transaction } from "@prisma/client";
 
 // Function to calculate total value
 export function calculateTotalValue(transactions: Transaction[]): number {
+  transactions.sort(
+    (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
+  );
   const assetBuyPrices: { [assetId: string]: number[] } = {}; // Track buy prices for each asset
   let totalValue = 0;
 
@@ -33,6 +36,9 @@ export function calculateTotalValue(transactions: Transaction[]): number {
 
 // Function to calculate total quantity
 export function calculateTotalQuantity(transactions: Transaction[]) {
+  transactions.sort(
+    (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
+  );
   const totalQuantity = transactions.reduce((total, transaction) => {
     if (transaction.type === "buy") {
       return total + parseFloat(transaction.quantity);

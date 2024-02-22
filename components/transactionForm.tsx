@@ -73,11 +73,9 @@ function TransactionForm({
     setLoading(true);
     const asset = {
       name: name,
-      symbol: symbol,
       quantity: assetQuantity,
       price: assetPrice,
       date: date,
-      sellCurrency: currency,
     };
 
     fetch("/api/assets/sell", {

@@ -74,7 +74,12 @@ function ManualTransactionForm({ modalOpen }: ManualTransactionFormPropsType) {
   async function handleManualSellTransaction() {
     setLoading(true);
 
-    const asset = manualTransaction;
+    const asset = {
+      name: manualTransaction.name,
+      quantity: manualTransaction.quantity,
+      price: manualTransaction.price,
+      date: manualTransaction.date,
+    };
 
     fetch("/api/assets/sell", {
       method: "PUT",
