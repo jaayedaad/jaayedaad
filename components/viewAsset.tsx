@@ -7,7 +7,7 @@ import { accumulateLineChartData } from "@/helper/lineChartDataAccumulator";
 import ChangeInterval, { Interval } from "./changeInterval";
 import AssetLineChart from "./assetLineChart";
 import { prepareLineChartData } from "@/helper/prepareLineChartData";
-import { Separator } from "./ui/separator";
+import TransactionHistory from "./transactionHistory";
 
 interface ViewAssetProps {
   open: boolean;
@@ -57,7 +57,7 @@ function ViewAsset({
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogContent className="h-[80vh] min-w-[50vw]">
+      <DialogContent className="h-[52vh] min-w-[50vw]">
         <Tabs defaultValue="summary" className="w-full">
           <TabsList>
             <TabsTrigger value="summary">Summary</TabsTrigger>
@@ -87,19 +87,9 @@ function ViewAsset({
               </p>
             </div>
             {dataToShow && <AssetLineChart dataToShow={dataToShow} />}
-            <div className="mt-4">
-              <Separator />
-            </div>
-            <div className="mt-4">
-              <p className="text-muted-foreground text-md">Current value</p>
-              <p className="text-sm flex items-center">
-                <IndianRupee size={14} />
-                {(+assetToView.currentValue.toFixed(2)).toLocaleString("en-IN")}
-              </p>
-            </div>
           </TabsContent>
           <TabsContent value="transactions">
-            Change your password here.
+            <TransactionHistory assetName={assetToView.name} />
           </TabsContent>
         </Tabs>
       </DialogContent>
