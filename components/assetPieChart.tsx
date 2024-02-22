@@ -94,7 +94,14 @@ function AssetPieChart({ view }: PieChartProps) {
   if (view === "dashboard") {
     data?.forEach((item) => {
       if (item.quantity !== "0") {
-        const type = item.type === "CRYPTOCURRENCY" ? "CRYPTO" : item.type;
+        let type: string;
+        if (item.type === "CRYPTOCURRENCY") {
+          type = "CRYPTO";
+        } else if (item.type === "EQUITY") {
+          type = "STOCKS";
+        } else {
+          type = item.type;
+        }
         const value = item.symbol ? item.currentValue : +item.currentPrice;
         sumByType[type] = (sumByType[type] || 0) + value;
       }
