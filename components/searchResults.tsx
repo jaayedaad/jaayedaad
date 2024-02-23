@@ -13,7 +13,6 @@ import {
 import { useState } from "react";
 import { ScrollArea } from "./ui/scroll-area";
 import TransactionForm from "./transactionForm";
-import ManualTransactionForm from "./manualTransactionForm";
 import { cn } from "@/lib/utils";
 
 type searchResultProps = {
@@ -43,7 +42,7 @@ const SearchResults = ({ results, handleModalState }: searchResultProps) => {
   return (
     results.length > 0 && (
       <>
-        <ScrollArea className={cn("", showForm ? "h-[16vh]" : "h-[24vh]")}>
+        <ScrollArea className={cn("mb-4", showForm ? "h-[16vh]" : "h-[24vh]")}>
           <Table>
             <TableHeader className="bg-secondary">
               <TableRow>

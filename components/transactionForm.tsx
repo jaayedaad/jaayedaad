@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { Separator } from "./ui/separator";
 import { Input } from "./ui/input";
 import { DatePicker } from "./ui/date-picker";
 import {
@@ -69,7 +68,7 @@ function TransactionForm({
   };
 
   // Sell assets handler
-  const handleSellAssets = async (name: string, symbol: string) => {
+  const handleSellAssets = async (name: string) => {
     setLoading(true);
     const asset = {
       name: name,
@@ -117,7 +116,7 @@ function TransactionForm({
   };
   return (
     <>
-      <div className="mt-4">
+      <div className="">
         {/* <div className="text-lg font-semibold leading-none tracking-tight">
           Add transaction
         </div> */}
@@ -188,12 +187,7 @@ function TransactionForm({
               </Button>
               <Button
                 className="w-full"
-                onClick={() =>
-                  handleSellAssets(
-                    selectedAsset.shortname,
-                    selectedAsset.symbol
-                  )
-                }
+                onClick={() => handleSellAssets(selectedAsset.shortname)}
                 disabled={loading}
               >
                 Sell

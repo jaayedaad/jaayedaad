@@ -57,7 +57,7 @@ function ViewAsset({
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogContent className="h-[52vh] min-w-[50vw]">
+      <DialogContent className="h-[47vh] min-w-[50vw]">
         <Tabs defaultValue="summary" className="w-full">
           <TabsList>
             <TabsTrigger value="summary">Summary</TabsTrigger>

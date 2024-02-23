@@ -86,7 +86,7 @@ function AssetTable({ data, view }: AssetTableProps) {
       setGroupedAsset(groupedAssets);
       setFilteredAsset(data);
     }
-  }, []);
+  }, [data]);
 
   const handleSort = (sortBy: string) => {
     if (!view) {
