@@ -13,8 +13,10 @@ async function DashboardLayout({ children }: { children: React.ReactNode }) {
   return (
     <main className="flex">
       <VisibilityProvider>
-        <Sidebar />
-        <DataProvider>{children}</DataProvider>
+        <DataProvider>
+          <Sidebar />
+          {children}
+        </DataProvider>
       </VisibilityProvider>
     </main>
   );

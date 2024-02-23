@@ -9,6 +9,7 @@ import {
   EyeOffIcon,
   Home,
   LogOut,
+  Plus,
   SquareStack,
   UserIcon,
 } from "lucide-react";
@@ -19,11 +20,21 @@ import { getCurrentUser } from "@/actions/getCurrentUser";
 import { User } from "@prisma/client";
 import { Toggle } from "./ui/toggle";
 import { useVisibility } from "@/contexts/visibility-context";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "./ui/dialog";
+import AddTransaction from "./addTransaction";
 
 function Sidebar() {
   const currentTab = usePathname();
   const { visible, setVisible } = useVisibility();
   const [user, setUser] = useState<User>();
+  const [open, setOpen] = useState(false);
 
   useEffect(() => {
     getCurrentUser().then((user: User) => setUser(user));
@@ -113,13 +124,29 @@ function Sidebar() {
               )}
             </Toggle>
           </div>
-          <Button
+          <Dialog open={open} onOpenChange={setOpen}>
+            <DialogTrigger asChild>
+              <Button className="justify-start w-fit">
+                <Plus className="mr-2" size={20} /> Add Asset
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="max-w-[50vw] max-h-[80vh]">
+              <DialogHeader>
+                <DialogTitle>Make transactions</DialogTitle>
+                <DialogDescription>
+                  Add transactions to your portfolio
+                </DialogDescription>
+              </DialogHeader>
+              <AddTransaction handleModalState={setOpen} />
+            </DialogContent>
+          </Dialog>
+          {/* <Button
             className="w-full justify-start"
             onClick={() => signOut({ callbackUrl: "/" })}
           >
             <LogOut size={20} className="mr-2" />
             Sign Out
-          </Button>
+          </Button> */}
         </div>
       </div>
     </div>
