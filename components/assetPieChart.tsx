@@ -149,7 +149,7 @@ function AssetPieChart({ view }: PieChartProps) {
               endAngle={-360}
               innerRadius={40}
               outerRadius={60}
-              paddingAngle={5}
+              paddingAngle={chartData.length > 1 ? 5 : 0}
               stroke="none"
               dataKey="value"
               onMouseEnter={(_, index) => setActiveIndex(index)}
