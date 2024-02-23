@@ -28,6 +28,7 @@ function AssetTable({ data, view }: AssetTableProps) {
   const [open, setOpen] = useState(false);
   const [assetToView, setAssetToView] = useState({
     symbol: "",
+    exchange: "",
     name: "",
     quantity: "",
     prevClose: "",
@@ -257,6 +258,7 @@ function AssetTable({ data, view }: AssetTableProps) {
                             setAssetToView((prev) => ({
                               ...prev,
                               symbol: asset.symbol,
+                              exchange: asset.exchange,
                               name: asset.name,
                               quantity: asset.quantity,
                               prevClose: asset.prevClose,
