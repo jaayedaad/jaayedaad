@@ -151,7 +151,7 @@ function AssetTable({ data, view }: AssetTableProps) {
     filteredAsset.length > 0 && (
       <>
         <Table>
-          <ScrollArea className={cn("w-full", view ? "h-[33vh]" : "h-[40vh]")}>
+          <ScrollArea className={cn("w-full", view ? "h-[33vh]" : "h-[41vh]")}>
             <TableHeader className="bg-secondary sticky top-0">
               {view ? (
                 <TableRow>
@@ -169,7 +169,7 @@ function AssetTable({ data, view }: AssetTableProps) {
                     </Button>
                   </TableHead>
                   <TableHead className="text-right w-[128px]">
-                    Buying Price
+                    Avg. Buying Price
                   </TableHead>
                   <TableHead className="text-right w-[128px]">
                     Buying Currency
