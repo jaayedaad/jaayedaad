@@ -24,9 +24,25 @@ function AssetLineChart({
       }}
     >
       <defs>
-        <linearGradient id="colorUv" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="5%" stopColor="#1d4fd8" stopOpacity={0.8} />
-          <stop offset="95%" stopColor="#1d4fd8" stopOpacity={0} />
+        <linearGradient id="colorAv" x1="0" y1="0" x2="0" y2="1">
+          <stop
+            offset="5%"
+            stopColor={`${
+              dataToShow[0].amt > dataToShow[dataToShow.length - 1].amt
+                ? "#ef4444"
+                : "#22c55e"
+            }`}
+            stopOpacity={0.8}
+          />
+          <stop
+            offset="95%"
+            stopColor={`${
+              dataToShow[0].amt > dataToShow[dataToShow.length - 1].amt
+                ? "#ef4444"
+                : "#22c55e"
+            }`}
+            stopOpacity={0}
+          />
         </linearGradient>
       </defs>
       <XAxis
@@ -38,6 +54,8 @@ function AssetLineChart({
         padding={{ left: 30 }}
       />
       <YAxis
+        type="number"
+        domain={["dataMin - 10000", "dataMax"]}
         tickLine={false}
         axisLine={false}
         tickFormatter={(tick) => formatIndianNumber(tick)}
@@ -66,8 +84,12 @@ function AssetLineChart({
       <Area
         type="monotone"
         dataKey="amt"
-        stroke="#1d4fd8"
-        fill="url(#colorUv)"
+        stroke={`${
+          dataToShow[0].amt > dataToShow[dataToShow.length - 1].amt
+            ? "#ef4444"
+            : "#22c55e"
+        }`}
+        fill="url(#colorAv)"
       />
     </AreaChart>
   );

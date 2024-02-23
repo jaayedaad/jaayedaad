@@ -78,8 +78,24 @@ function PortfolioLineChart({ data, view }: { data: any[]; view: string }) {
           >
             <defs>
               <linearGradient id="colorUv" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor="#1d4fd8" stopOpacity={0.8} />
-                <stop offset="95%" stopColor="#1d4fd8" stopOpacity={0} />
+                <stop
+                  offset="5%"
+                  stopColor={`${
+                    dataToShow[0].amt > dataToShow[dataToShow.length - 1].amt
+                      ? "#ef4444"
+                      : "#22c55e"
+                  }`}
+                  stopOpacity={0.8}
+                />
+                <stop
+                  offset="95%"
+                  stopColor={`${
+                    dataToShow[0].amt > dataToShow[dataToShow.length - 1].amt
+                      ? "#ef4444"
+                      : "#22c55e"
+                  }`}
+                  stopOpacity={0}
+                />
               </linearGradient>
             </defs>
             <XAxis
@@ -91,6 +107,7 @@ function PortfolioLineChart({ data, view }: { data: any[]; view: string }) {
               padding={{ left: 30 }}
             />
             <YAxis
+              domain={["dataMin - 10000", "dataMax + 10000"]}
               tickLine={false}
               axisLine={false}
               tickFormatter={(tick) =>
@@ -123,7 +140,11 @@ function PortfolioLineChart({ data, view }: { data: any[]; view: string }) {
             <Area
               type="monotone"
               dataKey="amt"
-              stroke="#1d4fd8"
+              stroke={`${
+                dataToShow[0].amt > dataToShow[dataToShow.length - 1].amt
+                  ? "#ef4444"
+                  : "#22c55e"
+              }`}
               fill="url(#colorUv)"
             />
           </AreaChart>
