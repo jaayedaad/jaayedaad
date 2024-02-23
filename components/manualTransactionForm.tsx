@@ -124,11 +124,11 @@ function ManualTransactionForm({ modalOpen }: ManualTransactionFormPropsType) {
     <>
       <Separator />
       <div className="mt-4">
-        <div className="text-lg font-semibold leading-none tracking-tight">
+        {/* <div className="text-lg font-semibold leading-none tracking-tight">
           Add manual transaction
-        </div>
+        </div> */}
         <div className="text-sm text-muted-foreground">
-          For assets like cars, land, etc
+          Make transactions for assets like property, jewellery, etc
         </div>
         <div className="grid grid-cols-4 py-4 gap-4">
           <div className="col-span-1 self-center">Name</div>

@@ -3,6 +3,8 @@ import { useEffect, useState } from "react";
 import SearchResults from "@/components/searchResults";
 import SearchField from "@/components/searchField";
 import LoadingSpinner from "@/components/ui/loading-spinner";
+import ManualTransactionForm from "./manualTransactionForm";
+import { Button } from "./ui/button";
 
 interface AddTransactionPropsType {
   handleModalState: React.Dispatch<React.SetStateAction<boolean>>;
@@ -14,6 +16,8 @@ export default function AddTransaction({
   const [searchQuery, setSearchQuery] = useState("");
   const [results, setResults] = useState<Array<any>>([]);
   const [loadingAsset, setLoadingAsset] = useState(false);
+  const [showManualTransactionForm, setShowManualTransactionForm] =
+    useState(false);
 
   // Function to handle search change
   const handleSearchChange = (value: string) => {
@@ -23,6 +27,7 @@ export default function AddTransaction({
 
   // Function to handle search
   const handleSearch = async () => {
+    setShowManualTransactionForm(false);
     try {
       // search API endpoint
       const url = `https://yh-finance.p.rapidapi.com/auto-complete?q=${searchQuery}`;
@@ -55,6 +60,10 @@ export default function AddTransaction({
     return () => clearTimeout(timerId);
   }, [searchQuery]);
 
+  const handleManualTransaction = () => {
+    setShowManualTransactionForm(true);
+  };
+
   return (
     <div className="flex w-full flex-col">
       <div className="flex gap-6 items-center">
@@ -63,6 +72,15 @@ export default function AddTransaction({
           searchQuery={searchQuery}
           handleSearchChange={handleSearchChange}
         />
+        <div className="text-center">
+          <Button
+            onClick={() => handleManualTransaction()}
+            className="text-muted-foreground text-center"
+            variant="ghost"
+          >
+            + Or add it manually
+          </Button>
+        </div>
       </div>
       {/* Results Table */}
       {loadingAsset ? (
@@ -71,11 +89,15 @@ export default function AddTransaction({
         </div>
       ) : (
         <div className="pt-4">
-          {results.length > 0 ? (
-            <SearchResults
-              results={results}
-              handleModalState={handleModalState}
-            />
+          {!showManualTransactionForm && results.length > 0 ? (
+            <>
+              <SearchResults
+                results={results}
+                handleModalState={handleModalState}
+              />
+            </>
+          ) : showManualTransactionForm ? (
+            <ManualTransactionForm modalOpen={handleModalState} />
           ) : (
             <div className="text-center my-12">Search for any assets!</div>
           )}

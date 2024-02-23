@@ -14,6 +14,7 @@ import { useState } from "react";
 import { ScrollArea } from "./ui/scroll-area";
 import TransactionForm from "./transactionForm";
 import ManualTransactionForm from "./manualTransactionForm";
+import { cn } from "@/lib/utils";
 
 type searchResultProps = {
   results: Array<any>;
@@ -35,19 +36,14 @@ const SearchResults = ({ results, handleModalState }: searchResultProps) => {
     quoteType: string,
     exchange: string
   ) => {
-    setShowForm((prevState) => !prevState);
+    setShowForm(true);
     setSelectedAsset({ shortname, symbol, quoteType, exchange });
   };
 
-  const handleManualTransaction = async () => {
-    setShowForm(true);
-  };
-
   return (
-    results.length > 0 &&
-    (!showForm ? (
+    results.length > 0 && (
       <>
-        <ScrollArea className="h-[50vh]">
+        <ScrollArea className={cn("", showForm ? "h-[16vh]" : "h-[24vh]")}>
           <Table>
             <TableHeader className="bg-secondary">
               <TableRow>
@@ -91,24 +87,14 @@ const SearchResults = ({ results, handleModalState }: searchResultProps) => {
             </TableBody>
           </Table>
         </ScrollArea>
-        <div className="text-center mt-2">
-          <Button
-            onClick={() => handleManualTransaction()}
-            className="text-muted-foreground text-center"
-            variant="ghost"
-          >
-            + or add it manually
-          </Button>
-        </div>
+        {showForm && selectedAsset && (
+          <TransactionForm
+            selectedAsset={selectedAsset}
+            modalOpen={handleModalState}
+          />
+        )}
       </>
-    ) : selectedAsset ? (
-      <TransactionForm
-        selectedAsset={selectedAsset}
-        modalOpen={handleModalState}
-      />
-    ) : (
-      <ManualTransactionForm modalOpen={handleModalState} />
-    ))
+    )
   );
 };
 

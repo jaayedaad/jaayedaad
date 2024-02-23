@@ -117,13 +117,12 @@ function TransactionForm({
   };
   return (
     <>
-      <Separator />
       <div className="mt-4">
-        <div className="text-lg font-semibold leading-none tracking-tight">
+        {/* <div className="text-lg font-semibold leading-none tracking-tight">
           Add transaction
-        </div>
+        </div> */}
         <div className="text-sm text-muted-foreground">
-          Make transaction for {selectedAsset.shortname}
+          Making transaction for {selectedAsset.shortname}
         </div>
         <div className="grid grid-cols-4 py-4 gap-4">
           <div className="text-md col-span-1">Quantity</div>
