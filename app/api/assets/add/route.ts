@@ -2,6 +2,7 @@ import { prisma } from "@/lib/prisma";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/utils/authOptions";
 import { calculateAvgBuyPrice } from "@/helper/transactionValueCalculator";
+import { Asset } from "@prisma/client";
 
 export async function POST(req: Request) {
   const body = await req.json();
@@ -15,6 +16,7 @@ export async function POST(req: Request) {
           transactions: true,
         },
       },
+      usersManualCategories: true,
     },
   });
 
@@ -27,12 +29,51 @@ export async function POST(req: Request) {
       }
     });
     if (!existingAsset) {
-      const asset = await prisma.asset.create({
-        data: {
-          ...body,
-          userId: user.id,
-        },
-      });
+      let asset: Asset;
+      if (body.isManualEntry) {
+        const existingCategory = user.usersManualCategories.find(
+          (manualCategory) => manualCategory.name === body.type
+        );
+
+        if (existingCategory) {
+          asset = await prisma.asset.create({
+            data: {
+              ...body,
+              userId: user.id,
+              manualCategoryId: existingCategory.id,
+            },
+          });
+        } else {
+          const usersManualCategory = await prisma.usersManualCategory.create({
+            data: {
+              name: body.type,
+              userId: user.id,
+            },
+          });
+          asset = await prisma.asset.create({
+            data: {
+              ...body,
+              userId: user.id,
+              manualCategoryId: usersManualCategory.id,
+            },
+          });
+        }
+
+        const assetPriceUpdate = await prisma.assetPriceUpdate.create({
+          data: {
+            assetId: asset.id,
+            price: body.currentPrice,
+            date: body.buyDate,
+          },
+        });
+      } else {
+        asset = await prisma.asset.create({
+          data: {
+            ...body,
+            userId: user.id,
+          },
+        });
+      }
       await prisma.transaction.create({
         data: {
           date: body.buyDate,
@@ -59,7 +100,7 @@ export async function POST(req: Request) {
       existingAsset.transactions.push(newTransaction);
       const avgBuyPrice = calculateAvgBuyPrice(existingAsset.transactions);
 
-      await prisma.asset.update({
+      const asset = await prisma.asset.update({
         where: {
           id: existingAsset.id,
         },
@@ -68,6 +109,16 @@ export async function POST(req: Request) {
           buyPrice: avgBuyPrice.toString(),
         },
       });
+
+      if (body.isManualEntry) {
+        const assetPriceUpdate = await prisma.assetPriceUpdate.create({
+          data: {
+            assetId: asset.id,
+            price: body.currentPrice,
+            date: body.buyDate,
+          },
+        });
+      }
     }
 
     return new Response("OK");

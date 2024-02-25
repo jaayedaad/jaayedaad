@@ -12,12 +12,10 @@ import { useEffect, useState } from "react";
 function Dashboard() {
   const [unrealisedProfitLoss, setUnrealisedProfitLoss] = useState<number>();
   const [realisedProfitLoss, setRealisedProfitLoss] = useState<number>();
-  const [loadingAsset, setLoadingAsset] = useState(true);
   const { assets, historicalData } = useData();
 
   useEffect(() => {
     if (assets) {
-      setLoadingAsset(false);
       const unrealizedProfitsLosses = calculateUnrealisedProfitLoss(assets);
       setUnrealisedProfitLoss(unrealizedProfitsLosses);
       const realizedProfitsLosses = calculateRealisedProfitLoss(assets);

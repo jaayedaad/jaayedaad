@@ -55,8 +55,8 @@ function Onboarding() {
 
   // Fetches current user & redirects to dashboard if username is set
   useEffect(() => {
-    getCurrentUser().then((user) => {
-      if (user.username) {
+    getCurrentUser().then((userResponse) => {
+      if (userResponse?.userData.username) {
         router.push("/dashboard");
       }
     });

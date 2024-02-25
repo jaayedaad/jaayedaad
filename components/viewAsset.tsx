@@ -8,11 +8,13 @@ import ChangeInterval, { Interval } from "./changeInterval";
 import AssetLineChart from "./assetLineChart";
 import { prepareLineChartData } from "@/helper/prepareLineChartData";
 import TransactionHistory from "./transactionHistory";
+import { prepareHistoricalDataForManualCategory } from "@/helper/manualAssetsHistoryMaker";
+import { Asset } from "@/actions/getAssetsAction";
 
 interface ViewAssetProps {
   open: boolean;
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
-  assetToView: {
+  assetToView?: {
     symbol: string;
     exchange: string;
     name: string;
@@ -23,6 +25,7 @@ interface ViewAssetProps {
     buyPrice: string;
     buyCurrency: string;
   };
+  manualAsset?: Asset;
   historicalData: any[];
 }
 
@@ -30,6 +33,7 @@ function ViewAsset({
   open,
   setOpen,
   assetToView,
+  manualAsset,
   historicalData,
 }: ViewAssetProps) {
   const [dataToShow, setDataToShow] = useState<
@@ -41,28 +45,63 @@ function ViewAsset({
   const [currentValue, setCurrentValue] = useState("");
   const [compareLabel, setCompareLabel] = useState("");
 
-  const assetHistory = [
-    historicalData.find((data) => data.assetSymbol === assetToView.symbol),
-  ];
+  const assetHistory: any[] = [];
+  if (assetToView?.symbol !== "") {
+    assetHistory.push(
+      historicalData.find((data) => data.assetSymbol === assetToView?.symbol)
+    );
+  } else if (manualAsset) {
+    const manualHistory = prepareHistoricalDataForManualCategory([manualAsset]);
+    assetHistory.splice(0, assetHistory.length, ...manualHistory);
+  }
   const lineChartData = accumulateLineChartData(assetHistory);
 
-  // Handle change in interval
+  // // Handle change in interval
   function onChange(value: Interval) {
+    if (manualAsset) {
+      lineChartData.sort(
+        (a, b) => new Date(b.name).getTime() - new Date(a.name).getTime()
+      );
+    }
     prepareLineChartData(value, lineChartData, setDataToShow);
-    setCurrentValue(assetHistory[0].prices[0].close);
+    setCurrentValue(
+      assetToView?.symbol !== ""
+        ? assetHistory[0].prices[0].close
+        : assetHistory[0].prices[assetHistory[0].prices.length - 1].value
+    );
     switch (value) {
       case "1d":
-        setCompareLabel(assetHistory[0].prices[1].close);
+        setCompareLabel(
+          assetToView?.symbol !== ""
+            ? assetHistory[0].prices[1].close
+            : assetHistory[0].prices[assetHistory[0].prices.length - 2].value
+        );
         break;
       case "1w":
-        setCompareLabel(assetHistory[0].prices[6].close);
+        setCompareLabel(
+          assetToView?.symbol !== ""
+            ? assetHistory[0].prices[6].close
+            : assetHistory[0].prices.length > 7
+            ? assetHistory[0].prices[assetHistory[0].prices.length - 8].value
+            : assetHistory[0].prices[0].value
+        );
         break;
       case "1m":
-        setCompareLabel(assetHistory[0].prices[29].close);
+        setCompareLabel(
+          assetToView?.symbol !== ""
+            ? assetHistory[0].prices[29].close
+            : assetHistory[0].prices.length > 30
+            ? assetHistory[0].prices[assetHistory[0].prices.length - 31].value
+            : assetHistory[0].prices[0].value
+        );
         break;
       case "1y":
         setCompareLabel(
-          assetHistory[0].prices[assetHistory[0].prices.length - 1].close
+          assetToView?.symbol !== ""
+            ? assetHistory[0].prices[assetHistory[0].prices.length - 1].close
+            : assetHistory[0].prices.length > 365
+            ? assetHistory[0].prices[assetHistory[0].prices.length - 366].value
+            : assetHistory[0].prices[0].value
         );
         break;
       default:
@@ -84,18 +123,27 @@ function ViewAsset({
           <TabsList>
             <TabsTrigger value="summary">Summary</TabsTrigger>
             <TabsTrigger value="transactions">Transactions</TabsTrigger>
+            {manualAsset !== undefined && (
+              <TabsTrigger value="priceUpdate">Update Price</TabsTrigger>
+            )}
           </TabsList>
           <TabsContent value="summary" className="mt-4">
             <div className="text-sm text-muted-foreground">
-              <span className="text-foreground pr-1">{assetToView.symbol}</span>
-              ({assetToView.exchange})
+              <span className="text-foreground pr-1">
+                {assetToView?.symbol !== ""
+                  ? assetToView?.symbol
+                  : manualAsset?.name}
+              </span>
+              {assetToView?.exchange !== "" && <>({assetToView?.exchange})</>}
             </div>
             <div>
               <div className="flex justify-between">
                 <div>
                   <h3 className="text-3xl font-bold flex items-center">
                     <IndianRupee strokeWidth={3} />
-                    {parseFloat(currentValue).toFixed(2)}
+                    {parseFloat(
+                      parseFloat(currentValue).toFixed(2)
+                    ).toLocaleString("en-IN")}
                   </h3>
                   <div className="flex gap-1">
                     <p
@@ -108,9 +156,8 @@ function ViewAsset({
                     >
                       {currentValue > compareLabel && "+"}
                       {(
-                        +parseFloat(currentValue).toFixed(2) -
-                        +parseFloat(compareLabel).toFixed(2)
-                      ).toFixed(2)}
+                        parseFloat(currentValue) - parseFloat(compareLabel)
+                      ).toLocaleString("en-IN")}
                     </p>
                     <p
                       className={cn(
@@ -137,8 +184,17 @@ function ViewAsset({
             {dataToShow && <AssetLineChart dataToShow={dataToShow} />}
           </TabsContent>
           <TabsContent value="transactions">
-            <TransactionHistory assetName={assetToView.name} />
+            {assetToView?.symbol !== ""
+              ? assetToView && (
+                  <TransactionHistory assetName={assetToView.name} />
+                )
+              : manualAsset && (
+                  <TransactionHistory assetName={manualAsset.name} />
+                )}
           </TabsContent>
+          {manualAsset !== undefined && (
+            <TabsContent value="priceUpdate"></TabsContent>
+          )}
         </Tabs>
       </DialogContent>
     </Dialog>

@@ -116,10 +116,7 @@ function TransactionForm({
   };
   return (
     <>
-      <div className="">
-        {/* <div className="text-lg font-semibold leading-none tracking-tight">
-          Add transaction
-        </div> */}
+      <div>
         <div className="text-sm text-muted-foreground">
           Making transaction for {selectedAsset.shortname}
         </div>

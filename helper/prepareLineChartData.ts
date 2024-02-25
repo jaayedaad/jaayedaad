@@ -37,11 +37,13 @@ export function prepareLineChartData(
     startDate.setFullYear(today.getFullYear() - 1);
     endDate = today;
   }
-
   // Fetch data based on the calculated start and end dates
   const fetchedData = data.filter((item) => {
     const itemDate = new Date(item.name);
-    return itemDate >= startDate && itemDate <= endDate;
+    return (
+      itemDate.getTime() >= startDate.getTime() &&
+      itemDate.getTime() <= endDate.getTime()
+    );
   });
 
   // Adjust date format if timeRange is not "1d"

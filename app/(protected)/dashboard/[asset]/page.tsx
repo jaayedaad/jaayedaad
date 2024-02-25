@@ -1,25 +1,25 @@
 "use client";
-import AddTransaction from "@/components/addTransaction";
+import { Asset } from "@/actions/getAssetsAction";
 import AssetPieChart from "@/components/assetPieChart";
 import AssetTable from "@/components/assetTable";
+import ManualTransactionChart from "@/components/manualTransactionChart";
 import PortfolioLineChart from "@/components/portfolioLineChart";
-import { Button } from "@/components/ui/button";
-import {
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
 import LoadingSpinner from "@/components/ui/loading-spinner";
+import { defaultCategories } from "@/constants/category";
 import { useData } from "@/contexts/data-context";
-import { Dialog } from "@radix-ui/react-dialog";
-import { Plus } from "lucide-react";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 function Page({ params }: { params: { asset: string } }) {
   const { assets, historicalData } = useData();
-  const [open, setOpen] = useState(false);
+  const [manualCategoryAssets, setManualCategoryAssets] = useState<Asset[]>();
+
+  useEffect(() => {
+    if (!defaultCategories.includes(params.asset) && assets) {
+      setManualCategoryAssets(
+        assets.filter((asset) => asset.type === params.asset.toUpperCase())
+      );
+    }
+  }, [assets]);
 
   // Get today's date
   const today = new Date();
@@ -30,24 +30,7 @@ function Page({ params }: { params: { asset: string } }) {
 
   return (
     <div className="px-6 py-6 w-full h-screen flex flex-col">
-      <div className="h-[6vh]">
-        <Dialog open={open} onOpenChange={setOpen}>
-          <DialogTrigger asChild>
-            <Button className="justify-start w-fit">
-              <Plus className="mr-2" size={20} /> Add {params.asset}
-            </Button>
-          </DialogTrigger>
-          <DialogContent className="max-w-[50vw] max-h-[80vh]">
-            <DialogHeader>
-              <DialogTitle>Make transactions</DialogTitle>
-              <DialogDescription>
-                Add transactions to your portfolio
-              </DialogDescription>
-            </DialogHeader>
-            <AddTransaction handleModalState={setOpen} />
-          </DialogContent>
-        </Dialog>
-      </div>
+      <div className="h-[6vh]"></div>
       <div className="min-h-[85vh] h-full mt-4">
         <div className="grid grid-rows-7 grid-cols-3 gap-4 h-full">
           <div className="row-span-3 col-span-1 border rounded-xl p-4">
@@ -55,7 +38,15 @@ function Page({ params }: { params: { asset: string } }) {
           </div>
           <div className="row-span-3 col-span-2 border rounded-xl p-4">
             {historicalData ? (
-              <PortfolioLineChart data={historicalData} view={params.asset} />
+              defaultCategories.includes(params.asset) ? (
+                <PortfolioLineChart data={historicalData} view={params.asset} />
+              ) : (
+                manualCategoryAssets && (
+                  <ManualTransactionChart
+                    manualCategoryAssets={manualCategoryAssets}
+                  />
+                )
+              )
             ) : (
               <div>
                 <h3 className="font-semibold">Portfolio Performance</h3>

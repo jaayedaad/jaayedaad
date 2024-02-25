@@ -15,6 +15,7 @@ import { currencies } from "@/constants/currency";
 import { toast } from "sonner";
 import { useData } from "@/contexts/data-context";
 import { Separator } from "./ui/separator";
+import { cn } from "@/lib/utils";
 
 interface ManualTransactionFormPropsType {
   modalOpen: React.Dispatch<React.SetStateAction<boolean>>;
@@ -124,25 +125,10 @@ function ManualTransactionForm({ modalOpen }: ManualTransactionFormPropsType) {
     <>
       <Separator />
       <div className="mt-4">
-        {/* <div className="text-lg font-semibold leading-none tracking-tight">
-          Add manual transaction
-        </div> */}
         <div className="text-sm text-muted-foreground">
           Make transactions for assets like property, jewellery, etc
         </div>
         <div className="grid grid-cols-4 py-4 gap-4">
-          <div className="col-span-1 self-center">Name</div>
-          <Input
-            className="col-span-3"
-            placeholder="Asset name"
-            value={manualTransaction.name}
-            onChange={(e) =>
-              setManualTransaction((prev) => ({
-                ...prev,
-                name: e.target.value,
-              }))
-            }
-          />
           <div className="col-span-1 self-center">Category</div>
           <div className="col-span-3">
             <Select
@@ -160,15 +146,31 @@ function ManualTransactionForm({ modalOpen }: ManualTransactionFormPropsType) {
               <SelectContent>
                 {categories.map((category) => {
                   return (
-                    <SelectItem key={category.label} value={category.label}>
-                      {category.value}
+                    <SelectItem key={category.label} value={category.value}>
+                      {category.label}
                     </SelectItem>
                   );
                 })}
               </SelectContent>
             </Select>
           </div>
-          <div className="col-span-1 self-center">Quantity</div>
+          <div className="col-span-1 self-center">Name</div>
+          <Input
+            className="col-span-3"
+            placeholder={`${
+              manualTransaction.type === "FD" ? "Bank Name" : "Asset name"
+            }`}
+            value={manualTransaction.name}
+            onChange={(e) =>
+              setManualTransaction((prev) => ({
+                ...prev,
+                name: e.target.value,
+              }))
+            }
+          />
+          <div className="col-span-1 self-center">
+            {manualTransaction.type === "FD" ? "Interest rate" : "Quantity"}
+          </div>
           <Input
             className="col-span-2 no-spinner"
             type="number"
@@ -179,7 +181,11 @@ function ManualTransactionForm({ modalOpen }: ManualTransactionFormPropsType) {
                 quantity: e.target.value,
               }))
             }
-            placeholder="Quantity"
+            placeholder={
+              manualTransaction.type === "FD"
+                ? "Interest rate (p.a)"
+                : "Quantity"
+            }
           />
           <Select
             onValueChange={(value) => {
@@ -203,7 +209,13 @@ function ManualTransactionForm({ modalOpen }: ManualTransactionFormPropsType) {
               })}
             </SelectContent>
           </Select>
-          <div className="col-span-1 self-center">Buy/Sell price</div>
+          <div className="col-span-1 self-center">Date</div>
+          <div className="col-span-3">
+            <DatePicker onSelect={handleDateSelect} />
+          </div>
+          <div className="col-span-1 self-center">
+            {manualTransaction.type === "FD" ? "Principal Amount" : "Price"}
+          </div>
           <Input
             className="col-span-3 no-spinner"
             type="number"
@@ -214,11 +226,25 @@ function ManualTransactionForm({ modalOpen }: ManualTransactionFormPropsType) {
                 price: e.target.value,
               }))
             }
-            placeholder="Price"
+            placeholder={
+              manualTransaction.type === "FD"
+                ? "Principal amount"
+                : "Unit price"
+            }
           />
-          <div className="col-span-1 self-center">Current price</div>
+          <div
+            className={cn(
+              "col-span-1 self-center",
+              manualTransaction.type === "FD" && "invisible"
+            )}
+          >
+            Current price
+          </div>
           <Input
-            className="col-span-3 no-spinner"
+            className={cn(
+              "col-span-3 no-spinner",
+              manualTransaction.type === "FD" && "invisible"
+            )}
             type="number"
             value={manualTransaction.currentPrice}
             onChange={(e) =>
@@ -227,26 +253,22 @@ function ManualTransactionForm({ modalOpen }: ManualTransactionFormPropsType) {
                 currentPrice: e.target.value,
               }))
             }
-            placeholder="Current price"
+            placeholder="Current unit price"
           />
-          <div className="col-span-1 self-center">Buy date</div>
-          <div className="col-span-3">
-            <DatePicker onSelect={handleDateSelect} />
-          </div>
           <div className="col-span-2 col-start-3 flex gap-2">
             <Button
               className="w-full"
               onClick={() => handleManualBuyTransaction()}
               disabled={loading}
             >
-              Buy
+              {manualTransaction.type === "FD" ? "Create" : "Buy"}
             </Button>
             <Button
               className="w-full"
               onClick={() => handleManualSellTransaction()}
               disabled={loading}
             >
-              Sell
+              {manualTransaction.type === "FD" ? "Break" : "Sell"}
             </Button>
           </div>
         </div>

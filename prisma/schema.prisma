@@ -35,16 +35,17 @@ model Session {
 }
 
 model User {
-  id            String       @id @default(cuid())
-  name          String?
-  username      String?      @unique
-  email         String       @unique
-  emailVerified DateTime?
-  image         String?
-  accounts      Account[]
-  sessions      Session[]
-  assets        Asset[]
-  preferences   Preference[]
+  id                    String                @id @default(cuid())
+  name                  String?
+  username              String?               @unique
+  email                 String                @unique
+  emailVerified         DateTime?
+  image                 String?
+  accounts              Account[]
+  sessions              Session[]
+  assets                Asset[]
+  preferences           Preference[]
+  usersManualCategories UsersManualCategory[]
 }
 
 model VerificationToken {
@@ -56,20 +57,23 @@ model VerificationToken {
 }
 
 model Asset {
-  id            String        @id @default(cuid())
-  name          String
-  symbol        String?
-  quantity      String
-  buyPrice      String
-  currentPrice  String?
-  isManualEntry Boolean       @default(false)
-  buyCurrency   String        @default("INR")
-  buyDate       DateTime
-  type          String
-  exchange      String?
-  userId        String
-  user          User          @relation(fields: [userId], references: [id], onDelete: Cascade)
-  transactions  Transaction[]
+  id                String               @id @default(cuid())
+  name              String
+  symbol            String?
+  quantity          String
+  buyPrice          String
+  currentPrice      String?
+  isManualEntry     Boolean              @default(false)
+  buyCurrency       String               @default("INR")
+  buyDate           DateTime
+  type              String
+  exchange          String?
+  userId            String
+  user              User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
+  transactions      Transaction[]
+  manualCategory    UsersManualCategory? @relation(fields: [manualCategoryId], references: [id], onDelete: Cascade)
+  manualCategoryId  String?
+  assetPriceUpdates AssetPriceUpdate[]
 }
 
 model Preference {
@@ -88,4 +92,20 @@ model Transaction {
   type     String
   assetId  String
   asset    Asset    @relation(fields: [assetId], references: [id], onDelete: Cascade)
+}
+
+model UsersManualCategory {
+  id     String  @id @default(cuid())
+  name   String
+  assets Asset[]
+  userId String
+  user   User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model AssetPriceUpdate {
+  id      String   @id @default(cuid())
+  price   String
+  date    DateTime
+  assetId String
+  asset   Asset    @relation(fields: [assetId], references: [id], onDelete: Cascade)
 }

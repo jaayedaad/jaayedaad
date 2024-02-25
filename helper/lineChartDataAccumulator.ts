@@ -22,20 +22,28 @@ export function accumulateLineChartData(historicalData: any[]) {
     return day + " " + monthNames[monthIndex] + " " + year;
   }
 
-  // Calculate sum of "close" values for each date
-  const result: { name: string; amt: number }[] = historicalData.reduce(
-    (acc, asset) => {
-      asset.prices.forEach((price: any, index: number) => {
-        const name = formatTimestamp(price.date);
-        const amt = acc[index]
-          ? acc[index].amt + (price.value || 0)
-          : price.value || 0;
-        acc[index] = { name, amt };
-      });
-      return acc;
-    },
-    []
-  );
+  // Create an object to store aggregated amounts for each date
+  const aggregatedAmounts: { [date: string]: number } = {};
+
+  // Iterate through each asset in historicalData
+  historicalData.forEach((asset) => {
+    // Iterate through prices in each asset
+    asset.prices.forEach((price: any) => {
+      const formattedDate = formatTimestamp(price.date);
+      // If date already exists, add the value, else initialize it
+      if (aggregatedAmounts[formattedDate]) {
+        aggregatedAmounts[formattedDate] += price.value || 0;
+      } else {
+        aggregatedAmounts[formattedDate] = price.value || 0;
+      }
+    });
+  });
+
+  // Convert aggregated amounts to the required format
+  const result = Object.keys(aggregatedAmounts).map((date) => ({
+    name: date,
+    amt: aggregatedAmounts[date],
+  }));
 
   return result;
 }

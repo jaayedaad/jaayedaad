@@ -2,6 +2,53 @@
 import { cookies } from "next/headers";
 import { getConversionRate } from "./getConversionRateAction";
 
+const calculateCurrentValue = (asset: Asset, conversionRate: string) => {
+  const calculateBaseValue = () => {
+    if (asset.buyCurrency === "USD") {
+      return +asset.buyPrice * +asset.quantity * +conversionRate;
+    } else {
+      return +asset.buyPrice * +asset.quantity;
+    }
+  };
+
+  const calculateYearsSinceCreated = () => {
+    const buyDate = new Date(asset.buyDate);
+    const today = new Date();
+    const differenceInMilliseconds = today.getTime() - buyDate.getTime(); // Difference in milliseconds
+    const differenceInDays = Math.floor(
+      differenceInMilliseconds / (1000 * 60 * 60 * 24)
+    );
+    return Math.floor(differenceInDays / 365);
+  };
+
+  const calculateCurrentValueForFD = () => {
+    const yearsSinceCreated = calculateYearsSinceCreated();
+    return (
+      +asset.buyPrice *
+      (1 + parseFloat(asset.quantity) / 100) ** yearsSinceCreated
+    );
+  };
+
+  if (asset.type === "FD") {
+    asset.currentValue = calculateCurrentValueForFD();
+    asset.currentPrice = (
+      asset.currentValue * (asset.buyCurrency === "USD" ? +conversionRate : 1)
+    ).toString();
+    asset.prevClose = asset.currentPrice;
+    asset.compareValue =
+      +asset.buyPrice * (asset.buyCurrency === "USD" ? +conversionRate : 1);
+  } else {
+    asset.compareValue = calculateBaseValue();
+    asset.currentValue = asset.isManualEntry
+      ? +asset.currentPrice * +asset.quantity
+      : +asset.prevClose * +asset.quantity;
+  }
+
+  if (asset.buyCurrency === "USD") {
+    asset.currentValue *= +conversionRate;
+  }
+};
+
 export type Asset = {
   id: string;
   name: string;
@@ -24,6 +71,12 @@ export type Asset = {
     quantity: string;
     price: string;
     type: string;
+    assetId: string;
+  }[];
+  assetPriceUpdates: {
+    id: string;
+    price: string;
+    date: Date;
     assetId: string;
   }[];
 };
@@ -79,21 +132,12 @@ export async function getAssets() {
 
         if (matchingQuote) {
           asset.prevClose = matchingQuote.regularMarketPreviousClose.toFixed(2);
+        } else {
+          asset.prevClose = asset.currentPrice;
         }
 
         // Calculate the current value of the asset
-        if (asset.buyCurrency === "USD") {
-          asset.compareValue =
-            +asset.buyPrice * +asset.quantity * +conversionRate;
-          asset.currentValue = asset.isManualEntry
-            ? +asset.currentPrice * +asset.quantity * +conversionRate
-            : +asset.prevClose * +asset.quantity * +conversionRate;
-        } else {
-          asset.compareValue = +asset.buyPrice * +asset.quantity;
-          asset.currentValue = asset.isManualEntry
-            ? +asset.currentPrice * +asset.quantity
-            : +asset.prevClose * +asset.quantity;
-        }
+        calculateCurrentValue(asset, conversionRate);
 
         return asset;
       });

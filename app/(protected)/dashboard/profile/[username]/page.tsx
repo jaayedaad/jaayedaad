@@ -9,21 +9,23 @@ import Link from "next/link";
 import { calculateUnrealisedProfitLoss } from "@/helper/unrealisedValueCalculator";
 
 async function Profile({ params }: { params: { username: string } }) {
-  const user: User = await getCurrentUser();
+  const userResponse = await getCurrentUser();
   const assets = await getAssets();
 
   return (
     <div className="my-6 px-6 w-full flex">
       <div className="min-w-[160px] mr-12">
         <div className="fixed">
-          <Image
-            src={user.image!}
-            alt="profile picture"
-            width={160}
-            height={160}
-            className="rounded-md mb-2 border-2 border-spacing-2"
-            priority
-          />
+          {userResponse && (
+            <Image
+              src={userResponse.userData.image!}
+              alt="profile picture"
+              width={160}
+              height={160}
+              className="rounded-md mb-2 border-2 border-spacing-2"
+              priority
+            />
+          )}
           <h2 className="text-lg text-center">{params?.username}</h2>
           <div className="flex flex-col mt-8">
             <Button variant="ghost" className="justify-start" asChild>

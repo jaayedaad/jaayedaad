@@ -19,7 +19,7 @@ import { Button } from "./ui/button";
 
 interface AssetTableProps {
   data: Asset[];
-  view?: string; // "stocks" | "crypto" | "funds"
+  view?: string; // "stocks" | "crypto" | "funds" | "property"
 }
 
 function AssetTable({ data, view }: AssetTableProps) {
@@ -44,6 +44,7 @@ function AssetTable({ data, view }: AssetTableProps) {
       compareValue: number;
     }[]
   >();
+  const [manualAsset, setManualAsset] = useState<Asset>();
   const [filteredAsset, setFilteredAsset] = useState<Asset[]>();
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
 
@@ -51,6 +52,10 @@ function AssetTable({ data, view }: AssetTableProps) {
     stocks: (asset) => asset.type === "EQUITY",
     crypto: (asset) => asset.type === "CRYPTOCURRENCY",
     funds: (asset) => asset.type === "MUTUALFUND",
+    property: (asset) => asset.type === "PROPERTY",
+    jewellery: (asset) => asset.type === "JEWELLERY",
+    fd: (asset) => asset.type === "FD",
+    others: (asset) => asset.type === "OTHERS",
   };
 
   //
@@ -78,7 +83,7 @@ function AssetTable({ data, view }: AssetTableProps) {
               type: asset.type,
               currentValue: asset.symbol
                 ? asset.currentValue
-                : parseFloat(asset.currentPrice),
+                : asset.currentValue,
               compareValue: asset.compareValue,
             });
           }
@@ -165,7 +170,9 @@ function AssetTable({ data, view }: AssetTableProps) {
                         handleSort("Quantity");
                       }}
                     >
-                      Quantity
+                      {filteredAsset.find((asset) => asset.type === "FD")
+                        ? "Interest rate (%)"
+                        : "Quantity"}
                       <ArrowUpDown className="ml-4 h-4 w-4" />
                     </Button>
                   </TableHead>
@@ -255,18 +262,20 @@ function AssetTable({ data, view }: AssetTableProps) {
                           className="cursor-pointer"
                           onClick={() => {
                             setOpen(true);
-                            setAssetToView((prev) => ({
-                              ...prev,
-                              symbol: asset.symbol,
-                              exchange: asset.exchange,
-                              name: asset.name,
-                              quantity: asset.quantity,
-                              prevClose: asset.prevClose,
-                              currentValue: asset.currentValue,
-                              type: asset.type,
-                              buyPrice: asset.buyPrice,
-                              buyCurrency: asset.buyCurrency,
-                            }));
+                            asset.symbol !== null
+                              ? setAssetToView((prev) => ({
+                                  ...prev,
+                                  symbol: asset.symbol,
+                                  exchange: asset.exchange,
+                                  name: asset.name,
+                                  quantity: asset.quantity,
+                                  prevClose: asset.prevClose,
+                                  currentValue: asset.currentValue,
+                                  type: asset.type,
+                                  buyPrice: asset.buyPrice,
+                                  buyCurrency: asset.buyCurrency,
+                                }))
+                              : setManualAsset(asset);
                           }}
                         >
                           <TableCell>{asset.name}</TableCell>
@@ -278,13 +287,17 @@ function AssetTable({ data, view }: AssetTableProps) {
                               : "* ".repeat(5)}
                           </TableCell>
                           <TableCell className="text-right">
-                            {parseFloat(asset.buyPrice).toFixed(2)}
+                            {parseFloat(
+                              (+asset.buyPrice).toFixed(2)
+                            ).toLocaleString("en-IN")}
                           </TableCell>
                           <TableCell className="text-right">
                             {asset.buyCurrency}
                           </TableCell>
                           <TableCell className="text-right">
-                            {asset?.prevClose}
+                            {parseFloat(asset.prevClose).toLocaleString(
+                              "en-IN"
+                            )}
                           </TableCell>
                           <TableCell className="text-right px-8">
                             <div className="flex flex-col">
@@ -297,7 +310,9 @@ function AssetTable({ data, view }: AssetTableProps) {
                             className={`text-right px-8 ${
                               asset.prevClose > asset.buyPrice
                                 ? "text-green-400"
-                                : "text-red-400"
+                                : asset.prevClose < asset.buyPrice
+                                ? "text-red-400"
+                                : ""
                             }`}
                           >
                             <div className="flex flex-col">
@@ -315,7 +330,7 @@ function AssetTable({ data, view }: AssetTableProps) {
                                   %
                                   <ArrowUpIcon className="h-4 w-4 ml-2" />)
                                 </span>
-                              ) : (
+                              ) : asset.prevClose < asset.buyPrice ? (
                                 <span className="flex items-center justify-end">
                                   (
                                   {(
@@ -326,6 +341,8 @@ function AssetTable({ data, view }: AssetTableProps) {
                                   %
                                   <ArrowDownIcon className="h-4 w-4 ml-2" />)
                                 </span>
+                              ) : (
+                                ""
                               )}
                             </div>
                           </TableCell>
@@ -358,7 +375,9 @@ function AssetTable({ data, view }: AssetTableProps) {
                               "flex justify-end items-center",
                               asset.currentValue > asset.compareValue
                                 ? "text-green-400"
-                                : "text-red-400"
+                                : asset.currentValue < asset.compareValue
+                                ? "text-red-400"
+                                : "hidden"
                             )}
                           >
                             (
@@ -367,6 +386,13 @@ function AssetTable({ data, view }: AssetTableProps) {
                                   asset.currentValue - asset.compareValue
                                 ).toFixed(2)).toLocaleString("en-IN")
                               : "* ".repeat(5)}
+                            {asset.currentValue > asset.compareValue ? (
+                              <ArrowUpIcon className="h-4 w-4 ml-2" />
+                            ) : asset.currentValue < asset.compareValue ? (
+                              <ArrowDownIcon className="h-4 w-4 ml-2" />
+                            ) : (
+                              ""
+                            )}
                             )
                           </div>
                         </TableCell>
@@ -375,7 +401,9 @@ function AssetTable({ data, view }: AssetTableProps) {
                             "text-right px-8",
                             asset.currentValue > asset.compareValue
                               ? "text-green-400"
-                              : "text-red-400"
+                              : asset.currentValue < asset.compareValue
+                              ? "text-red-400"
+                              : ""
                           )}
                         >
                           <div className="flex justify-end items-center">
@@ -388,8 +416,10 @@ function AssetTable({ data, view }: AssetTableProps) {
                             %
                             {asset.currentValue > asset.compareValue ? (
                               <ArrowUpIcon className="h-4 w-4 ml-2" />
-                            ) : (
+                            ) : asset.currentValue < asset.compareValue ? (
                               <ArrowDownIcon className="h-4 w-4 ml-2" />
+                            ) : (
+                              ""
                             )}
                             )
                           </div>
@@ -405,6 +435,7 @@ function AssetTable({ data, view }: AssetTableProps) {
             open={open}
             setOpen={setOpen}
             assetToView={assetToView}
+            manualAsset={manualAsset}
             historicalData={historicalData}
           />
         )}

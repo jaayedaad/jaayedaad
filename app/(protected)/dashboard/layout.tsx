@@ -6,8 +6,8 @@ import { redirect } from "next/navigation";
 import React from "react";
 
 async function DashboardLayout({ children }: { children: React.ReactNode }) {
-  const user = await getCurrentUser();
-  if (!user.username) {
+  const userResponse = await getCurrentUser();
+  if (!userResponse?.userData.username) {
     redirect("/auth/onboarding");
   }
   return (

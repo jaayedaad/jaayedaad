@@ -1,14 +1,32 @@
 "use client";
 
-import { Asset, getAssets } from "@/actions/getAssetsAction";
+import { Asset as detailedAsset, getAssets } from "@/actions/getAssetsAction";
+import { getCurrentUser } from "@/actions/getCurrentUser";
 import { getHistoricalData } from "@/actions/getHistoricalData";
+import { Asset } from "@prisma/client";
 import React, { createContext, useContext, useEffect, useState } from "react";
 
 export const DataContext = createContext<{
-  assets: Asset[] | undefined;
-  setAssets: React.Dispatch<React.SetStateAction<Asset[] | undefined>>;
+  assets: detailedAsset[] | undefined;
   historicalData: any[] | undefined;
-  setHistoricalData: React.Dispatch<React.SetStateAction<any[] | undefined>>;
+  user:
+    | {
+        usersManualCategories: {
+          id: string;
+          name: string;
+          userId: string;
+          assets: Asset[] | undefined;
+        }[];
+        userData: {
+          id: string;
+          name: string | null;
+          username: string | null;
+          email: string;
+          emailVerified: Date | null;
+          image: string | null;
+        };
+      }
+    | undefined;
   updateData: () => void;
 } | null>(null);
 
@@ -18,9 +36,29 @@ export default function DataProvider({
   children: React.ReactNode;
 }) {
   const [historicalData, setHistoricalData] = useState<any[]>();
-  const [assets, setAssets] = useState<Asset[]>();
+  const [assets, setAssets] = useState<detailedAsset[]>();
+  const [user, setUser] = useState<{
+    usersManualCategories: {
+      id: string;
+      name: string;
+      userId: string;
+      assets: Asset[] | undefined;
+    }[];
+    userData: {
+      id: string;
+      name: string | null;
+      username: string | null;
+      email: string;
+      emailVerified: Date | null;
+      image: string | null;
+    };
+  }>();
 
   const fetchData = async () => {
+    const userResponse = await getCurrentUser();
+    if (userResponse) {
+      setUser(userResponse);
+    }
     const assets = await getAssets();
     setAssets(assets);
     if (assets) {
@@ -41,9 +79,8 @@ export default function DataProvider({
     <DataContext.Provider
       value={{
         assets,
-        setAssets,
         historicalData,
-        setHistoricalData,
+        user,
         updateData,
       }}
     >

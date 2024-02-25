@@ -111,6 +111,10 @@ function AssetPieChart({ view }: PieChartProps) {
       stocks: (asset) => asset.type === "EQUITY",
       crypto: (asset) => asset.type === "CRYPTOCURRENCY",
       funds: (asset) => asset.type === "MUTUALFUND",
+      property: (asset) => asset.type === "PROPERTY",
+      jewellery: (asset) => asset.type === "JEWELLERY",
+      fd: (asset) => asset.type === "FD",
+      others: (asset) => asset.type === "OTHERS",
     };
 
     data = data?.filter(filters[view]);

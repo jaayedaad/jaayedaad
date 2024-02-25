@@ -1,5 +1,6 @@
 "use server";
 import { authOptions } from "@/utils/authOptions";
+import { Asset } from "@prisma/client";
 import { getServerSession } from "next-auth";
 import { cookies } from "next/headers";
 
@@ -23,6 +24,23 @@ export async function getCurrentUser() {
       }
     );
 
-    return res.json();
+    const userResponse: {
+      usersManualCategories: {
+        id: string;
+        name: string;
+        userId: string;
+        assets: Asset[];
+      }[];
+      userData: {
+        id: string;
+        name: string | null;
+        username: string | null;
+        email: string;
+        emailVerified: Date | null;
+        image: string | null;
+      };
+    } = await res.json();
+
+    return userResponse;
   }
 }

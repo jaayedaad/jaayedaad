@@ -1,23 +1,24 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { Button } from "./ui/button";
-import { signOut } from "next-auth/react";
 import {
   Bitcoin,
   CandlestickChart,
   EyeIcon,
   EyeOffIcon,
+  Gem,
   Home,
+  LandPlot,
+  Landmark,
   LogOut,
   Plus,
+  Shapes,
   SquareStack,
   UserIcon,
 } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
-import { getCurrentUser } from "@/actions/getCurrentUser";
-import { User } from "@prisma/client";
 import { Toggle } from "./ui/toggle";
 import { useVisibility } from "@/contexts/visibility-context";
 import {
@@ -29,16 +30,26 @@ import {
   DialogTrigger,
 } from "./ui/dialog";
 import AddTransaction from "./addTransaction";
+import { useData } from "@/contexts/data-context";
 
 function Sidebar() {
   const currentTab = usePathname();
+  const { user } = useData();
   const { visible, setVisible } = useVisibility();
-  const [user, setUser] = useState<User>();
   const [open, setOpen] = useState(false);
 
-  useEffect(() => {
-    getCurrentUser().then((user: User) => setUser(user));
-  }, []);
+  const uniqueCategorySet = new Set<string>();
+  user?.usersManualCategories.forEach((category) => {
+    if (category.assets) {
+      category.assets.forEach((asset) => {
+        if (+asset.quantity !== 0) {
+          uniqueCategorySet.add(asset.type);
+        }
+      });
+    }
+  });
+  const manualCategoryList = Array.from(uniqueCategorySet);
+
   return (
     <div className="py-6 px-4 border-r h-screen w-fit">
       <div className="flex flex-col justify-between h-full">
@@ -47,7 +58,7 @@ function Sidebar() {
             asChild
             variant="ghost"
             className={cn(
-              `w-full justify-start`,
+              `w-full justify-start pr-8`,
               currentTab === "/dashboard" &&
                 "bg-secondary text-foreground hover:bg-primary/20"
             )}
@@ -61,7 +72,7 @@ function Sidebar() {
             asChild
             variant="ghost"
             className={cn(
-              `w-full justify-start`,
+              `w-full justify-start pr-8`,
               currentTab === "/dashboard/stocks" &&
                 "bg-secondary text-foreground hover:bg-primary/20"
             )}
@@ -75,7 +86,7 @@ function Sidebar() {
             asChild
             variant="ghost"
             className={cn(
-              `w-full justify-start`,
+              `w-full justify-start pr-8`,
               currentTab === "/dashboard/crypto" &&
                 "bg-secondary text-foreground hover:bg-primary/20"
             )}
@@ -89,7 +100,7 @@ function Sidebar() {
             asChild
             variant="ghost"
             className={cn(
-              `w-full justify-start`,
+              `w-full justify-start pr-8`,
               currentTab === "/dashboard/funds" &&
                 "bg-secondary text-foreground hover:bg-primary/20"
             )}
@@ -99,23 +110,51 @@ function Sidebar() {
               Funds
             </Link>
           </Button>
+          {manualCategoryList.map((category) => {
+            return (
+              <Button
+                key={category}
+                asChild
+                variant="ghost"
+                className={cn(
+                  `w-full justify-start pr-8`,
+                  currentTab === `/dashboard/${category.toLowerCase()}` &&
+                    "bg-secondary text-foreground hover:bg-primary/20"
+                )}
+              >
+                <Link href={`/dashboard/${category.toLowerCase()}`}>
+                  {category === "PROPERTY" ? (
+                    <LandPlot className="mr-2" size={20} />
+                  ) : category === "JEWELLERY" ? (
+                    <Gem className="mr-2" size={20} />
+                  ) : category === "FD" ? (
+                    <Landmark className="mr-2" size={20} />
+                  ) : (
+                    <Shapes className="mr-2" size={20} />
+                  )}
+                  {category.charAt(0).toUpperCase() +
+                    category.slice(1).toLowerCase()}
+                </Link>
+              </Button>
+            );
+          })}
           <Button
             asChild
             variant="ghost"
             className={cn(
-              `w-full justify-start`,
-              currentTab === `/dashboard/profile/${user?.username}` &&
+              `w-full justify-start pr-8`,
+              currentTab === `/dashboard/profile/${user?.userData.username}` &&
                 "bg-secondary text-foreground hover:bg-primary/20"
             )}
           >
-            <Link href={`/dashboard/profile/${user?.username}`}>
+            <Link href={`/dashboard/profile/${user?.userData.username}`}>
               <UserIcon className="mr-2" size={20} /> Profile
             </Link>
           </Button>
         </div>
         <div className="flex flex-col gap-6">
           <div className="flex items-center justify-between">
-            Safe mode
+            <p className="text-sm">{visible ? "Public" : "Private"} mode</p>
             <Toggle onPressedChange={() => setVisible(!visible)}>
               {visible ? (
                 <EyeIcon className="h-4 w-4" />
@@ -126,7 +165,7 @@ function Sidebar() {
           </div>
           <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
-              <Button className="justify-start w-fit">
+              <Button className="justify-start w-fit pr-8">
                 <Plus className="mr-2" size={20} /> Add Asset
               </Button>
             </DialogTrigger>
@@ -140,13 +179,6 @@ function Sidebar() {
               <AddTransaction handleModalState={setOpen} />
             </DialogContent>
           </Dialog>
-          {/* <Button
-            className="w-full justify-start"
-            onClick={() => signOut({ callbackUrl: "/" })}
-          >
-            <LogOut size={20} className="mr-2" />
-            Sign Out
-          </Button> */}
         </div>
       </div>
     </div>

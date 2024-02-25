@@ -17,6 +17,7 @@ export async function GET() {
       },
       include: {
         transactions: true,
+        assetPriceUpdates: true,
       },
     });
     return Response.json(assets);
