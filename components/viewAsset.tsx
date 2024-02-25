@@ -10,6 +10,7 @@ import { prepareLineChartData } from "@/helper/prepareLineChartData";
 import TransactionHistory from "./transactionHistory";
 import { prepareHistoricalDataForManualCategory } from "@/helper/manualAssetsHistoryMaker";
 import { Asset } from "@/actions/getAssetsAction";
+import AssetPriceUpdates from "./assetPriceUpdates";
 
 interface ViewAssetProps {
   open: boolean;
@@ -193,7 +194,9 @@ function ViewAsset({
                 )}
           </TabsContent>
           {manualAsset !== undefined && (
-            <TabsContent value="priceUpdate"></TabsContent>
+            <TabsContent value="priceUpdate">
+              <AssetPriceUpdates assetToView={manualAsset} />
+            </TabsContent>
           )}
         </Tabs>
       </DialogContent>

@@ -97,7 +97,10 @@ export function prepareHistoricalDataForManualCategory(
           // Find last updated on date & price
           for (const assetUpdate of priceUpdates) {
             const updateDate = new Date(assetUpdate.date);
-            if (updateDate >= transactionDate) {
+            if (
+              new Date(updateDate.toDateString()) >=
+              new Date(transactionDate.toDateString())
+            ) {
               priceAtDate = +assetUpdate.price;
               break; // set priceAtDate & exit the loop once a newer date is found
             }
