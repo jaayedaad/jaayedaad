@@ -113,11 +113,16 @@ function AssetPieChart({ view }: PieChartProps) {
       funds: (asset) => asset.type === "MUTUALFUND",
       property: (asset) => asset.type === "PROPERTY",
       jewellery: (asset) => asset.type === "JEWELLERY",
-      fd: (asset) => asset.type === "FD",
+      deposits: (asset) => asset.type === "DEPOSITS",
       others: (asset) => asset.type === "OTHERS",
     };
 
-    data = data?.filter(filters[view]);
+    if (view && filters.hasOwnProperty(view)) {
+      data = data?.filter(filters[view]);
+    } else {
+      const param = decodeURIComponent(view);
+      data = data?.filter((asset) => asset.type === param.toUpperCase());
+    }
 
     data?.forEach((item) => {
       const type = item.name;

@@ -1,7 +1,7 @@
 export const categories = [
   { value: "PROPERTY", label: "PROPERTY" },
   { value: "JEWELLERY", label: "JEWELLERY" },
-  { value: "FD", label: "FIXED DEPOSIT" },
+  { value: "DEPOSITS", label: "FIXED DEPOSIT" },
   { value: "OTHERS", label: "OTHERS" },
 ];
 

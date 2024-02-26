@@ -55,7 +55,10 @@ function AssetLineChart({
       />
       <YAxis
         type="number"
-        domain={["dataMin - 10000", "dataMax"]}
+        domain={[
+          (dataMin: any) => Math.max(0, dataMin - dataMin / 10),
+          (dataMax: any) => dataMax + dataMax / 10,
+        ]}
         tickLine={false}
         axisLine={false}
         tickFormatter={(tick) => formatIndianNumber(tick)}

@@ -33,7 +33,7 @@ import AddTransaction from "./addTransaction";
 import { useData } from "@/contexts/data-context";
 
 function Sidebar() {
-  const currentTab = usePathname();
+  const currentTab = decodeURIComponent(usePathname());
   const { user } = useData();
   const { visible, setVisible } = useVisibility();
   const [open, setOpen] = useState(false);
@@ -170,12 +170,12 @@ function Sidebar() {
               </Button>
             </DialogTrigger>
             <DialogContent className="max-w-[50vw] max-h-[80vh]">
-              <DialogHeader>
+              <div className="flex gap-2">
                 <DialogTitle>Make transactions</DialogTitle>
-                <DialogDescription>
+                <p className="text-muted-foreground text-sm">
                   Add transactions to your portfolio
-                </DialogDescription>
-              </DialogHeader>
+                </p>
+              </div>
               <AddTransaction handleModalState={setOpen} />
             </DialogContent>
           </Dialog>

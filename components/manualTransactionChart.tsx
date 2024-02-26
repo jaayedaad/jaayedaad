@@ -102,7 +102,10 @@ function ManualTransactionChart({
               padding={{ left: 30 }}
             />
             <YAxis
-              domain={["dataMin - 10000", "dataMax + 10000"]}
+              domain={[
+                (dataMin: any) => Math.max(0, dataMin - dataMin / 10),
+                (dataMax: any) => dataMax + dataMax / 10,
+              ]}
               tickLine={false}
               axisLine={false}
               tickFormatter={(tick) =>

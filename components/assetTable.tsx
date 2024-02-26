@@ -61,7 +61,14 @@ function AssetTable({ data, view }: AssetTableProps) {
   //
   useEffect(() => {
     if (view) {
-      setFilteredAsset(data.filter(filters[view]));
+      if (filters.hasOwnProperty(view)) {
+        setFilteredAsset(data.filter(filters[view]));
+      } else {
+        const param = decodeURIComponent(view);
+        setFilteredAsset(
+          data?.filter((asset) => asset.type === param.toUpperCase())
+        );
+      }
     } else {
       let groupedAssets: {
         type: string;
@@ -170,7 +177,7 @@ function AssetTable({ data, view }: AssetTableProps) {
                         handleSort("Quantity");
                       }}
                     >
-                      {filteredAsset.find((asset) => asset.type === "FD")
+                      {filteredAsset.find((asset) => asset.type === "DEPOSITS")
                         ? "Interest rate (%)"
                         : "Quantity"}
                       <ArrowUpDown className="ml-4 h-4 w-4" />
@@ -183,7 +190,9 @@ function AssetTable({ data, view }: AssetTableProps) {
                     Buying Currency
                   </TableHead>
                   <TableHead className="text-right w-[136px]">
-                    Previous Close
+                    {filteredAsset[0].symbol !== null
+                      ? "Previous close"
+                      : "Last updated price"}
                   </TableHead>
                   <TableHead className="text-right w-[128px]">
                     <Button
@@ -308,9 +317,9 @@ function AssetTable({ data, view }: AssetTableProps) {
                           </TableCell>
                           <TableCell
                             className={`text-right px-8 ${
-                              asset.prevClose > asset.buyPrice
+                              +asset.prevClose > +asset.buyPrice
                                 ? "text-green-400"
-                                : asset.prevClose < asset.buyPrice
+                                : +asset.prevClose < +asset.buyPrice
                                 ? "text-red-400"
                                 : ""
                             }`}
@@ -319,7 +328,7 @@ function AssetTable({ data, view }: AssetTableProps) {
                               {visible
                                 ? asset.currentValue.toLocaleString("en-IN")
                                 : "* ".repeat(5)}
-                              {asset.prevClose > asset.buyPrice ? (
+                              {+asset.prevClose > +asset.buyPrice ? (
                                 <span className="flex items-center justify-end">
                                   (
                                   {(
@@ -330,7 +339,7 @@ function AssetTable({ data, view }: AssetTableProps) {
                                   %
                                   <ArrowUpIcon className="h-4 w-4 ml-2" />)
                                 </span>
-                              ) : asset.prevClose < asset.buyPrice ? (
+                              ) : +asset.prevClose < +asset.buyPrice ? (
                                 <span className="flex items-center justify-end">
                                   (
                                   {(

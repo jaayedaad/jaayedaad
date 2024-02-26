@@ -1,6 +1,8 @@
 import React, { useState } from "react";
+import { categories as builtInCategories } from "@/constants/category";
+import { currencies } from "@/constants/currency";
+import { useData } from "@/contexts/data-context";
 import { Button } from "@/components/ui/button";
-
 import { Input } from "@/components/ui/input";
 import {
   Select,
@@ -10,19 +12,40 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { DatePicker } from "@/components/ui/date-picker";
-import { categories } from "@/constants/category";
-import { currencies } from "@/constants/currency";
 import { toast } from "sonner";
-import { useData } from "@/contexts/data-context";
 import { Separator } from "./ui/separator";
 import { cn } from "@/lib/utils";
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+} from "@/components/ui/command";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { Check, ChevronsUpDown } from "lucide-react";
 
 interface ManualTransactionFormPropsType {
   modalOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 function ManualTransactionForm({ modalOpen }: ManualTransactionFormPropsType) {
-  const { updateData } = useData();
+  const { updateData, user } = useData();
+  user?.usersManualCategories.forEach((manualCategory) => {
+    const existingCategory = builtInCategories.some(
+      (category) => category.value === manualCategory.name
+    );
+    if (!existingCategory) {
+      builtInCategories.splice(builtInCategories.length - 1, 0, {
+        value: manualCategory.name,
+        label: manualCategory.name,
+      });
+    }
+  });
   const [loading, setLoading] = useState(false);
   const [manualTransaction, setManualTransaction] = useState({
     name: "",
@@ -33,6 +56,11 @@ function ManualTransactionForm({ modalOpen }: ManualTransactionFormPropsType) {
     currentPrice: "",
     date: "",
   });
+
+  const [open, setOpen] = useState(false);
+  const [value, setValue] = useState(manualTransaction.type);
+  const [commandSearch, setCommandSearch] = useState("");
+  const [categories, setCategories] = useState(builtInCategories);
 
   const handleDateSelect = (selectedDate: Date) => {
     setManualTransaction((prev) => ({
@@ -59,7 +87,7 @@ function ManualTransactionForm({ modalOpen }: ManualTransactionFormPropsType) {
     updateData();
     setLoading(false);
     modalOpen(false);
-    toast.success("Asset added successfully");
+    toast.success("Transaction confirmed!");
     // Reset the manual transaction states
     setManualTransaction({
       name: "",
@@ -131,28 +159,81 @@ function ManualTransactionForm({ modalOpen }: ManualTransactionFormPropsType) {
         <div className="grid grid-cols-4 py-4 gap-4">
           <div className="col-span-1 self-center">Category</div>
           <div className="col-span-3">
-            <Select
-              onValueChange={(value) => {
-                setManualTransaction((prev) => ({
-                  ...prev,
-                  type: value,
-                }));
-              }}
-              defaultValue="PROPERTY"
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="" />
-              </SelectTrigger>
-              <SelectContent>
-                {categories.map((category) => {
-                  return (
-                    <SelectItem key={category.label} value={category.value}>
-                      {category.label}
-                    </SelectItem>
-                  );
-                })}
-              </SelectContent>
-            </Select>
+            <Popover open={open} onOpenChange={setOpen}>
+              <PopoverTrigger asChild>
+                <Button
+                  variant="outline"
+                  role="combobox"
+                  aria-expanded={open}
+                  className="w-full justify-between"
+                >
+                  {value &&
+                    categories.find(
+                      (category) => category.value === value.toUpperCase()
+                    )?.label}
+                  <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-[500px] p-0">
+                <Command>
+                  <CommandInput
+                    placeholder="Search category..."
+                    onValueChange={(value) => setCommandSearch(value)}
+                  />
+                  <CommandEmpty>
+                    <Button
+                      variant="link"
+                      onClick={() => {
+                        const newCategory = {
+                          label: commandSearch.toUpperCase(),
+                          value: commandSearch.toUpperCase(),
+                        };
+                        setCategories((prev) => [...prev, newCategory]);
+                        setValue(commandSearch.toUpperCase());
+                        setManualTransaction((prev) => ({
+                          ...prev,
+                          type: commandSearch.toUpperCase(),
+                        }));
+                        setOpen(false);
+                      }}
+                    >
+                      + add category
+                    </Button>
+                  </CommandEmpty>
+                  <CommandGroup>
+                    {categories.map((category) => (
+                      <CommandItem
+                        key={category.value}
+                        value={category.value}
+                        className={`${
+                          value.toUpperCase() !== category.value.toUpperCase()
+                            ? "text-muted-foreground"
+                            : "text-white bg-muted"
+                        }`}
+                        onSelect={(currentValue) => {
+                          setValue(currentValue);
+                          setManualTransaction((prev) => ({
+                            ...prev,
+                            type: currentValue.toUpperCase(),
+                          }));
+                          setOpen(false);
+                        }}
+                      >
+                        <Check
+                          className={cn(
+                            "mr-2 h-4 w-4",
+                            value.toUpperCase() === category.value
+                              ? "opacity-100"
+                              : "opacity-0"
+                          )}
+                        />
+                        {category.label}
+                      </CommandItem>
+                    ))}
+                  </CommandGroup>
+                </Command>
+              </PopoverContent>
+            </Popover>
           </div>
           <div className="col-span-1 self-center">Name</div>
           <Input

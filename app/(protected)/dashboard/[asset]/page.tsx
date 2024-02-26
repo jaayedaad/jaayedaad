@@ -13,10 +13,11 @@ function Page({ params }: { params: { asset: string } }) {
   const { assets, historicalData } = useData();
   const [manualCategoryAssets, setManualCategoryAssets] = useState<Asset[]>();
 
+  const param = decodeURIComponent(params.asset);
   useEffect(() => {
     if (!defaultCategories.includes(params.asset) && assets) {
       setManualCategoryAssets(
-        assets.filter((asset) => asset.type === params.asset.toUpperCase())
+        assets.filter((asset) => asset.type === param.toUpperCase())
       );
     }
   }, [assets]);
@@ -64,7 +65,7 @@ function Page({ params }: { params: { asset: string } }) {
               <div className="flex items-center gap-1">
                 <h3 className="font-semibold">Asset Overview</h3>
                 <p className="text-muted-foreground text-sm">
-                  (Comprehensive list of your owned {params.asset})
+                  (Comprehensive list of your owned {param})
                 </p>
               </div>
               <div>
@@ -75,7 +76,7 @@ function Page({ params }: { params: { asset: string } }) {
             </div>
             <div className="mt-6">
               {assets ? (
-                <AssetTable data={assets} view={params.asset} />
+                <AssetTable data={assets} view={param} />
               ) : (
                 <div className="h-56 flex items-center">
                   <LoadingSpinner />
