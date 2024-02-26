@@ -28,6 +28,15 @@ export default function AddTransaction({
   // Function to handle search
   const handleSearch = async () => {
     setShowManualTransactionForm(false);
+    const response = await fetch("/api/assets/search", {
+      method: "POST",
+      body: JSON.stringify({ searchQuery: searchQuery }),
+    });
+    const resultsFromDB = await response.json();
+    // Set the state with the initial results from the database
+    setResults(resultsFromDB);
+    setLoadingAsset(false);
+
     try {
       // search API endpoint
       const url = `https://yh-finance.p.rapidapi.com/auto-complete?q=${searchQuery}`;
@@ -40,8 +49,27 @@ export default function AddTransaction({
       };
 
       const res = await fetch(url, options);
-      const { quotes: results } = await res.json();
-      setResults(results);
+      const { quotes: resultsFromAPI } = await res.json();
+
+      // Merge resultsFromDB with resultsFromAPI, keeping all items from resultsFromDB and adding unmatched items from resultsFromAPI
+      const mergedResults = resultsFromDB.map((dbResult: any) => {
+        const matchingResult = resultsFromAPI.find(
+          (apiResult: any) => apiResult.shortname === dbResult.shortname
+        );
+        return matchingResult ? { ...dbResult, ...matchingResult } : dbResult;
+      });
+
+      // Add unmatched items from resultsFromAPI
+      resultsFromAPI.forEach((apiResult: any) => {
+        const isUnmatched = !resultsFromDB.some(
+          (dbResult: any) => dbResult.shortname === apiResult.shortname
+        );
+        if (isUnmatched) {
+          mergedResults.push(apiResult);
+        }
+      });
+
+      setResults(mergedResults);
     } finally {
       setLoadingAsset(false);
     }
