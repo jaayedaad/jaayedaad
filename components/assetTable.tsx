@@ -50,12 +50,12 @@ function AssetTable({ data, view }: AssetTableProps) {
 
   const filters: Record<string, (asset: Asset) => boolean> = {
     "common stock": (asset) => asset.type === "Common Stock",
-    crypto: (asset) => asset.type === "CRYPTOCURRENCY",
-    funds: (asset) => asset.type === "MUTUALFUND",
-    property: (asset) => asset.type === "PROPERTY",
-    jewellery: (asset) => asset.type === "JEWELLERY",
-    fd: (asset) => asset.type === "FD",
-    others: (asset) => asset.type === "OTHERS",
+    "digital currency": (asset) => asset.type === "Digital Currency",
+    "mutual fund": (asset) => asset.type === "Mutual Fund",
+    property: (asset) => asset.type === "Property",
+    jewellery: (asset) => asset.type === "Jewellery",
+    deposits: (asset) => asset.type === "Deposits",
+    others: (asset) => asset.type === "Others",
   };
 
   //

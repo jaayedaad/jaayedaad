@@ -31,13 +31,13 @@ function PortfolioLineChart({ data, view }: { data: any[]; view: string }) {
       accumulateLineChartData(
         data.filter((item) => item.assetType === "Common Stock")
       ),
-    crypto: () =>
+    "digital currency": () =>
       accumulateLineChartData(
-        data.filter((item) => item.assetType === "CRYPTOCURRENCY")
+        data.filter((item) => item.assetType === "Digital Currency")
       ),
-    funds: () =>
+    "mutual fund": () =>
       accumulateLineChartData(
-        data.filter((item) => item.assetType === "MUTUALFUND")
+        data.filter((item) => item.assetType === "Mutual Fund")
       ),
   };
   if (filterMap.hasOwnProperty(view)) {

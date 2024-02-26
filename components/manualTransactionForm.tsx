@@ -49,7 +49,7 @@ function ManualTransactionForm({ modalOpen }: ManualTransactionFormPropsType) {
   const [loading, setLoading] = useState(false);
   const [manualTransaction, setManualTransaction] = useState({
     name: "",
-    type: "PROPERTY",
+    type: "Property",
     quantity: "",
     buyCurrency: "INR",
     price: "",
@@ -91,7 +91,7 @@ function ManualTransactionForm({ modalOpen }: ManualTransactionFormPropsType) {
     // Reset the manual transaction states
     setManualTransaction({
       name: "",
-      type: "PROPERTY",
+      type: "Property",
       quantity: "",
       buyCurrency: "",
       price: "",
@@ -122,7 +122,7 @@ function ManualTransactionForm({ modalOpen }: ManualTransactionFormPropsType) {
           // Reset the manual transaction states
           setManualTransaction({
             name: "",
-            type: "PROPERTY",
+            type: "Property",
             quantity: "",
             buyCurrency: "",
             price: "",
@@ -138,7 +138,7 @@ function ManualTransactionForm({ modalOpen }: ManualTransactionFormPropsType) {
           // Reset the manual transaction states
           setManualTransaction({
             name: "",
-            type: "PROPERTY",
+            type: "Property",
             quantity: "",
             buyCurrency: "",
             price: "",
@@ -168,9 +168,8 @@ function ManualTransactionForm({ modalOpen }: ManualTransactionFormPropsType) {
                   className="w-full justify-between"
                 >
                   {value &&
-                    categories.find(
-                      (category) => category.value === value.toUpperCase()
-                    )?.label}
+                    categories.find((category) => category.value === value)
+                      ?.label}
                   <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                 </Button>
               </PopoverTrigger>
@@ -185,14 +184,14 @@ function ManualTransactionForm({ modalOpen }: ManualTransactionFormPropsType) {
                       variant="link"
                       onClick={() => {
                         const newCategory = {
-                          label: commandSearch.toUpperCase(),
-                          value: commandSearch.toUpperCase(),
+                          label: commandSearch,
+                          value: commandSearch,
                         };
                         setCategories((prev) => [...prev, newCategory]);
-                        setValue(commandSearch.toUpperCase());
+                        setValue(commandSearch);
                         setManualTransaction((prev) => ({
                           ...prev,
-                          type: commandSearch.toUpperCase(),
+                          type: commandSearch,
                         }));
                         setOpen(false);
                       }}
@@ -206,7 +205,7 @@ function ManualTransactionForm({ modalOpen }: ManualTransactionFormPropsType) {
                         key={category.value}
                         value={category.value}
                         className={`${
-                          value.toUpperCase() !== category.value.toUpperCase()
+                          value !== category.value
                             ? "text-muted-foreground"
                             : "text-white bg-muted"
                         }`}
@@ -214,7 +213,7 @@ function ManualTransactionForm({ modalOpen }: ManualTransactionFormPropsType) {
                           setValue(currentValue);
                           setManualTransaction((prev) => ({
                             ...prev,
-                            type: currentValue.toUpperCase(),
+                            type: currentValue,
                           }));
                           setOpen(false);
                         }}
@@ -222,7 +221,7 @@ function ManualTransactionForm({ modalOpen }: ManualTransactionFormPropsType) {
                         <Check
                           className={cn(
                             "mr-2 h-4 w-4",
-                            value.toUpperCase() === category.value
+                            value === category.value
                               ? "opacity-100"
                               : "opacity-0"
                           )}

@@ -87,11 +87,11 @@ function Sidebar() {
             variant="ghost"
             className={cn(
               `w-full justify-start pr-8`,
-              currentTab === "/dashboard/crypto" &&
+              currentTab === "/dashboard/digital currency" &&
                 "bg-secondary text-foreground hover:bg-primary/20"
             )}
           >
-            <Link href="/dashboard/crypto">
+            <Link href="/dashboard/digital currency">
               <Bitcoin className="mr-2" size={20} />
               Crypto
             </Link>
@@ -101,11 +101,11 @@ function Sidebar() {
             variant="ghost"
             className={cn(
               `w-full justify-start pr-8`,
-              currentTab === "/dashboard/funds" &&
+              currentTab === "/dashboard/mutual fund" &&
                 "bg-secondary text-foreground hover:bg-primary/20"
             )}
           >
-            <Link href="/dashboard/funds">
+            <Link href="/dashboard/mutual fund">
               <SquareStack className="mr-2" size={20} />
               Funds
             </Link>

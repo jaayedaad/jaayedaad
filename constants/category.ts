@@ -1,8 +1,8 @@
 export const categories = [
-  { value: "PROPERTY", label: "PROPERTY" },
-  { value: "JEWELLERY", label: "JEWELLERY" },
-  { value: "DEPOSITS", label: "FIXED DEPOSIT" },
-  { value: "OTHERS", label: "OTHERS" },
+  { value: "Property", label: "Property" },
+  { value: "Jewellery", label: "Jewellery" },
+  { value: "Deposits", label: "Fixed Deposit" },
+  { value: "Others", label: "Others" },
 ];
 
 export const defaultCategories = ["common stock", "crypto", "funds"];
