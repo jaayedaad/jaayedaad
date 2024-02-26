@@ -99,51 +99,30 @@ export async function getAssets() {
   const conversionRate = await getConversionRate();
 
   if (assets.length > 0) {
-    // Get symbols from the assets
-    const assetSymbols = assets.map((asset) => asset.symbol);
-    const assetSymbolsQuery = assetSymbols.join("%2C");
-
-    // Get previous close values and their currency
-    const quotes = await fetch(
-      `https://yh-finance.p.rapidapi.com/market/v2/get-quotes?region=US&symbols=${assetSymbolsQuery}`,
-      {
-        method: "GET",
-        headers: {
-          "X-RapidAPI-Key": process.env.NEXT_PUBLIC_YHFINANCE_KEY,
-          "X-RapidAPI-Host": "yh-finance.p.rapidapi.com",
-        },
-      }
-    );
-
-    const responseData = await quotes.json();
-
-    if (responseData.quoteResponse !== undefined) {
-      const {
-        quoteResponse: { result: quotesData },
-      } = responseData;
-      // Proceed with quotesData
-
-      // Update assets with relevant properties
-      const updatedAssets = assets.map((asset) => {
-        const matchingQuote = quotesData.find(
-          // @ts-ignore
-          (quote) => quote.symbol === asset.symbol
-        );
-
-        if (matchingQuote) {
-          asset.prevClose = matchingQuote.regularMarketPreviousClose.toFixed(2);
-        } else {
-          asset.prevClose = asset.currentPrice;
+    const assetQuotesPromises = assets.map(async (asset) => {
+      const quoteResponse = await fetch(
+        `https://api.twelvedata.com/quote?symbol=${asset.symbol}`,
+        {
+          method: "GET",
+          headers: {
+            Authorization: `apikey ${process.env.NEXT_PUBLIC_TWELVEDATA_API_KEY}`,
+          },
         }
+      );
 
-        // Calculate the current value of the asset
+      const quote = await quoteResponse.json();
+
+      if (quote.code && quote.code === 404) {
+        asset.prevClose = asset.currentPrice;
+      } else {
+        asset.prevClose = (+quote.previous_close).toFixed(2);
         calculateCurrentValue(asset, conversionRate);
+      }
 
-        return asset;
-      });
+      return asset;
+    });
 
-      // Return updated assets
-      return updatedAssets;
-    }
+    const updatedAssets = await Promise.all(assetQuotesPromises);
+    return updatedAssets;
   }
 }

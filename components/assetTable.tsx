@@ -49,7 +49,7 @@ function AssetTable({ data, view }: AssetTableProps) {
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
 
   const filters: Record<string, (asset: Asset) => boolean> = {
-    stocks: (asset) => asset.type === "EQUITY",
+    "common stock": (asset) => asset.type === "Common Stock",
     crypto: (asset) => asset.type === "CRYPTOCURRENCY",
     funds: (asset) => asset.type === "MUTUALFUND",
     property: (asset) => asset.type === "PROPERTY",

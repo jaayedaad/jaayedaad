@@ -3,7 +3,7 @@ import { Asset } from "@/actions/getAssetsAction";
 export function prepareHistoricalDataForManualCategory(
   manualCategoryAssets: Asset[]
 ) {
-  const historicalData: { prices: { date: number; value: number }[] }[] = [];
+  const historicalData: { values: { date: number; value: number }[] }[] = [];
   manualCategoryAssets.forEach((asset) => {
     const aggregatedAssetData: { date: number; value: number }[] = [];
     // sort assetPriceUpdates in ascending order
@@ -137,7 +137,7 @@ export function prepareHistoricalDataForManualCategory(
       }
     });
     aggregatedAssetData.shift();
-    historicalData.push({ prices: aggregatedAssetData });
+    historicalData.push({ values: aggregatedAssetData });
   });
 
   return historicalData;

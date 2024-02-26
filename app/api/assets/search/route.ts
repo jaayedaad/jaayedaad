@@ -38,9 +38,9 @@ function transformToResultFormat(
   topMatchingAssets: (Asset & { similarity: number })[]
 ) {
   return topMatchingAssets.map((asset) => ({
-    shortname: asset.name,
+    instrument_name: asset.name,
     symbol: asset.symbol || "", // If symbol is null, set it to an empty string
-    quoteType: asset.type,
+    instrument_type: asset.type,
     exchange: asset.exchange || "", // If exchange is null, set it to an empty string
   }));
 }

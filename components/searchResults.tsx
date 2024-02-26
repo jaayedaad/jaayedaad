@@ -23,20 +23,20 @@ type searchResultProps = {
 const SearchResults = ({ results, handleModalState }: searchResultProps) => {
   const [showForm, setShowForm] = useState(false);
   const [selectedAsset, setSelectedAsset] = useState<{
-    shortname: string;
+    instrument_name: string;
     symbol: string;
-    quoteType: string;
+    instrument_type: string;
     exchange: string;
   }>();
 
   const handleAddClick = async (
-    shortname: string,
+    instrument_name: string,
     symbol: string,
-    quoteType: string,
+    instrument_type: string,
     exchange: string
   ) => {
     setShowForm(true);
-    setSelectedAsset({ shortname, symbol, quoteType, exchange });
+    setSelectedAsset({ instrument_name, symbol, instrument_type, exchange });
   };
 
   return (
@@ -55,9 +55,9 @@ const SearchResults = ({ results, handleModalState }: searchResultProps) => {
             <TableBody className="overflow-y-hidden">
               {results.map((result, index) => {
                 return (
-                  result.shortname && (
+                  result.instrument_name && (
                     <TableRow key={index}>
-                      <TableCell>{result?.shortname}</TableCell>
+                      <TableCell>{result?.instrument_name}</TableCell>
                       <TableCell className="text-right">
                         {result?.exchange}
                       </TableCell>
@@ -68,9 +68,9 @@ const SearchResults = ({ results, handleModalState }: searchResultProps) => {
                         <Button
                           onClick={() =>
                             handleAddClick(
-                              result.shortname,
+                              result.instrument_name,
                               result.symbol,
-                              result.quoteType,
+                              result.instrument_type,
                               result.exchange
                             )
                           }

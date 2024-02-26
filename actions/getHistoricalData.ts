@@ -8,28 +8,70 @@ export async function getHistoricalData(assets: Asset[]) {
   let historicalData = [];
   for (const asset of assets) {
     if (asset.symbol && parseFloat(asset.quantity) > 0) {
-      const { symbol } = asset;
-      const res = await fetch(
-        `https://yh-finance.p.rapidapi.com/stock/v3/get-historical-data?symbol=${symbol}&region=US`,
+      const { symbol, transactions } = asset;
+      const sortedTransactions = transactions.sort(
+        (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
+      );
+
+      // Get the date from the first transaction
+      const firstTransactionDate = new Date(transactions[0].date);
+
+      // Format the start date
+      const formattedStartDate = `${firstTransactionDate.getFullYear()}-${(
+        firstTransactionDate.getMonth() + 1
+      )
+        .toString()
+        .padStart(2, "0")}-${firstTransactionDate
+        .getDate()
+        .toString()
+        .padStart(2, "0")} ${firstTransactionDate
+        .getHours()
+        .toString()
+        .padStart(2, "0")}:${firstTransactionDate
+        .getMinutes()
+        .toString()
+        .padStart(2, "0")}:${firstTransactionDate
+        .getSeconds()
+        .toString()
+        .padStart(2, "0")}`;
+
+      // Get today's date
+      const today = new Date();
+      const formattedToday = `${today.getFullYear()}-${(today.getMonth() + 1)
+        .toString()
+        .padStart(2, "0")}-${today
+        .getDate()
+        .toString()
+        .padStart(2, "0")} ${today
+        .getHours()
+        .toString()
+        .padStart(2, "0")}:${today
+        .getMinutes()
+        .toString()
+        .padStart(2, "0")}:${today.getSeconds().toString().padStart(2, "0")}`;
+
+      const newRes = await fetch(
+        `https://api.twelvedata.com/time_series?symbol=${symbol}&interval=1day&dp=2&previous_close=true&start_date=${formattedStartDate}&end_date=${formattedToday}`,
         {
           method: "GET",
           headers: {
-            "X-RapidAPI-Key": process.env.NEXT_PUBLIC_YHFINANCE_KEY,
-            "X-RapidAPI-Host": "yh-finance.p.rapidapi.com",
+            Authorization: `apikey ${process.env.NEXT_PUBLIC_TWELVEDATA_API_KEY}`,
           },
         }
       );
-      const data = await res.json();
+      const data = await newRes.json();
+
       if (data) {
         // Calculate total value of asset and add it to the data object
-        data.prices.forEach((price: any) => {
+        data.values.forEach((dayData: any) => {
+          dayData.date = new Date(dayData.datetime).getTime() / 1000;
           data.assetType = asset.type;
           data.assetSymbol = asset.symbol;
-          if (price.close) {
+          if (dayData.close) {
             if (asset.buyCurrency === "USD") {
-              price.value = price.close * +conversionRate * +asset.quantity;
+              dayData.value = dayData.close * +conversionRate * +asset.quantity;
             } else {
-              price.value = price.close * +asset.quantity;
+              dayData.value = dayData.close * +asset.quantity;
             }
           }
         });
@@ -40,7 +82,7 @@ export async function getHistoricalData(assets: Asset[]) {
   }
 
   historicalData.forEach((obj) => {
-    let prices = obj.prices;
+    let prices = obj.values;
     let lastNonNullValue = 0;
 
     // Backward pass: replace null values with the nearest non-null value preceding them

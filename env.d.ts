@@ -13,8 +13,8 @@ declare global {
       // Prisma
       DATABASE_URL: string;
 
-      // YH Finance
-      NEXT_PUBLIC_YHFINANCE_KEY: string;
+      // TWELVE DATA API KEY
+      NEXT_PUBLIC_TWELVEDATA_API_KEY: string;
     }
   }
 }

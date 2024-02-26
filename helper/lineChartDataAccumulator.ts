@@ -28,7 +28,7 @@ export function accumulateLineChartData(historicalData: any[]) {
   // Iterate through each asset in historicalData
   historicalData.forEach((asset) => {
     // Iterate through prices in each asset
-    asset.prices.forEach((price: any) => {
+    asset.values.forEach((price: any) => {
       const formattedDate = formatTimestamp(price.date);
       // If date already exists, add the value, else initialize it
       if (aggregatedAmounts[formattedDate]) {

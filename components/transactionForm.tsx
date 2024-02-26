@@ -15,9 +15,9 @@ import { toast } from "sonner";
 
 interface transactionFormPropsType {
   selectedAsset: {
-    shortname: string;
+    instrument_name: string;
     symbol: string;
-    quoteType: string;
+    instrument_type: string;
     exchange: string;
   };
   modalOpen: React.Dispatch<React.SetStateAction<boolean>>;
@@ -118,7 +118,7 @@ function TransactionForm({
     <>
       <div>
         <div className="text-sm text-muted-foreground">
-          Making transaction for {selectedAsset.shortname}
+          Making transaction for {selectedAsset.instrument_name}
         </div>
         <div className="grid grid-cols-4 py-4 gap-4">
           <div className="text-md col-span-1">Quantity</div>
@@ -172,9 +172,9 @@ function TransactionForm({
                 className="w-full"
                 onClick={() =>
                   handleAddAssets(
-                    selectedAsset.shortname,
+                    selectedAsset.instrument_name,
                     selectedAsset.symbol,
-                    selectedAsset.quoteType,
+                    selectedAsset.instrument_type,
                     selectedAsset.exchange
                   )
                 }
@@ -184,7 +184,7 @@ function TransactionForm({
               </Button>
               <Button
                 className="w-full"
-                onClick={() => handleSellAssets(selectedAsset.shortname)}
+                onClick={() => handleSellAssets(selectedAsset.instrument_name)}
                 disabled={loading}
               >
                 Sell

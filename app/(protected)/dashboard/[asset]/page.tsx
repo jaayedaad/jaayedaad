@@ -18,11 +18,13 @@ function Page({ params }: { params: { asset: string } }) {
   useEffect(() => {
     if (!defaultCategories.includes(params.asset) && assets) {
       const categoryExist = assets.some(
-        (asset) => asset.type === param.toUpperCase()
+        (asset) => asset.type.toLowerCase() === param.toLowerCase()
       );
       if (categoryExist) {
         setManualCategoryAssets(
-          assets.filter((asset) => asset.type === param.toUpperCase())
+          assets.filter(
+            (asset) => asset.type.toLowerCase() === param.toLowerCase()
+          )
         );
       } else {
         redirect("/dashboard");
@@ -47,8 +49,8 @@ function Page({ params }: { params: { asset: string } }) {
           </div>
           <div className="row-span-3 col-span-2 border rounded-xl p-4">
             {historicalData ? (
-              defaultCategories.includes(params.asset) ? (
-                <PortfolioLineChart data={historicalData} view={params.asset} />
+              defaultCategories.includes(param) ? (
+                <PortfolioLineChart data={historicalData} view={param} />
               ) : (
                 manualCategoryAssets && (
                   <ManualTransactionChart

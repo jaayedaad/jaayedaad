@@ -67,42 +67,53 @@ function ViewAsset({
     prepareLineChartData(value, lineChartData, setDataToShow);
     setCurrentValue(
       assetToView?.symbol !== ""
-        ? assetHistory[0].prices[0].close
-        : assetHistory[0].prices[assetHistory[0].prices.length - 1].value
+        ? assetHistory[0].values[0].close
+        : assetHistory[0].values[0].value
     );
     switch (value) {
       case "1d":
         setCompareLabel(
-          assetToView?.symbol !== ""
-            ? assetHistory[0].prices[1].close
-            : assetHistory[0].prices[assetHistory[0].prices.length - 2].value
+          assetHistory[0].values.length > 0
+            ? assetToView?.symbol !== ""
+              ? assetHistory[0].values[1].close
+              : assetHistory[0].values[assetHistory[0].values.length - 2].value
+            : assetToView?.symbol !== ""
+            ? assetHistory[0].values[assetHistory[0].values.length - 1].close
+            : assetHistory[0].values[assetHistory[0].values.length - 1].value
         );
         break;
       case "1w":
         setCompareLabel(
-          assetToView?.symbol !== ""
-            ? assetHistory[0].prices[6].close
-            : assetHistory[0].prices.length > 7
-            ? assetHistory[0].prices[assetHistory[0].prices.length - 8].value
-            : assetHistory[0].prices[0].value
+          assetHistory[0].values.length > 6
+            ? assetToView?.symbol !== ""
+              ? assetHistory[0].values[7].close
+              : assetHistory[0].values[assetHistory[0].values.length - 8].value
+            : assetToView?.symbol !== ""
+            ? assetHistory[0].values[assetHistory[0].values.length - 1].close
+            : assetHistory[0].values[assetHistory[0].values.length - 1].value
         );
         break;
       case "1m":
         setCompareLabel(
-          assetToView?.symbol !== ""
-            ? assetHistory[0].prices[29].close
-            : assetHistory[0].prices.length > 30
-            ? assetHistory[0].prices[assetHistory[0].prices.length - 31].value
-            : assetHistory[0].prices[0].value
+          assetHistory[0].values.length > 29
+            ? assetToView?.symbol !== ""
+              ? assetHistory[0].values[30].close
+              : assetHistory[0].values[assetHistory[0].values.length - 30].value
+            : assetToView?.symbol !== ""
+            ? assetHistory[0].values[assetHistory[0].values.length - 1].close
+            : assetHistory[0].values[assetHistory[0].values.length - 1].value
         );
         break;
       case "1y":
         setCompareLabel(
-          assetToView?.symbol !== ""
-            ? assetHistory[0].prices[assetHistory[0].prices.length - 1].close
-            : assetHistory[0].prices.length > 365
-            ? assetHistory[0].prices[assetHistory[0].prices.length - 366].value
-            : assetHistory[0].prices[0].value
+          assetHistory[0].values.length > 364
+            ? assetToView?.symbol !== ""
+              ? assetHistory[0].values[365].close
+              : assetHistory[0].values[assetHistory[0].values.length - 366]
+                  .value
+            : assetToView?.symbol !== ""
+            ? assetHistory[0].values[assetHistory[0].values.length - 1].close
+            : assetHistory[0].values[assetHistory[0].values.length - 1].value
         );
         break;
       default:

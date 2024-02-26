@@ -108,7 +108,7 @@ function AssetPieChart({ view }: PieChartProps) {
     });
   } else {
     const filters: Record<string, (asset: Asset) => boolean> = {
-      stocks: (asset) => asset.type === "EQUITY",
+      "common stock": (asset) => asset.type === "Common Stock",
       crypto: (asset) => asset.type === "CRYPTOCURRENCY",
       funds: (asset) => asset.type === "MUTUALFUND",
       property: (asset) => asset.type === "PROPERTY",
@@ -117,10 +117,10 @@ function AssetPieChart({ view }: PieChartProps) {
       others: (asset) => asset.type === "OTHERS",
     };
 
-    if (view && filters.hasOwnProperty(view)) {
-      data = data?.filter(filters[view]);
+    const param = decodeURIComponent(view);
+    if (param && filters.hasOwnProperty(param)) {
+      data = data?.filter(filters[param]);
     } else {
-      const param = decodeURIComponent(view);
       data = data?.filter((asset) => asset.type === param.toUpperCase());
     }
 

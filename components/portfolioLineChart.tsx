@@ -27,9 +27,9 @@ function PortfolioLineChart({ data, view }: { data: any[]; view: string }) {
 
   const filterMap: FilterMap = {
     dashboard: () => accumulateLineChartData(data),
-    stocks: () =>
+    "common stock": () =>
       accumulateLineChartData(
-        data.filter((item) => item.assetType === "EQUITY")
+        data.filter((item) => item.assetType === "Common Stock")
       ),
     crypto: () =>
       accumulateLineChartData(
@@ -40,7 +40,6 @@ function PortfolioLineChart({ data, view }: { data: any[]; view: string }) {
         data.filter((item) => item.assetType === "MUTUALFUND")
       ),
   };
-
   if (filterMap.hasOwnProperty(view)) {
     accumulatedData = filterMap[view]();
   } else {

@@ -73,11 +73,11 @@ function Sidebar() {
             variant="ghost"
             className={cn(
               `w-full justify-start pr-8`,
-              currentTab === "/dashboard/stocks" &&
+              currentTab === "/dashboard/common stock" &&
                 "bg-secondary text-foreground hover:bg-primary/20"
             )}
           >
-            <Link href="/dashboard/stocks">
+            <Link href="/dashboard/common stock">
               <CandlestickChart className="mr-2" size={20} />
               Stocks
             </Link>

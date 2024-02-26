@@ -39,22 +39,22 @@ export default function AddTransaction({
 
     try {
       // search API endpoint
-      const url = `https://yh-finance.p.rapidapi.com/auto-complete?q=${searchQuery}`;
+      const url = `https://api.twelvedata.com/symbol_search?symbol=${searchQuery}&outputsize=9`;
       const options = {
         method: "GET",
         headers: {
-          "X-RapidAPI-Key": process.env.NEXT_PUBLIC_YHFINANCE_KEY,
-          "X-RapidAPI-Host": "yh-finance.p.rapidapi.com",
+          Authorization: `apikey ${process.env.NEXT_PUBLIC_TWELVEDATA_API_KEY}`,
         },
       };
 
       const res = await fetch(url, options);
-      const { quotes: resultsFromAPI } = await res.json();
+      const { data: resultsFromAPI } = await res.json();
 
       // Merge resultsFromDB with resultsFromAPI, keeping all items from resultsFromDB and adding unmatched items from resultsFromAPI
       const mergedResults = resultsFromDB.map((dbResult: any) => {
         const matchingResult = resultsFromAPI.find(
-          (apiResult: any) => apiResult.shortname === dbResult.shortname
+          (apiResult: any) =>
+            apiResult.instrument_name === dbResult.instrument_name
         );
         return matchingResult ? { ...dbResult, ...matchingResult } : dbResult;
       });
@@ -62,7 +62,8 @@ export default function AddTransaction({
       // Add unmatched items from resultsFromAPI
       resultsFromAPI.forEach((apiResult: any) => {
         const isUnmatched = !resultsFromDB.some(
-          (dbResult: any) => dbResult.shortname === apiResult.shortname
+          (dbResult: any) =>
+            dbResult.instrument_name === apiResult.instrument_name
         );
         if (isUnmatched) {
           mergedResults.push(apiResult);
