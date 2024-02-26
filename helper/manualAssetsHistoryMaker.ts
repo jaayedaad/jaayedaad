@@ -50,14 +50,20 @@ export function prepareHistoricalDataForManualCategory(
             unformatedDate.setDate(unformatedDate.getDate() - 1)
           );
 
-          if (assetTransactionDate >= transactionDate) {
+          if (
+            new Date(assetTransactionDate.toDateString()) >=
+            new Date(transactionDate.toDateString())
+          ) {
             lastUpdatedDates.push(assetTransactionDate);
           }
         });
 
-        lastUpdatedDates.push(new Date());
+        lastUpdatedDates.push(nextTransactionDate);
         let index = 0;
-        while (transactionDate <= nextTransactionDate) {
+        while (
+          new Date(transactionDate.toDateString()) <
+          new Date(nextTransactionDate.toDateString())
+        ) {
           // Find last updated on date & price
           for (const assetUpdate of priceUpdates) {
             const updateDate = new Date(assetUpdate.date);
@@ -66,7 +72,10 @@ export function prepareHistoricalDataForManualCategory(
               break; // set priceAtDate & exit the loop once a newer date is found
             }
           }
-          while (transactionDate <= lastUpdatedDates[index + 1]) {
+          while (
+            new Date(transactionDate.toDateString()) <
+            new Date(lastUpdatedDates[index + 1].toDateString())
+          ) {
             aggregatedAssetData.push({
               date: new Date(transactionDate).getTime() / 1000,
               value: quantityAtDate * priceAtDate,
@@ -82,18 +91,21 @@ export function prepareHistoricalDataForManualCategory(
         // Iterate over sorted assets and add dates newer than transactionDate
         priceUpdates.forEach((asset) => {
           const unformatedDate = new Date(asset.date);
-          const assetTransactionDate = new Date(
+          const assetUpdateDate = new Date(
             unformatedDate.setDate(unformatedDate.getDate() - 1)
           );
 
-          if (assetTransactionDate >= transactionDate) {
-            lastUpdatedDates.push(assetTransactionDate);
+          if (assetUpdateDate >= transactionDate) {
+            lastUpdatedDates.push(assetUpdateDate);
           }
         });
 
         lastUpdatedDates.push(currentDate);
         let index = 0;
-        while (transactionDate <= currentDate) {
+        while (
+          new Date(transactionDate.toDateString()) <=
+          new Date(currentDate.toDateString())
+        ) {
           // Find last updated on date & price
           for (const assetUpdate of priceUpdates) {
             const updateDate = new Date(assetUpdate.date);
@@ -104,6 +116,9 @@ export function prepareHistoricalDataForManualCategory(
               priceAtDate = +assetUpdate.price;
               break; // set priceAtDate & exit the loop once a newer date is found
             }
+          }
+          if (lastUpdatedDates.length === 1) {
+            lastUpdatedDates.push(new Date());
           }
           while (
             new Date(transactionDate.toDateString()) <=
