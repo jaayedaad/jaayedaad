@@ -102,9 +102,9 @@ function TransactionHistory({ assetName }: { assetName: string }) {
               {assetToView && (
                 <TransactionForm
                   selectedAsset={{
-                    shortname: assetToView.name,
+                    instrument_name: assetToView.name,
                     symbol: assetToView.symbol,
-                    quoteType: assetToView.type,
+                    instrument_type: assetToView.type,
                     exchange: assetToView.exchange,
                   }}
                   modalOpen={setShowTransactionForm}
