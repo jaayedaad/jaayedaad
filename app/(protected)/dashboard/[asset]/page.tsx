@@ -7,6 +7,7 @@ import PortfolioLineChart from "@/components/portfolioLineChart";
 import LoadingSpinner from "@/components/ui/loading-spinner";
 import { defaultCategories } from "@/constants/category";
 import { useData } from "@/contexts/data-context";
+import { redirect } from "next/navigation";
 import React, { useEffect, useState } from "react";
 
 function Page({ params }: { params: { asset: string } }) {
@@ -16,9 +17,16 @@ function Page({ params }: { params: { asset: string } }) {
   const param = decodeURIComponent(params.asset);
   useEffect(() => {
     if (!defaultCategories.includes(params.asset) && assets) {
-      setManualCategoryAssets(
-        assets.filter((asset) => asset.type === param.toUpperCase())
+      const categoryExist = assets.some(
+        (asset) => asset.type === param.toUpperCase()
       );
+      if (categoryExist) {
+        setManualCategoryAssets(
+          assets.filter((asset) => asset.type === param.toUpperCase())
+        );
+      } else {
+        redirect("/dashboard");
+      }
     }
   }, [assets]);
 
