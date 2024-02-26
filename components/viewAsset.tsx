@@ -116,6 +116,13 @@ function ViewAsset({
             : assetHistory[0].values[assetHistory[0].values.length - 1].value
         );
         break;
+      case "All":
+        setCompareLabel(
+          assetToView?.symbol !== ""
+            ? assetHistory[0].values[assetHistory[0].values.length - 1].close
+            : assetHistory[0].values[assetHistory[0].values.length - 1].value
+        );
+        break;
       default:
         throw new Error("Invalid interval value");
     }

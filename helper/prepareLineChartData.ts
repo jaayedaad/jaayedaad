@@ -36,6 +36,10 @@ export function prepareLineChartData(
     startDate = new Date(today);
     startDate.setFullYear(today.getFullYear() - 1);
     endDate = today;
+  } else if (timeRange === "All") {
+    startDate = new Date(data[data.length - 1].name);
+    startDate.setFullYear(today.getFullYear() - 1);
+    endDate = today;
   }
   // Fetch data based on the calculated start and end dates
   const fetchedData = data.filter((item) => {

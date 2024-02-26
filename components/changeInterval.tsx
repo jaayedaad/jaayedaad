@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 
-export type Interval = "1d" | "1w" | "1m" | "1y";
+export type Interval = "1d" | "1w" | "1m" | "1y" | "All";
 interface ChildProps {
   onChange: (value: Interval) => void;
 }
@@ -54,6 +54,16 @@ function ChangeInterval({ onChange }: ChildProps) {
         }}
       >
         1y
+      </Button>
+      <Button
+        variant={activeInterval === "All" ? "secondary" : "ghost"}
+        size="icon"
+        onClick={() => {
+          setActiveInterval("All");
+          onChange("All");
+        }}
+      >
+        All
       </Button>
     </div>
   );
