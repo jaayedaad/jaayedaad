@@ -12,22 +12,35 @@ import React, { useEffect, useState } from "react";
 
 function Page({ params }: { params: { asset: string } }) {
   const { assets, historicalData } = useData();
+  const [defaultCategoryAssets, setDefaultCategoryAssets] = useState<Asset[]>();
   const [manualCategoryAssets, setManualCategoryAssets] = useState<Asset[]>();
 
   const param = decodeURIComponent(params.asset);
   useEffect(() => {
-    if (!defaultCategories.includes(params.asset) && assets) {
-      const categoryExist = assets.some(
-        (asset) => asset.type.toLowerCase() === param.toLowerCase()
-      );
-      if (categoryExist) {
-        setManualCategoryAssets(
+    if (assets) {
+      if (!defaultCategories.includes(param)) {
+        const categoryExist = assets.some(
+          (asset) => asset.type.toLowerCase() === param.toLowerCase()
+        );
+        if (categoryExist) {
+          setManualCategoryAssets(
+            assets.filter(
+              (asset) => asset.type.toLowerCase() === param.toLowerCase()
+            )
+          );
+        } else {
+          redirect("/dashboard");
+        }
+      } else {
+        if (
           assets.filter(
             (asset) => asset.type.toLowerCase() === param.toLowerCase()
-          )
-        );
-      } else {
-        redirect("/dashboard");
+          ).length === 0
+        ) {
+          redirect("/dashboard");
+        } else {
+          setDefaultCategoryAssets(assets);
+        }
       }
     }
   }, [assets]);
@@ -48,7 +61,7 @@ function Page({ params }: { params: { asset: string } }) {
             <AssetPieChart view={params.asset} />
           </div>
           <div className="row-span-3 col-span-2 border rounded-xl p-4">
-            {historicalData ? (
+            {defaultCategoryAssets && historicalData ? (
               defaultCategories.includes(param) ? (
                 <PortfolioLineChart data={historicalData} view={param} />
               ) : (
@@ -85,8 +98,8 @@ function Page({ params }: { params: { asset: string } }) {
               </div>
             </div>
             <div className="mt-6">
-              {assets ? (
-                <AssetTable data={assets} view={param} />
+              {defaultCategoryAssets ? (
+                <AssetTable data={defaultCategoryAssets} view={param} />
               ) : (
                 <div className="h-56 flex items-center">
                   <LoadingSpinner />
