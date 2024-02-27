@@ -64,76 +64,74 @@ function Dashboard() {
       <div className="inline-flex justify-end">
         <ChangeInterval onChange={onChange} />
       </div>
-      <div className="h-full">
-        <div className="py-6 w-full flex flex-col">
-          <div className="grid grid-cols-6 grid-row-5 gap-4 h-full text-foreground">
-            {/* Asset distribution pie chart */}
-            <div className="col-span-2 row-span-2 bg-card border rounded-xl p-4">
-              <AssetPieChart view="dashboard" />
-            </div>
-            {/* Portfolio line chart */}
-            <div className="col-span-4 row-span-2 bg-card border rounded-xl p-4">
-              {historicalData ? (
-                <PortfolioLineChart
-                  data={historicalData}
-                  view="dashboard"
-                  timeInterval={timeInterval}
-                />
-              ) : (
-                <div>
-                  <h3 className="font-semibold">Portfolio Performance</h3>
-                  <p className="text-muted-foreground text-sm">
-                    Insight into your portfolio&apos;s value dynamics
-                  </p>
-                  <div className="h-40 flex items-center">
-                    <LoadingSpinner />
-                  </div>
-                </div>
-              )}
-            </div>
-            {/* Asset Table */}
-            <div className="col-span-4 row-span-3 bg-card border rounded-xl p-4">
-              <div className="flex justify-between">
-                <div className="flex items-center gap-1">
-                  <h3 className="font-semibold">Asset Overview</h3>
-                  <p className="text-muted-foreground text-sm">
-                    (Comprehensive list of your owned assets)
-                  </p>
-                </div>
-                <div>
-                  <p className="text-muted-foreground text-sm">
-                    Last update on ({yesterday.toLocaleDateString("en-GB")})
-                  </p>
+      <div className="min-h-[85vh] h-full mt-4">
+        <div className="grid grid-rows-7 grid-cols-3 gap-4 h-full text-foreground">
+          {/* Asset distribution pie chart */}
+          <div className="col-span-1 row-span-3 bg-card border rounded-xl p-4">
+            <AssetPieChart view="dashboard" />
+          </div>
+          {/* Portfolio line chart */}
+          <div className="col-span-2 row-span-3 bg-card border rounded-xl p-4">
+            {historicalData ? (
+              <PortfolioLineChart
+                data={historicalData}
+                view="dashboard"
+                timeInterval={timeInterval}
+              />
+            ) : (
+              <div>
+                <h3 className="font-semibold">Portfolio Performance</h3>
+                <p className="text-muted-foreground text-sm">
+                  Insight into your portfolio&apos;s value dynamics
+                </p>
+                <div className="h-40 flex items-center">
+                  <LoadingSpinner />
                 </div>
               </div>
-              <div className="mt-6">
-                {assets ? (
-                  <AssetTable data={assets} />
-                ) : (
-                  <div className="h-64 flex items-center">
-                    <LoadingSpinner />
-                  </div>
-                )}
+            )}
+          </div>
+          {/* Asset Table */}
+          <div className="col-span-2 row-span-4 bg-card border rounded-xl p-4">
+            <div className="flex justify-between">
+              <div className="flex items-center gap-1">
+                <h3 className="font-semibold">Asset Overview</h3>
+                <p className="text-muted-foreground text-sm">
+                  (Comprehensive list of your owned assets)
+                </p>
+              </div>
+              <div>
+                <p className="text-muted-foreground text-sm">
+                  Last update on ({yesterday.toLocaleDateString("en-GB")})
+                </p>
               </div>
             </div>
-            {/* Performance metrics */}
-            <div className="col-span-2 row-span-3 bg-card border rounded-xl p-4">
-              <h3 className="font-semibold">Performance Metrics</h3>
-              <p className="text-muted-foreground text-sm">
-                Analyzing Your Investment Performance
-              </p>
+            <div className="mt-6">
               {assets ? (
-                <PerformanceMetrics
-                  assets={assets}
-                  realisedProfitLoss={realisedProfitLoss}
-                  unrealisedProfitLoss={unrealisedProfitLoss}
-                />
+                <AssetTable data={assets} />
               ) : (
-                <div className="h-72 w-full flex items-center">
+                <div className="h-64 flex items-center">
                   <LoadingSpinner />
                 </div>
               )}
             </div>
+          </div>
+          {/* Performance metrics */}
+          <div className="col-span-1 row-span-4 bg-card border rounded-xl p-4">
+            <h3 className="font-semibold">Performance Metrics</h3>
+            <p className="text-muted-foreground text-sm">
+              Analyzing Your Investment Performance
+            </p>
+            {assets ? (
+              <PerformanceMetrics
+                assets={assets}
+                realisedProfitLoss={realisedProfitLoss}
+                unrealisedProfitLoss={unrealisedProfitLoss}
+              />
+            ) : (
+              <div className="h-72 w-full flex items-center">
+                <LoadingSpinner />
+              </div>
+            )}
           </div>
         </div>
       </div>
