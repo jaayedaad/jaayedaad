@@ -5,4 +5,8 @@ export const categories = [
   { value: "Others", label: "Others" },
 ];
 
-export const defaultCategories = ["common stock", "crypto", "funds"];
+export const defaultCategories = [
+  "common stock",
+  "digital currency",
+  "mutual fund",
+];

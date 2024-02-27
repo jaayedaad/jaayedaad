@@ -123,11 +123,11 @@ function Sidebar() {
                 )}
               >
                 <Link href={`/dashboard/${category.toLowerCase()}`}>
-                  {category === "PROPERTY" ? (
+                  {category === "Property" ? (
                     <LandPlot className="mr-2" size={20} />
-                  ) : category === "JEWELLERY" ? (
+                  ) : category === "Jewellery" ? (
                     <Gem className="mr-2" size={20} />
-                  ) : category === "FD" ? (
+                  ) : category === "Deposits" ? (
                     <Landmark className="mr-2" size={20} />
                   ) : (
                     <Shapes className="mr-2" size={20} />

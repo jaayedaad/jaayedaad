@@ -33,7 +33,6 @@ function TransactionForm({
   const [assetPrice, setAssetPrice] = useState<string>("");
   const [date, setDate] = useState<string>("");
   const [currency, setCurrency] = useState("INR");
-  console.log(selectedAsset);
   // Add assets handler
   const handleAddAssets = async (
     name: string,
@@ -76,7 +75,6 @@ function TransactionForm({
       price: assetPrice,
       date: date,
     };
-    console.log(asset);
 
     fetch("/api/assets/sell", {
       method: "PUT",
