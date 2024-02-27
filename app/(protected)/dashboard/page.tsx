@@ -1,4 +1,5 @@
 "use client";
+import { getConversionRate } from "@/actions/getConversionRateAction";
 import AssetPieChart from "@/components/assetPieChart";
 import AssetTable from "@/components/assetTable";
 import ChangeInterval, { Interval } from "@/components/changeInterval";
@@ -6,23 +7,41 @@ import PerformanceMetrics from "@/components/performanceMetrics";
 import PortfolioLineChart from "@/components/portfolioLineChart";
 import LoadingSpinner from "@/components/ui/loading-spinner";
 import { useData } from "@/contexts/data-context";
-import { calculateRealisedProfitLoss } from "@/helper/realisedValueCalculator";
+import {
+  ProfitLoss,
+  calculateRealisedProfitLoss,
+} from "@/helper/realisedValueCalculator";
 import { calculateUnrealisedProfitLoss } from "@/helper/unrealisedValueCalculator";
 import { useEffect, useState } from "react";
 
 function Dashboard() {
   const [unrealisedProfitLoss, setUnrealisedProfitLoss] = useState<number>();
-  const [realisedProfitLoss, setRealisedProfitLoss] = useState<number>();
+  const [realisedProfitLoss, setRealisedProfitLoss] = useState<string>();
   const [timeInterval, setTimeInterval] = useState<Interval>("1d");
+  const [realisedProfitLossArray, setRealisedProfitLossArray] =
+    useState<ProfitLoss[]>();
   const { assets, historicalData } = useData();
 
   useEffect(() => {
-    if (assets) {
-      const unrealizedProfitsLosses = calculateUnrealisedProfitLoss(assets);
-      setUnrealisedProfitLoss(unrealizedProfitsLosses);
-      const realizedProfitsLosses = calculateRealisedProfitLoss(assets);
-      setRealisedProfitLoss(realizedProfitsLosses);
+    async function calculateProfitLoss() {
+      if (assets) {
+        const conversionRate = await getConversionRate();
+        const unrealizedProfitsLosses = calculateUnrealisedProfitLoss(assets);
+        setUnrealisedProfitLoss(unrealizedProfitsLosses);
+        const realisedProfitLossArray = calculateRealisedProfitLoss(
+          assets,
+          conversionRate
+        );
+        setRealisedProfitLoss(
+          realisedProfitLossArray?.filter(
+            (profitLoss) => profitLoss.interval === "1d"
+          )[0].realisedProfitLoss
+        );
+        setRealisedProfitLossArray(realisedProfitLossArray);
+      }
     }
+
+    calculateProfitLoss();
   }, [assets]);
 
   // Get today's date
@@ -34,6 +53,10 @@ function Dashboard() {
 
   const onChange = (value: Interval) => {
     setTimeInterval(value);
+    const profitLoss = realisedProfitLossArray?.filter(
+      (profitLoss) => profitLoss.interval === value
+    )[0].realisedProfitLoss;
+    setRealisedProfitLoss(profitLoss);
   };
 
   return assets ? (

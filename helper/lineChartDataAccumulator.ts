@@ -33,7 +33,6 @@ function fillMissingDates(data: { [date: string]: number }): {
   // Add current date if missing
   const currentDate = new Date();
   const latestDate = new Date(sortedDates[sortedDates.length - 1]);
-  console.log(latestDate);
   if (
     currentDate.toISOString().slice(0, 10) !==
     latestDate.toISOString().slice(0, 10)
@@ -127,7 +126,6 @@ export function accumulateLineChartData(historicalData: any[]) {
 
   // Fill missing dates for the merged data
   const finalAggregatedAmounts = fillMissingDates(mergedData);
-  console.log(finalAggregatedAmounts);
 
   // Convert aggregated amounts to the required format
   const result = Object.keys(finalAggregatedAmounts).map((date) => ({

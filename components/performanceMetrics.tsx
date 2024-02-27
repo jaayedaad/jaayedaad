@@ -11,7 +11,7 @@ function PerformanceMetrics({
 }: {
   assets: Asset[];
   unrealisedProfitLoss: number | undefined;
-  realisedProfitLoss: number | undefined;
+  realisedProfitLoss: string | undefined;
 }) {
   const { visible } = useVisibility();
   return (
@@ -85,7 +85,7 @@ function PerformanceMetrics({
           <div
             className={cn(
               "flex items-center gap-1",
-              realisedProfitLoss && realisedProfitLoss < 0
+              realisedProfitLoss && +realisedProfitLoss < 0
                 ? "text-red-400"
                 : "text-green-400"
             )}
@@ -94,7 +94,7 @@ function PerformanceMetrics({
             <span className="text-2xl font-bold">
               {visible
                 ? realisedProfitLoss &&
-                  parseFloat(realisedProfitLoss.toFixed(2)).toLocaleString(
+                  parseFloat((+realisedProfitLoss).toFixed(2)).toLocaleString(
                     "en-IN"
                   )
                 : "* ".repeat(5)}
