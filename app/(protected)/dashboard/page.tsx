@@ -11,13 +11,25 @@ import {
   ProfitLoss,
   calculateRealisedProfitLoss,
 } from "@/helper/realisedValueCalculator";
-import { calculateUnrealisedProfitLoss } from "@/helper/unrealisedValueCalculator";
+import {
+  calculateUnrealisedProfitLoss,
+  getUnrealisedProfitLossArray,
+} from "@/helper/unrealisedValueCalculator";
 import { useEffect, useState } from "react";
 
 function Dashboard() {
   const [unrealisedProfitLoss, setUnrealisedProfitLoss] = useState<number>();
   const [realisedProfitLoss, setRealisedProfitLoss] = useState<string>();
-  const [timeInterval, setTimeInterval] = useState<Interval>("1d");
+  const [timeInterval, setTimeInterval] = useState<Interval>("All");
+  const [unrealisedProfitLossArray, setUnrealisedProfitLossArray] = useState<
+    {
+      type: string;
+      currentValue: string;
+      prevClose: string;
+      interval: string;
+      unrealisedProfitLoss: string;
+    }[]
+  >();
   const [realisedProfitLossArray, setRealisedProfitLossArray] =
     useState<ProfitLoss[]>();
   const { assets, historicalData } = useData();
@@ -26,23 +38,31 @@ function Dashboard() {
     async function calculateProfitLoss() {
       if (assets) {
         const conversionRate = await getConversionRate();
-        const unrealizedProfitsLosses = calculateUnrealisedProfitLoss(assets);
-        setUnrealisedProfitLoss(unrealizedProfitsLosses);
-        const realisedProfitLossArray = calculateRealisedProfitLoss(
+        if (historicalData) {
+          const unrealisedResults = getUnrealisedProfitLossArray(
+            historicalData,
+            assets,
+            conversionRate
+          );
+          setUnrealisedProfitLossArray(unrealisedResults);
+        }
+        const realisedProfitLossResults = calculateRealisedProfitLoss(
           assets,
           conversionRate
         );
-        setRealisedProfitLoss(
-          realisedProfitLossArray?.filter(
-            (profitLoss) => profitLoss.interval === "1d"
-          )[0].realisedProfitLoss
-        );
-        setRealisedProfitLossArray(realisedProfitLossArray);
+        if (timeInterval === "All") {
+          setRealisedProfitLoss(
+            realisedProfitLossResults.filter(
+              (profitLoss) => profitLoss.interval === "All"
+            )[0].realisedProfitLoss
+          );
+        }
+        setRealisedProfitLossArray(realisedProfitLossResults);
       }
     }
 
     calculateProfitLoss();
-  }, [assets]);
+  }, [assets, timeInterval, historicalData]);
 
   // Get today's date
   const today = new Date();
@@ -53,6 +73,20 @@ function Dashboard() {
 
   const onChange = (value: Interval) => {
     setTimeInterval(value);
+    if (value === "All" && assets) {
+      const unrealizedProfitsLosses = calculateUnrealisedProfitLoss(assets);
+      setUnrealisedProfitLoss(unrealizedProfitsLosses);
+    } else {
+      const filteredUnrealizedProfitsLosses = unrealisedProfitLossArray?.filter(
+        (res) => res.interval === value
+      );
+      const unrealisedProfitLoss = filteredUnrealizedProfitsLosses?.reduce(
+        (acc, entry) => acc + parseFloat(entry.unrealisedProfitLoss),
+        0
+      );
+
+      setUnrealisedProfitLoss(unrealisedProfitLoss);
+    }
     const profitLoss = realisedProfitLossArray?.filter(
       (profitLoss) => profitLoss.interval === value
     )[0].realisedProfitLoss;
@@ -107,7 +141,11 @@ function Dashboard() {
             </div>
             <div className="mt-6">
               {assets ? (
-                <AssetTable data={assets} />
+                <AssetTable
+                  data={assets}
+                  timelineInterval={timeInterval}
+                  intervalChangeData={unrealisedProfitLossArray}
+                />
               ) : (
                 <div className="h-64 flex items-center">
                   <LoadingSpinner />

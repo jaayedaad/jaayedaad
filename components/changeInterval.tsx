@@ -8,7 +8,7 @@ interface ChildProps {
 }
 
 function ChangeInterval({ onChange }: ChildProps) {
-  const [activeInterval, setActiveInterval] = useState<Interval>("1d");
+  const [activeInterval, setActiveInterval] = useState<Interval>("All");
   useEffect(() => {
     onChange(activeInterval);
   }, []);

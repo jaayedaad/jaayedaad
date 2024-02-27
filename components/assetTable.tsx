@@ -2,6 +2,7 @@
 import {
   Table,
   TableBody,
+  TableCaption,
   TableCell,
   TableHead,
   TableHeader,
@@ -16,13 +17,27 @@ import { useEffect, useState } from "react";
 import { useData } from "@/contexts/data-context";
 import ViewAsset from "./viewAsset";
 import { Button } from "./ui/button";
+import { Interval } from "./changeInterval";
 
 interface AssetTableProps {
   data: Asset[];
   view?: string; // "stocks" | "crypto" | "funds" | "property"
+  timelineInterval?: Interval;
+  intervalChangeData?: {
+    type: string;
+    currentValue: string;
+    prevClose: string;
+    interval: string;
+    unrealisedProfitLoss: string;
+  }[];
 }
 
-function AssetTable({ data, view }: AssetTableProps) {
+function AssetTable({
+  data,
+  view,
+  timelineInterval,
+  intervalChangeData,
+}: AssetTableProps) {
   const { visible } = useVisibility();
   const { historicalData } = useData();
   const [open, setOpen] = useState(false);
@@ -58,7 +73,6 @@ function AssetTable({ data, view }: AssetTableProps) {
     others: (asset) => asset.type === "Others",
   };
 
-  //
   useEffect(() => {
     if (view) {
       if (filters.hasOwnProperty(view)) {
@@ -75,6 +89,16 @@ function AssetTable({ data, view }: AssetTableProps) {
         currentValue: number;
         compareValue: number;
       }[] = [];
+
+      const intervalData = intervalChangeData?.filter(
+        (data) => data.interval === timelineInterval
+      );
+
+      const currentValueSumByType = intervalData?.reduce((acc: any, data) => {
+        const { type, currentValue } = data;
+        acc[type] = (acc[type] || 0) + parseFloat(currentValue);
+        return acc;
+      }, {});
 
       data.forEach((asset) => {
         if (asset.quantity !== "0") {
@@ -96,10 +120,20 @@ function AssetTable({ data, view }: AssetTableProps) {
           }
         }
       });
+      if (intervalData && intervalData.length > 0) {
+        groupedAssets = groupedAssets.map((asset) => ({
+          ...asset,
+          currentValue:
+            currentValueSumByType[asset.type] !== undefined
+              ? currentValueSumByType[asset.type]
+              : asset.currentValue,
+        }));
+      }
+
       setGroupedAsset(groupedAssets);
       setFilteredAsset(data);
     }
-  }, [data]);
+  }, [data, timelineInterval]);
 
   const handleSort = (sortBy: string) => {
     if (!view) {
@@ -164,6 +198,9 @@ function AssetTable({ data, view }: AssetTableProps) {
     filteredAsset.length > 0 && (
       <>
         <Table>
+          <TableCaption className="text-right">
+            *All values are in INR.
+          </TableCaption>
           <ScrollArea className="w-full h-[33vh]">
             <TableHeader className="bg-secondary sticky top-0">
               {view ? (

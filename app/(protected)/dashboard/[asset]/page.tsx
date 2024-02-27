@@ -42,7 +42,7 @@ function Page({ params }: { params: { asset: string } }) {
         }
       }
     }
-  }, [assets]);
+  }, [assets, param]);
 
   // Get today's date
   const today = new Date();
