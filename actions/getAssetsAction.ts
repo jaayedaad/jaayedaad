@@ -29,7 +29,7 @@ const calculateCurrentValue = (asset: Asset, conversionRate: string) => {
     );
   };
 
-  if (asset.type === "FD") {
+  if (asset.type === "Deposits") {
     asset.currentValue = calculateCurrentValueForFD();
     asset.currentPrice = (
       asset.currentValue * (asset.buyCurrency === "USD" ? +conversionRate : 1)
@@ -116,8 +116,8 @@ export async function getAssets() {
         asset.prevClose = asset.currentPrice;
       } else {
         asset.prevClose = (+quote.previous_close).toFixed(2);
-        calculateCurrentValue(asset, conversionRate);
       }
+      calculateCurrentValue(asset, conversionRate);
 
       return asset;
     });

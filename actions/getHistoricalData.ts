@@ -60,8 +60,7 @@ export async function getHistoricalData(assets: Asset[]) {
         }
       );
       const data = await newRes.json();
-
-      if (data) {
+      if (data.code !== 429) {
         // Calculate total value of asset and add it to the data object
         data.values.forEach((dayData: any) => {
           dayData.date = new Date(dayData.datetime).getTime() / 1000;
