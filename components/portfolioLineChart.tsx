@@ -1,6 +1,6 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Area, AreaChart, Tooltip, XAxis, YAxis } from "recharts";
-import ChangeInterval, { Interval } from "./changeInterval";
+import { Interval } from "./changeInterval";
 import { IndianRupee } from "lucide-react";
 import { accumulateLineChartData } from "@/helper/lineChartDataAccumulator";
 import { useVisibility } from "@/contexts/visibility-context";
@@ -11,7 +11,15 @@ interface FilterMap {
   [key: string]: () => { name: string; amt: number }[];
 }
 
-function PortfolioLineChart({ data, view }: { data: any[]; view: string }) {
+function PortfolioLineChart({
+  data,
+  view,
+  timeInterval,
+}: {
+  data: any[];
+  view: string;
+  timeInterval?: Interval;
+}) {
   const { visible } = useVisibility();
   const [dataToShow, setDataToShow] = useState<
     {
@@ -46,10 +54,10 @@ function PortfolioLineChart({ data, view }: { data: any[]; view: string }) {
     // Handle case where view is not recognized
   }
 
-  // Handle change in interval
-  function onChange(value: Interval) {
-    prepareLineChartData(value, accumulatedData, setDataToShow);
-  }
+  useEffect(() => {
+    timeInterval &&
+      prepareLineChartData(timeInterval, accumulatedData, setDataToShow);
+  }, [timeInterval]);
 
   return (
     <>
@@ -60,7 +68,6 @@ function PortfolioLineChart({ data, view }: { data: any[]; view: string }) {
             Insight into your portfolio&apos;s value dynamics
           </p>
         </div>
-        <ChangeInterval onChange={onChange} />
       </div>
       <div className="flex justify-center mt-2">
         {dataToShow && (
@@ -106,7 +113,10 @@ function PortfolioLineChart({ data, view }: { data: any[]; view: string }) {
               padding={{ left: 30 }}
             />
             <YAxis
-              domain={["dataMin - 10000", "dataMax + 10000"]}
+              domain={[
+                (dataMin: any) => Math.max(0, dataMin - dataMin / 10),
+                (dataMax: any) => dataMax + dataMax / 10,
+              ]}
               tickLine={false}
               axisLine={false}
               tickFormatter={(tick) =>

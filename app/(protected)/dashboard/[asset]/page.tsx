@@ -2,6 +2,7 @@
 import { Asset } from "@/actions/getAssetsAction";
 import AssetPieChart from "@/components/assetPieChart";
 import AssetTable from "@/components/assetTable";
+import ChangeInterval, { Interval } from "@/components/changeInterval";
 import ManualTransactionChart from "@/components/manualTransactionChart";
 import PortfolioLineChart from "@/components/portfolioLineChart";
 import LoadingSpinner from "@/components/ui/loading-spinner";
@@ -12,8 +13,8 @@ import React, { useEffect, useState } from "react";
 
 function Page({ params }: { params: { asset: string } }) {
   const { assets, historicalData } = useData();
-  const [defaultCategoryAssets, setDefaultCategoryAssets] = useState<Asset[]>();
   const [manualCategoryAssets, setManualCategoryAssets] = useState<Asset[]>();
+  const [timeInterval, setTimeInterval] = useState<Interval>("1d");
 
   const param = decodeURIComponent(params.asset);
   useEffect(() => {
@@ -38,8 +39,6 @@ function Page({ params }: { params: { asset: string } }) {
           ).length === 0
         ) {
           redirect("/dashboard");
-        } else {
-          setDefaultCategoryAssets(assets);
         }
       }
     }
@@ -52,18 +51,28 @@ function Page({ params }: { params: { asset: string } }) {
   const yesterday = new Date(today);
   yesterday.setDate(today.getDate() - 1);
 
+  const onChange = (value: Interval) => {
+    setTimeInterval(value);
+  };
+
   return (
     <div className="px-6 py-6 w-full h-screen flex flex-col">
-      <div className="h-[6vh]"></div>
+      <div className="inline-flex justify-end">
+        <ChangeInterval onChange={onChange} />
+      </div>
       <div className="min-h-[85vh] h-full mt-4">
         <div className="grid grid-rows-7 grid-cols-3 gap-4 h-full">
           <div className="row-span-3 col-span-1 border rounded-xl p-4">
             <AssetPieChart view={params.asset} />
           </div>
           <div className="row-span-3 col-span-2 border rounded-xl p-4">
-            {defaultCategoryAssets && historicalData ? (
+            {historicalData ? (
               defaultCategories.includes(param) ? (
-                <PortfolioLineChart data={historicalData} view={param} />
+                <PortfolioLineChart
+                  data={historicalData}
+                  view={param}
+                  timeInterval={timeInterval}
+                />
               ) : (
                 manualCategoryAssets && (
                   <ManualTransactionChart
@@ -98,8 +107,8 @@ function Page({ params }: { params: { asset: string } }) {
               </div>
             </div>
             <div className="mt-6">
-              {defaultCategoryAssets ? (
-                <AssetTable data={defaultCategoryAssets} view={param} />
+              {assets ? (
+                <AssetTable data={assets} view={param} />
               ) : (
                 <div className="h-56 flex items-center">
                   <LoadingSpinner />
