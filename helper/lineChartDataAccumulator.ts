@@ -30,20 +30,22 @@ function fillMissingDates(data: { [date: string]: number }): {
     }
   }
 
-  // Add current date if missing
-  const currentDate = new Date();
-  const latestDate = new Date(sortedDates[sortedDates.length - 1]);
-  if (
-    currentDate.toISOString().slice(0, 10) !==
-    latestDate.toISOString().slice(0, 10)
-  ) {
-    const formattedCurrentDate = currentDate.toLocaleDateString("en-US", {
-      day: "numeric",
-      month: "short",
-      year: "numeric",
-    });
-    filledData[formattedCurrentDate] =
-      data[sortedDates[sortedDates.length - 1]];
+  if (sortedDates.length) {
+    // Add current date if missing
+    const currentDate = new Date();
+    const latestDate = new Date(sortedDates[sortedDates.length - 1]);
+    if (
+      currentDate.toISOString().slice(0, 10) !==
+      latestDate.toISOString().slice(0, 10)
+    ) {
+      const formattedCurrentDate = currentDate.toLocaleDateString("en-US", {
+        day: "numeric",
+        month: "short",
+        year: "numeric",
+      });
+      filledData[formattedCurrentDate] =
+        data[sortedDates[sortedDates.length - 1]];
+    }
   }
 
   // Convert ISO date format back to original format

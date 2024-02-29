@@ -58,7 +58,7 @@ function ManualTransactionForm({ modalOpen }: ManualTransactionFormPropsType) {
   });
 
   const [open, setOpen] = useState(false);
-  const [value, setValue] = useState(manualTransaction.type);
+  const [value, setValue] = useState("property");
   const [commandSearch, setCommandSearch] = useState("");
   const [categories, setCategories] = useState(builtInCategories);
 
@@ -168,8 +168,9 @@ function ManualTransactionForm({ modalOpen }: ManualTransactionFormPropsType) {
                   className="w-full justify-between"
                 >
                   {value &&
-                    categories.find((category) => category.value === value)
-                      ?.label}
+                    categories.find(
+                      (category) => category.value.toLowerCase() === value
+                    )?.label}
                   <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                 </Button>
               </PopoverTrigger>
@@ -205,7 +206,7 @@ function ManualTransactionForm({ modalOpen }: ManualTransactionFormPropsType) {
                         key={category.value}
                         value={category.value}
                         className={`${
-                          value !== category.value
+                          value !== category.value.toLowerCase()
                             ? "text-muted-foreground"
                             : "text-white bg-muted"
                         }`}
@@ -221,7 +222,7 @@ function ManualTransactionForm({ modalOpen }: ManualTransactionFormPropsType) {
                         <Check
                           className={cn(
                             "mr-2 h-4 w-4",
-                            value === category.value
+                            value === category.value.toLowerCase()
                               ? "opacity-100"
                               : "opacity-0"
                           )}

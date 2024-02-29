@@ -24,6 +24,8 @@ function Dashboard() {
   const [unrealisedProfitLossArray, setUnrealisedProfitLossArray] = useState<
     {
       type: string;
+      symbol: string;
+      compareValue: string;
       currentValue: string;
       prevClose: string;
       interval: string;
@@ -74,8 +76,8 @@ function Dashboard() {
   const onChange = (value: Interval) => {
     setTimeInterval(value);
     if (value === "All" && assets) {
-      const unrealizedProfitsLosses = calculateUnrealisedProfitLoss(assets);
-      setUnrealisedProfitLoss(unrealizedProfitsLosses);
+      const unrealisedProfitsLosses = calculateUnrealisedProfitLoss(assets);
+      setUnrealisedProfitLoss(unrealisedProfitsLosses);
     } else {
       const filteredUnrealizedProfitsLosses = unrealisedProfitLossArray?.filter(
         (res) => res.interval === value

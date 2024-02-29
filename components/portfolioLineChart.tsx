@@ -114,8 +114,8 @@ function PortfolioLineChart({
             />
             <YAxis
               domain={[
-                (dataMin: any) => Math.max(0, dataMin - dataMin / 10),
-                (dataMax: any) => dataMax + dataMax / 10,
+                (dataMin: any) => Math.max(0, dataMin - dataMin / 20),
+                (dataMax: any) => dataMax + dataMax / 20,
               ]}
               tickLine={false}
               axisLine={false}
