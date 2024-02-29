@@ -14,7 +14,9 @@ export async function getHistoricalData(assets: Asset[]) {
       );
 
       // Get the date from the first transaction
-      const firstTransactionDate = new Date(transactions[0].date);
+      const firstTransactionDate = new Date(
+        new Date(sortedTransactions[0].date).toDateString()
+      );
 
       // Format the start date
       const formattedStartDate = `${firstTransactionDate.getFullYear()}-${(
