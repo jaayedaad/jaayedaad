@@ -44,6 +44,8 @@ export function getUnrealisedProfitLossArray(
 ) {
   const results: {
     type: string;
+    symbol: string;
+    compareValue: string;
     currentValue: string;
     prevClose: string;
     interval: string;
@@ -62,12 +64,18 @@ export function getUnrealisedProfitLossArray(
     const pastDate = new Date(currentDate);
     pastDate.setDate(currentDate.getDate() - days);
 
-    assets.forEach((asset, index) => {
+    assets.forEach((asset) => {
       const transactions = asset.transactions.filter(
         (transaction) => new Date(transaction.date) <= pastDate
       );
 
-      const quantityTillInterval = calculateTotalQuantity(transactions);
+      let quantityTillInterval: number = 0;
+
+      if (transactions.length === 0 && asset.symbol) {
+        quantityTillInterval = calculateTotalQuantity(asset.transactions);
+      } else {
+        quantityTillInterval = calculateTotalQuantity(transactions);
+      }
 
       if (asset.symbol) {
         const assetHistory = historicalData.filter(
@@ -77,21 +85,39 @@ export function getUnrealisedProfitLossArray(
         const populatedHistory = populateMissingDates(assetHistory[0]);
         const valueOfInterval = populatedHistory.values.filter((value) => {
           return (
-            new Date(pastDate).getTime() / 1000 < new Date(value.date).getTime()
+            new Date(pastDate.toDateString()).getTime() / 1000 <
+            new Date(value.date).getTime()
           );
         });
 
         const result = {
           type: asset.type,
+          symbol: asset.symbol,
+          compareValue: (
+            quantityTillInterval *
+            +asset.buyPrice *
+            (asset.buyCurrency === "USD" ? +conversionRate : 1)
+          ).toFixed(2),
           currentValue: (
-            parseFloat(valueOfInterval[0].close) *
+            parseFloat(
+              transactions.length > 0
+                ? valueOfInterval[0].close
+                : valueOfInterval[valueOfInterval.length - 2].close
+            ) *
             quantityTillInterval *
             (asset.buyCurrency === "USD" ? +conversionRate : 1)
           ).toFixed(2),
-          prevClose: valueOfInterval[0].close,
+          prevClose:
+            transactions.length > 0
+              ? valueOfInterval[0].close
+              : valueOfInterval[valueOfInterval.length - 2].close,
           interval: label,
           unrealisedProfitLoss: (
-            (parseFloat(valueOfInterval[0].close) -
+            (parseFloat(
+              transactions.length > 0
+                ? valueOfInterval[0].close
+                : valueOfInterval[valueOfInterval.length - 2].close
+            ) -
               parseFloat(asset.buyPrice)) *
             quantityTillInterval *
             (asset.buyCurrency === "USD" ? +conversionRate : 1)

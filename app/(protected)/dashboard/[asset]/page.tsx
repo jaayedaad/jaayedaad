@@ -1,5 +1,6 @@
 "use client";
 import { Asset } from "@/actions/getAssetsAction";
+import { getConversionRate } from "@/actions/getConversionRateAction";
 import AssetPieChart from "@/components/assetPieChart";
 import AssetTable from "@/components/assetTable";
 import ChangeInterval, { Interval } from "@/components/changeInterval";
@@ -8,41 +9,74 @@ import PortfolioLineChart from "@/components/portfolioLineChart";
 import LoadingSpinner from "@/components/ui/loading-spinner";
 import { defaultCategories } from "@/constants/category";
 import { useData } from "@/contexts/data-context";
+import { getUnrealisedProfitLossArray } from "@/helper/unrealisedValueCalculator";
 import { redirect } from "next/navigation";
 import React, { useEffect, useState } from "react";
 
 function Page({ params }: { params: { asset: string } }) {
+  const param = decodeURIComponent(params.asset);
   const { assets, historicalData } = useData();
+  const [assetsToView, setAssetsToView] = useState<Asset[] | undefined>(
+    assets?.filter((asset) => asset.type.toLowerCase() === param.toLowerCase())
+  );
   const [manualCategoryAssets, setManualCategoryAssets] = useState<Asset[]>();
   const [timeInterval, setTimeInterval] = useState<Interval>("1d");
+  const [unrealisedProfitLossArray, setUnrealisedProfitLossArray] = useState<
+    {
+      type: string;
+      symbol: string;
+      compareValue: string;
+      currentValue: string;
+      prevClose: string;
+      interval: string;
+      unrealisedProfitLoss: string;
+    }[]
+  >();
 
-  const param = decodeURIComponent(params.asset);
+  const filteredAssets = assets?.filter(
+    (asset) => asset.type.toLowerCase() === param.toLowerCase()
+  );
+
   useEffect(() => {
-    if (assets) {
-      if (!defaultCategories.includes(param)) {
-        const categoryExist = assets.some(
-          (asset) => asset.type.toLowerCase() === param.toLowerCase()
-        );
-        if (categoryExist) {
-          setManualCategoryAssets(
-            assets.filter(
-              (asset) => asset.type.toLowerCase() === param.toLowerCase()
-            )
-          );
-        } else {
-          redirect("/dashboard");
-        }
-      } else {
-        if (
-          assets.filter(
+    async function getPageData() {
+      if (filteredAssets) {
+        if (!defaultCategories.includes(param)) {
+          const categoryExist = filteredAssets.some(
             (asset) => asset.type.toLowerCase() === param.toLowerCase()
-          ).length === 0
-        ) {
-          redirect("/dashboard");
+          );
+          if (categoryExist) {
+            setManualCategoryAssets(
+              filteredAssets.filter(
+                (asset) => asset.type.toLowerCase() === param.toLowerCase()
+              )
+            );
+          } else {
+            redirect("/dashboard");
+          }
+        } else {
+          if (
+            !filteredAssets.filter(
+              (asset) => asset.type.toLowerCase() === param.toLowerCase()
+            ).length
+          ) {
+            redirect("/dashboard");
+          } else {
+            const conversionRate = await getConversionRate();
+            if (historicalData) {
+              const unrealisedResults = getUnrealisedProfitLossArray(
+                historicalData,
+                filteredAssets,
+                conversionRate
+              );
+              setUnrealisedProfitLossArray(unrealisedResults);
+            }
+          }
         }
       }
     }
-  }, [assets, param]);
+
+    getPageData();
+  }, [filteredAssets, param]);
 
   // Get today's date
   const today = new Date();
@@ -53,6 +87,25 @@ function Page({ params }: { params: { asset: string } }) {
 
   const onChange = (value: Interval) => {
     setTimeInterval(value);
+    if (value !== "All" && filteredAssets) {
+      const updatedAssetsToView = filteredAssets.map((asset) => {
+        const matchingIntervalData = unrealisedProfitLossArray?.find(
+          (data) => data.symbol === asset.symbol && data.interval === value
+        );
+        if (matchingIntervalData) {
+          return {
+            ...asset,
+            compareValue: +matchingIntervalData.compareValue,
+            currentValue: +matchingIntervalData.currentValue,
+            prevClose: matchingIntervalData.prevClose,
+          };
+        }
+        return asset;
+      });
+      setAssetsToView(updatedAssetsToView);
+    } else {
+      setAssetsToView(filteredAssets);
+    }
   };
 
   return (
@@ -107,8 +160,8 @@ function Page({ params }: { params: { asset: string } }) {
               </div>
             </div>
             <div className="mt-6">
-              {assets ? (
-                <AssetTable data={assets} view={param} />
+              {assetsToView ? (
+                <AssetTable data={assetsToView} view={param} />
               ) : (
                 <div className="h-56 flex items-center">
                   <LoadingSpinner />

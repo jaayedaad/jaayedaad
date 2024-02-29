@@ -25,6 +25,8 @@ interface AssetTableProps {
   timelineInterval?: Interval;
   intervalChangeData?: {
     type: string;
+    symbol: string;
+    compareValue: string;
     currentValue: string;
     prevClose: string;
     interval: string;
@@ -76,11 +78,24 @@ function AssetTable({
   useEffect(() => {
     if (view) {
       if (filters.hasOwnProperty(view)) {
+        const filteredAssets = data.filter(filters[view]);
+        filteredAssets.forEach((asset) => {
+          const matchingIntervalData = intervalChangeData?.filter(
+            (data) => data.symbol === asset.symbol
+          );
+          if (matchingIntervalData) {
+            asset.prevClose = matchingIntervalData[0].prevClose;
+            asset.compareValue = +matchingIntervalData[0].compareValue;
+            asset.currentValue = +matchingIntervalData[0].currentValue;
+          }
+        });
         setFilteredAsset(data.filter(filters[view]));
       } else {
         const param = decodeURIComponent(view);
         setFilteredAsset(
-          data?.filter((asset) => asset.type === param.toUpperCase())
+          data?.filter(
+            (asset) => asset.type.toUpperCase() === param.toUpperCase()
+          )
         );
       }
     } else {
@@ -97,6 +112,12 @@ function AssetTable({
       const currentValueSumByType = intervalData?.reduce((acc: any, data) => {
         const { type, currentValue } = data;
         acc[type] = (acc[type] || 0) + parseFloat(currentValue);
+        return acc;
+      }, {});
+
+      const compareValueSumByType = intervalData?.reduce((acc: any, data) => {
+        const { type, compareValue } = data;
+        acc[type] = (acc[type] || 0) + parseFloat(compareValue);
         return acc;
       }, {});
 
@@ -127,6 +148,10 @@ function AssetTable({
             currentValueSumByType[asset.type] !== undefined
               ? currentValueSumByType[asset.type]
               : asset.currentValue,
+          compareValue:
+            compareValueSumByType[asset.type] !== undefined
+              ? compareValueSumByType[asset.type]
+              : asset.compareValue,
         }));
       }
 
@@ -224,7 +249,7 @@ function AssetTable({
                     Avg. Buying Price
                   </TableHead>
                   <TableHead className="text-right w-[128px]">
-                    Buying Currency
+                    Exchange
                   </TableHead>
                   <TableHead className="text-right w-[136px]">
                     {filteredAsset[0].symbol !== null
@@ -338,7 +363,7 @@ function AssetTable({
                             ).toLocaleString("en-IN")}
                           </TableCell>
                           <TableCell className="text-right">
-                            {asset.buyCurrency}
+                            {asset.exchange}
                           </TableCell>
                           <TableCell className="text-right">
                             {parseFloat(asset.prevClose).toLocaleString(
