@@ -107,7 +107,7 @@ function Sidebar() {
           >
             <Link href="/dashboard/mutual fund">
               <SquareStack className="mr-2" size={20} />
-              Funds
+              Mutual Funds
             </Link>
           </Button>
           {manualCategoryList.map((category) => {
@@ -166,7 +166,7 @@ function Sidebar() {
           <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
               <Button className="justify-start w-fit pr-8">
-                <Plus className="mr-2" size={20} /> Add Asset
+                <Plus className="mr-2" size={20} /> Add transaction
               </Button>
             </DialogTrigger>
             <DialogContent className="max-w-[50vw] max-h-[80vh]">
