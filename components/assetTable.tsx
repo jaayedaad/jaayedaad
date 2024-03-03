@@ -2,7 +2,6 @@
 import {
   Table,
   TableBody,
-  TableCaption,
   TableCell,
   TableHead,
   TableHeader,
@@ -18,6 +17,10 @@ import { useData } from "@/contexts/data-context";
 import ViewAsset from "./viewAsset";
 import { Button } from "./ui/button";
 import { Interval } from "./changeInterval";
+import AssetTableCaption from "./assetTableCaption";
+import { useRouter } from "next/navigation";
+import { getConversionRate } from "@/actions/getConversionRateAction";
+import { useCurrency } from "@/contexts/currency-context";
 
 interface AssetTableProps {
   data: Asset[];
@@ -42,18 +45,10 @@ function AssetTable({
 }: AssetTableProps) {
   const { visible } = useVisibility();
   const { historicalData } = useData();
+  const { defaultCurrency } = useCurrency();
+  const router = useRouter();
   const [open, setOpen] = useState(false);
-  const [assetToView, setAssetToView] = useState({
-    symbol: "",
-    exchange: "",
-    name: "",
-    quantity: "",
-    prevClose: "",
-    currentValue: 0,
-    type: "",
-    buyPrice: "",
-    buyCurrency: "",
-  });
+  const [assetToView, setAssetToView] = useState<Asset>();
   const [groupedAsset, setGroupedAsset] = useState<
     {
       type: string;
@@ -64,6 +59,9 @@ function AssetTable({
   const [manualAsset, setManualAsset] = useState<Asset>();
   const [filteredAsset, setFilteredAsset] = useState<Asset[]>();
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
+  const [conversionRates, setConversionRates] = useState<{
+    [currency: string]: number;
+  }>();
 
   const filters: Record<string, (asset: Asset) => boolean> = {
     "common stock": (asset) => asset.type === "Common Stock",
@@ -76,89 +74,97 @@ function AssetTable({
   };
 
   useEffect(() => {
-    if (view) {
-      if (filters.hasOwnProperty(view)) {
-        const filteredAssets = data.filter(filters[view]);
-        filteredAssets.forEach((asset) => {
-          const matchingIntervalData = intervalChangeData?.filter(
-            (data) => data.symbol === asset.symbol
+    async function fetchData() {
+      const conversionRate = await getConversionRate();
+      setConversionRates(conversionRate);
+      if (view) {
+        if (filters.hasOwnProperty(view)) {
+          const filteredAssets = data.filter(filters[view]);
+          filteredAssets.forEach((asset) => {
+            const matchingIntervalData = intervalChangeData?.filter(
+              (data) => data.symbol === asset.symbol
+            );
+            if (matchingIntervalData) {
+              asset.prevClose = matchingIntervalData[0].prevClose;
+              asset.compareValue = +matchingIntervalData[0].compareValue;
+              asset.currentValue = +matchingIntervalData[0].currentValue;
+            }
+          });
+          setFilteredAsset(data.filter(filters[view]));
+        } else {
+          const param = decodeURIComponent(view);
+          setFilteredAsset(
+            data?.filter(
+              (asset) => asset.type.toUpperCase() === param.toUpperCase()
+            )
           );
-          if (matchingIntervalData) {
-            asset.prevClose = matchingIntervalData[0].prevClose;
-            asset.compareValue = +matchingIntervalData[0].compareValue;
-            asset.currentValue = +matchingIntervalData[0].currentValue;
+        }
+      } else {
+        let groupedAssets: {
+          type: string;
+          currentValue: number;
+          compareValue: number;
+        }[] = [];
+
+        const intervalData = intervalChangeData?.filter(
+          (data) => data.interval === timelineInterval
+        );
+
+        const currentValueSumByType = intervalData?.reduce((acc: any, data) => {
+          const { type, currentValue } = data;
+          acc[type] = (acc[type] || 0) + parseFloat(currentValue);
+          return acc;
+        }, {});
+
+        const compareValueSumByType = intervalData?.reduce((acc: any, data) => {
+          const { type, compareValue } = data;
+          acc[type] = (acc[type] || 0) + parseFloat(compareValue);
+          return acc;
+        }, {});
+
+        data.forEach((asset) => {
+          if (asset.quantity !== "0") {
+            const assetCurrency = asset.buyCurrency.toLowerCase();
+            const currencyConversion = conversionRate[assetCurrency];
+            const multiplier = 1 / currencyConversion;
+            const existingType = groupedAssets.find(
+              (data) => data.type === asset.type
+            );
+
+            if (existingType) {
+              existingType.currentValue += asset.currentValue * multiplier;
+              existingType.compareValue += asset.compareValue * multiplier;
+            } else {
+              groupedAssets.push({
+                type: asset.type,
+                currentValue: asset.symbol
+                  ? asset.currentValue * multiplier
+                  : asset.currentValue * multiplier,
+                compareValue: asset.compareValue * multiplier,
+              });
+            }
           }
         });
-        setFilteredAsset(data.filter(filters[view]));
-      } else {
-        const param = decodeURIComponent(view);
-        setFilteredAsset(
-          data?.filter(
-            (asset) => asset.type.toUpperCase() === param.toUpperCase()
-          )
-        );
-      }
-    } else {
-      let groupedAssets: {
-        type: string;
-        currentValue: number;
-        compareValue: number;
-      }[] = [];
-
-      const intervalData = intervalChangeData?.filter(
-        (data) => data.interval === timelineInterval
-      );
-
-      const currentValueSumByType = intervalData?.reduce((acc: any, data) => {
-        const { type, currentValue } = data;
-        acc[type] = (acc[type] || 0) + parseFloat(currentValue);
-        return acc;
-      }, {});
-
-      const compareValueSumByType = intervalData?.reduce((acc: any, data) => {
-        const { type, compareValue } = data;
-        acc[type] = (acc[type] || 0) + parseFloat(compareValue);
-        return acc;
-      }, {});
-
-      data.forEach((asset) => {
-        if (asset.quantity !== "0") {
-          const existingType = groupedAssets.find(
-            (data) => data.type === asset.type
-          );
-
-          if (existingType) {
-            existingType.currentValue += asset.currentValue;
-            existingType.compareValue += asset.compareValue;
-          } else {
-            groupedAssets.push({
-              type: asset.type,
-              currentValue: asset.symbol
-                ? asset.currentValue
+        if (intervalData && intervalData.length > 0) {
+          groupedAssets = groupedAssets.map((asset) => ({
+            ...asset,
+            currentValue:
+              currentValueSumByType[asset.type] !== undefined
+                ? currentValueSumByType[asset.type]
                 : asset.currentValue,
-              compareValue: asset.compareValue,
-            });
-          }
+            compareValue:
+              compareValueSumByType[asset.type] !== undefined
+                ? compareValueSumByType[asset.type]
+                : asset.compareValue,
+          }));
         }
-      });
-      if (intervalData && intervalData.length > 0) {
-        groupedAssets = groupedAssets.map((asset) => ({
-          ...asset,
-          currentValue:
-            currentValueSumByType[asset.type] !== undefined
-              ? currentValueSumByType[asset.type]
-              : asset.currentValue,
-          compareValue:
-            compareValueSumByType[asset.type] !== undefined
-              ? compareValueSumByType[asset.type]
-              : asset.compareValue,
-        }));
-      }
 
-      setGroupedAsset(groupedAssets);
-      setFilteredAsset(data);
+        setGroupedAsset(groupedAssets);
+        setFilteredAsset(data);
+      }
     }
-  }, [data, timelineInterval]);
+    fetchData();
+  }, [data, timelineInterval, defaultCurrency]);
 
   const handleSort = (sortBy: string) => {
     if (!view) {
@@ -218,14 +224,16 @@ function AssetTable({
     }
   };
 
+  const handleGroupRowClick = (assetType: string) => {
+    router.push(`/dashboard/${assetType.toLowerCase()}`);
+  };
+
   return (
     filteredAsset &&
     filteredAsset.length > 0 && (
       <>
         <Table>
-          <TableCaption className="text-right">
-            *All values are in INR.
-          </TableCaption>
+          <AssetTableCaption />
           <ScrollArea className="w-full h-[33vh]">
             <TableHeader className="bg-secondary sticky top-0">
               {view ? (
@@ -334,18 +342,7 @@ function AssetTable({
                           onClick={() => {
                             setOpen(true);
                             asset.symbol !== null
-                              ? setAssetToView((prev) => ({
-                                  ...prev,
-                                  symbol: asset.symbol,
-                                  exchange: asset.exchange,
-                                  name: asset.name,
-                                  quantity: asset.quantity,
-                                  prevClose: asset.prevClose,
-                                  currentValue: asset.currentValue,
-                                  type: asset.type,
-                                  buyPrice: asset.buyPrice,
-                                  buyCurrency: asset.buyCurrency,
-                                }))
+                              ? setAssetToView(asset)
                               : setManualAsset(asset);
                           }}
                         >
@@ -358,22 +355,36 @@ function AssetTable({
                               : "* ".repeat(5)}
                           </TableCell>
                           <TableCell className="text-right">
-                            {parseFloat(
-                              (+asset.buyPrice).toFixed(2)
-                            ).toLocaleString("en-IN")}
+                            {conversionRates &&
+                              parseFloat(
+                                (
+                                  +asset.buyPrice /
+                                  conversionRates[
+                                    asset.buyCurrency.toLowerCase()
+                                  ]
+                                ).toFixed(2)
+                              ).toLocaleString("en-IN")}
                           </TableCell>
                           <TableCell className="text-right">
                             {asset.exchange}
                           </TableCell>
                           <TableCell className="text-right">
-                            {parseFloat(asset.prevClose).toLocaleString(
-                              "en-IN"
-                            )}
+                            {conversionRates &&
+                              (
+                                parseFloat(asset.prevClose) /
+                                conversionRates[asset.buyCurrency.toLowerCase()]
+                              ).toLocaleString("en-IN")}
                           </TableCell>
                           <TableCell className="text-right px-8">
                             <div className="flex flex-col">
                               {visible
-                                ? asset.compareValue.toLocaleString("en-IN")
+                                ? conversionRates &&
+                                  (
+                                    asset.compareValue /
+                                    conversionRates[
+                                      asset.buyCurrency.toLowerCase()
+                                    ]
+                                  ).toLocaleString("en-IN")
                                 : "* ".repeat(5)}
                             </div>
                           </TableCell>
@@ -388,7 +399,13 @@ function AssetTable({
                           >
                             <div className="flex flex-col">
                               {visible
-                                ? asset.currentValue.toLocaleString("en-IN")
+                                ? conversionRates &&
+                                  (
+                                    asset.currentValue /
+                                    conversionRates[
+                                      asset.buyCurrency.toLowerCase()
+                                    ]
+                                  ).toLocaleString("en-IN")
                                 : "* ".repeat(5)}
                               {+asset.prevClose > +asset.buyPrice ? (
                                 <span className="flex items-center justify-end">
@@ -424,9 +441,14 @@ function AssetTable({
                 : groupedAsset &&
                   groupedAsset.map((asset, index) => {
                     return (
-                      <TableRow key={index}>
+                      <TableRow
+                        onClick={() => handleGroupRowClick(asset.type)}
+                        key={index}
+                      >
                         <TableCell>
-                          {asset.type === "EQUITY" ? "STOCKS" : asset.type}
+                          {asset.type === "Common Stock"
+                            ? "Stocks"
+                            : asset.type}
                         </TableCell>
                         <TableCell className="text-right px-8">
                           {visible

@@ -6,6 +6,7 @@ import ChangeInterval, { Interval } from "@/components/changeInterval";
 import PerformanceMetrics from "@/components/performanceMetrics";
 import PortfolioLineChart from "@/components/portfolioLineChart";
 import LoadingSpinner from "@/components/ui/loading-spinner";
+import { useCurrency } from "@/contexts/currency-context";
 import { useData } from "@/contexts/data-context";
 import {
   ProfitLoss,
@@ -18,6 +19,7 @@ import {
 import { useEffect, useState } from "react";
 
 function Dashboard() {
+  const { defaultCurrency, conversionRates } = useCurrency();
   const [unrealisedProfitLoss, setUnrealisedProfitLoss] = useState<number>();
   const [realisedProfitLoss, setRealisedProfitLoss] = useState<string>();
   const [timeInterval, setTimeInterval] = useState<Interval>("All");
@@ -38,19 +40,18 @@ function Dashboard() {
 
   useEffect(() => {
     async function calculateProfitLoss() {
-      if (assets) {
-        const conversionRate = await getConversionRate();
+      if (assets && conversionRates) {
         if (historicalData) {
           const unrealisedResults = getUnrealisedProfitLossArray(
             historicalData,
             assets,
-            conversionRate
+            conversionRates
           );
           setUnrealisedProfitLossArray(unrealisedResults);
         }
         const realisedProfitLossResults = calculateRealisedProfitLoss(
           assets,
-          conversionRate
+          conversionRates
         );
         if (timeInterval === "All") {
           setRealisedProfitLoss(
@@ -64,7 +65,7 @@ function Dashboard() {
     }
 
     calculateProfitLoss();
-  }, [assets, timeInterval, historicalData]);
+  }, [assets, timeInterval, historicalData, defaultCurrency, conversionRates]);
 
   // Get today's date
   const today = new Date();
@@ -75,8 +76,11 @@ function Dashboard() {
 
   const onChange = (value: Interval) => {
     setTimeInterval(value);
-    if (value === "All" && assets) {
-      const unrealisedProfitsLosses = calculateUnrealisedProfitLoss(assets);
+    if (value === "All" && assets && conversionRates) {
+      const unrealisedProfitsLosses = calculateUnrealisedProfitLoss(
+        assets,
+        conversionRates
+      );
       setUnrealisedProfitLoss(unrealisedProfitsLosses);
     } else {
       const filteredUnrealizedProfitsLosses = unrealisedProfitLossArray?.filter(
@@ -109,11 +113,23 @@ function Dashboard() {
           {/* Portfolio line chart */}
           <div className="col-span-2 row-span-3 bg-card border rounded-xl p-4">
             {historicalData ? (
-              <PortfolioLineChart
-                data={historicalData}
-                view="dashboard"
-                timeInterval={timeInterval}
-              />
+              historicalData.length ? (
+                <PortfolioLineChart
+                  data={historicalData}
+                  view="dashboard"
+                  timeInterval={timeInterval}
+                />
+              ) : (
+                <div>
+                  <h3 className="font-semibold">Portfolio Performance</h3>
+                  <p className="text-muted-foreground text-sm">
+                    Insight into your portfolio&apos;s value dynamics
+                  </p>
+                  <div className="h-40 flex items-center justify-center">
+                    You don&apos;t own any assets yet
+                  </div>
+                </div>
+              )
             ) : (
               <div>
                 <h3 className="font-semibold">Portfolio Performance</h3>

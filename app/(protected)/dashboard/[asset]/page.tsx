@@ -16,9 +16,18 @@ import React, { useEffect, useState } from "react";
 function Page({ params }: { params: { asset: string } }) {
   const param = decodeURIComponent(params.asset);
   const { assets, historicalData } = useData();
-  const [assetsToView, setAssetsToView] = useState<Asset[] | undefined>(
-    assets?.filter((asset) => asset.type.toLowerCase() === param.toLowerCase())
+
+  const filteredAssets = assets?.filter(
+    (asset) => asset.type.toLowerCase() === param.toLowerCase()
   );
+
+  if (!filteredAssets?.length) {
+    redirect("/dashboard");
+  }
+  const [assetsToView, setAssetsToView] = useState<Asset[] | undefined>(
+    filteredAssets
+  );
+
   const [manualCategoryAssets, setManualCategoryAssets] = useState<Asset[]>();
   const [timeInterval, setTimeInterval] = useState<Interval>("1d");
   const [unrealisedProfitLossArray, setUnrealisedProfitLossArray] = useState<
@@ -32,10 +41,6 @@ function Page({ params }: { params: { asset: string } }) {
       unrealisedProfitLoss: string;
     }[]
   >();
-
-  const filteredAssets = assets?.filter(
-    (asset) => asset.type.toLowerCase() === param.toLowerCase()
-  );
 
   useEffect(() => {
     async function getPageData() {
@@ -62,6 +67,7 @@ function Page({ params }: { params: { asset: string } }) {
             redirect("/dashboard");
           } else {
             const conversionRate = await getConversionRate();
+
             if (historicalData) {
               const unrealisedResults = getUnrealisedProfitLossArray(
                 historicalData,

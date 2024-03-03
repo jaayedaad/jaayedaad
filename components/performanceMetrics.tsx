@@ -1,4 +1,5 @@
 import { Asset } from "@/actions/getAssetsAction";
+import { useCurrency } from "@/contexts/currency-context";
 import { useVisibility } from "@/contexts/visibility-context";
 import { cn } from "@/lib/utils";
 import { ArrowDown, ArrowUp, IndianRupee } from "lucide-react";
@@ -14,6 +15,8 @@ function PerformanceMetrics({
   realisedProfitLoss: string | undefined;
 }) {
   const { visible } = useVisibility();
+  const { conversionRates } = useCurrency();
+
   return (
     <div className="mt-4">
       <div className="flex justify-between items-center mb-6">
@@ -23,18 +26,23 @@ function PerformanceMetrics({
             <IndianRupee className="h-6 w-6" strokeWidth={3} />
             <span className="text-2xl font-bold">
               {visible
-                ? parseFloat(
+                ? conversionRates &&
+                  parseFloat(
                     assets
-                      ?.reduce(
-                        (acc, asset) =>
+                      ?.reduce((acc, asset) => {
+                        const assetCurrency = asset.buyCurrency.toLowerCase();
+                        const currencyConversion =
+                          conversionRates[assetCurrency];
+                        const multiplier = 1 / currencyConversion;
+                        return (
                           acc +
                           (asset.quantity > "0"
                             ? asset.symbol
-                              ? asset.currentValue
-                              : +asset.currentPrice || 0
-                            : 0),
-                        0
-                      )
+                              ? asset.currentValue * multiplier
+                              : +asset.currentPrice * multiplier || 0
+                            : 0)
+                        );
+                      }, 0)
                       .toFixed(2)
                   ).toLocaleString("en-IN")
                 : "* ".repeat(5)}
@@ -58,13 +66,17 @@ function PerformanceMetrics({
             <div className="text-2xl font-bold">
               {unrealisedProfitLoss && (
                 <div className="flex items-center">
-                  {(
-                    (unrealisedProfitLoss * 100) /
-                    +assets.reduce(
-                      (acc, asset) => acc + (asset.compareValue || 0),
-                      0
-                    )
-                  ).toFixed(2) + "%"}
+                  {conversionRates &&
+                    (
+                      (unrealisedProfitLoss * 100) /
+                      +assets.reduce((acc, asset) => {
+                        const assetCurrency = asset.buyCurrency.toLowerCase();
+                        const currencyConversion =
+                          conversionRates[assetCurrency];
+                        const multiplier = 1 / currencyConversion;
+                        return acc + (asset.compareValue * multiplier || 0);
+                      }, 0)
+                    ).toFixed(2) + "%"}
                   {unrealisedProfitLoss > 0 ? <ArrowUp /> : <ArrowDown />}
                 </div>
               )}

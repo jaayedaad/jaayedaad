@@ -2,13 +2,10 @@
 import { cookies } from "next/headers";
 import { getConversionRate } from "./getConversionRateAction";
 
-const calculateCurrentValue = (asset: Asset, conversionRate: string) => {
+const calculateCurrentValue = (asset: Asset) => {
   const calculateBaseValue = () => {
-    if (asset.buyCurrency === "USD") {
-      return +asset.buyPrice * +asset.quantity * +conversionRate;
-    } else {
-      return +asset.buyPrice * +asset.quantity;
-    }
+    const currentValue = +asset.buyPrice * +asset.quantity;
+    return currentValue;
   };
 
   const calculateYearsSinceCreated = () => {
@@ -31,21 +28,14 @@ const calculateCurrentValue = (asset: Asset, conversionRate: string) => {
 
   if (asset.type === "Deposits") {
     asset.currentValue = calculateCurrentValueForFD();
-    asset.currentPrice = (
-      asset.currentValue * (asset.buyCurrency === "USD" ? +conversionRate : 1)
-    ).toString();
+    asset.currentPrice = asset.currentValue.toString();
     asset.prevClose = asset.currentPrice;
-    asset.compareValue =
-      +asset.buyPrice * (asset.buyCurrency === "USD" ? +conversionRate : 1);
+    asset.compareValue = +asset.buyPrice;
   } else {
     asset.compareValue = calculateBaseValue();
     asset.currentValue = asset.isManualEntry
       ? +asset.currentPrice * +asset.quantity
       : +asset.prevClose * +asset.quantity;
-  }
-
-  if (asset.buyCurrency === "USD") {
-    asset.currentValue *= +conversionRate;
   }
 };
 
@@ -96,7 +86,6 @@ export async function getAssets() {
     credentials: "include",
   });
   const assets: Asset[] = await data.json();
-  const conversionRate = await getConversionRate();
 
   if (assets.length > 0) {
     const assetQuotesPromises = assets.map(async (asset) => {
@@ -117,7 +106,7 @@ export async function getAssets() {
       } else {
         asset.prevClose = (+quote.previous_close).toFixed(2);
       }
-      calculateCurrentValue(asset, conversionRate);
+      calculateCurrentValue(asset);
 
       return asset;
     });

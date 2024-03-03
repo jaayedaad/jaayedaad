@@ -1,5 +1,6 @@
 import { getCurrentUser } from "@/actions/getCurrentUser";
 import Sidebar from "@/components/sidebar";
+import CurrencyProvider from "@/contexts/currency-context";
 import DataProvider from "@/contexts/data-context";
 import VisibilityProvider from "@/contexts/visibility-context";
 import { redirect } from "next/navigation";
@@ -14,8 +15,10 @@ async function DashboardLayout({ children }: { children: React.ReactNode }) {
     <main className="flex">
       <VisibilityProvider>
         <DataProvider>
-          <Sidebar />
-          {children}
+          <CurrencyProvider>
+            <Sidebar />
+            {children}
+          </CurrencyProvider>
         </DataProvider>
       </VisibilityProvider>
     </main>

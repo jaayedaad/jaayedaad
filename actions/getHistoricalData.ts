@@ -68,12 +68,12 @@ export async function getHistoricalData(assets: Asset[]) {
           dayData.date = new Date(dayData.datetime).getTime() / 1000;
           data.assetType = asset.type;
           data.assetSymbol = asset.symbol;
+          const assetCurrency = asset.buyCurrency.toLowerCase();
+          const currencyConversion = conversionRate[assetCurrency];
+          const multiplier = 1 / currencyConversion;
+
           if (dayData.close) {
-            if (asset.buyCurrency === "USD") {
-              dayData.value = dayData.close * +conversionRate * +asset.quantity;
-            } else {
-              dayData.value = dayData.close * +asset.quantity;
-            }
+            dayData.value = dayData.close * +asset.quantity * multiplier;
           }
         });
 

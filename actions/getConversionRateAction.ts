@@ -1,9 +1,15 @@
-export async function getConversionRate() {
-  const res = await fetch(
-    "https://cdn.jsdelivr.net/gh/fawazahmed0/currency-api@1/latest/currencies/usd/inr.json"
-  );
-  let { inr: rawConversionRate } = await res.json();
-  const conversionRate: string = rawConversionRate.toFixed(2);
+import { getPreferences } from "./getPreferencesAction";
 
-  return conversionRate;
+export async function getConversionRate() {
+  const userPreferences = await getPreferences();
+  const userPreferredCurrency: string =
+    userPreferences.defaultCurrency.toLowerCase();
+  const response = await fetch(
+    `https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@latest/v1/currencies/${userPreferredCurrency}.json`
+  );
+  const {
+    [userPreferredCurrency]: conversions,
+  }: { [key: string]: { [currency: string]: number } } = await response.json();
+
+  return conversions;
 }

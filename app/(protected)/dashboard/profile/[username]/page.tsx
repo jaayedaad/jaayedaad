@@ -1,12 +1,9 @@
-import { User } from "@prisma/client";
 import { getCurrentUser } from "@/actions/getCurrentUser";
 import Image from "next/image";
-import { IndianRupee, Settings } from "lucide-react";
+import { Settings } from "lucide-react";
 import { getAssets } from "@/actions/getAssetsAction";
-import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { calculateUnrealisedProfitLoss } from "@/helper/unrealisedValueCalculator";
 
 async function Profile({ params }: { params: { username: string } }) {
   const userResponse = await getCurrentUser();
@@ -36,57 +33,6 @@ async function Profile({ params }: { params: { username: string } }) {
             </Button>
           </div>
         </div>
-      </div>
-      <div className="w-full">
-        <h1 className="text-5xl font-bold">Portfolio</h1>
-        {assets ? (
-          <div className="mt-4 grid grid-cols-3 gap-4">
-            <div>
-              <div className="p-4 rounded-md border w-full">
-                <p className="text-sm flex items-center justify-between mb-2">
-                  Holdings <IndianRupee className="h-3 w-3" />
-                </p>
-                <div className="flex items-center gap-1">
-                  <IndianRupee className="h-6 w-6" strokeWidth={3} />
-                  <span className="text-2xl font-bold">
-                    {parseFloat(
-                      assets
-                        ?.reduce(
-                          (acc, asset) => acc + (asset.currentValue || 0),
-                          0
-                        )
-                        .toFixed(2)
-                    ).toLocaleString("en-IN")}
-                  </span>
-                </div>
-                <div className="flex items-center gap-1 text-muted-foreground">
-                  Income:{" "}
-                  <IndianRupee
-                    className={cn(
-                      "h-4 w-4",
-                      calculateUnrealisedProfitLoss(assets) > 0
-                        ? "text-green-400"
-                        : "text-red-400"
-                    )}
-                  />
-                  <span
-                    className={
-                      calculateUnrealisedProfitLoss(assets) > 0
-                        ? "text-green-400"
-                        : "text-red-400"
-                    }
-                  >
-                    {calculateUnrealisedProfitLoss(assets)?.toLocaleString(
-                      "en-IN"
-                    )}
-                  </span>
-                </div>
-              </div>
-            </div>
-          </div>
-        ) : (
-          <div>You haven&apos;t added any assets yet!</div>
-        )}
       </div>
     </div>
   );
