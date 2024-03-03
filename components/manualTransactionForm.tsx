@@ -188,7 +188,12 @@ function ManualTransactionForm({ modalOpen }: ManualTransactionFormPropsType) {
                           label: commandSearch,
                           value: commandSearch,
                         };
-                        setCategories((prev) => [...prev, newCategory]);
+                        setCategories((prev) => {
+                          const insertIndex = prev.length - 1;
+                          const newCategories = [...prev];
+                          newCategories.splice(insertIndex, 0, newCategory); // Insert the new category at the second last position
+                          return newCategories;
+                        });
                         setValue(commandSearch);
                         setManualTransaction((prev) => ({
                           ...prev,
@@ -295,7 +300,9 @@ function ManualTransactionForm({ modalOpen }: ManualTransactionFormPropsType) {
             <DatePicker onSelect={handleDateSelect} />
           </div>
           <div className="col-span-1 self-center">
-            {manualTransaction.type === "FD" ? "Principal Amount" : "Price"}
+            {manualTransaction.type === "FD"
+              ? "Principal Amount"
+              : "Your price"}
           </div>
           <Input
             className="col-span-3 no-spinner"

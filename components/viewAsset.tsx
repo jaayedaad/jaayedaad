@@ -1,7 +1,7 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs";
 import { Dialog, DialogContent } from "./ui/dialog";
-import { IndianRupee } from "lucide-react";
+import { IndianRupee, Trash } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { accumulateLineChartData } from "@/helper/lineChartDataAccumulator";
 import ChangeInterval, { Interval } from "./changeInterval";
@@ -11,21 +11,21 @@ import TransactionHistory from "./transactionHistory";
 import { prepareHistoricalDataForManualCategory } from "@/helper/manualAssetsHistoryMaker";
 import { Asset } from "@/actions/getAssetsAction";
 import AssetPriceUpdates from "./assetPriceUpdates";
+import { getConversionRate } from "@/actions/getConversionRateAction";
+import {
+  calculateUnrealisedProfitLoss,
+  getUnrealisedProfitLossArray,
+} from "@/helper/unrealisedValueCalculator";
+import {
+  ProfitLoss,
+  calculateRealisedProfitLoss,
+} from "@/helper/realisedValueCalculator";
+import LoadingSpinner from "./ui/loading-spinner";
 
 interface ViewAssetProps {
   open: boolean;
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
-  assetToView?: {
-    symbol: string;
-    exchange: string;
-    name: string;
-    quantity: string;
-    prevClose: string;
-    currentValue: number;
-    type: string;
-    buyPrice: string;
-    buyCurrency: string;
-  };
+  assetToView?: Asset;
   manualAsset?: Asset;
   historicalData: any[];
 }
@@ -45,6 +45,25 @@ function ViewAsset({
   >();
   const [currentValue, setCurrentValue] = useState("");
   const [compareLabel, setCompareLabel] = useState("");
+  const [assetSummary, setAssetSummary] = useState<{
+    compareValue: string;
+    currentValue: string;
+    unrealisedProfitLoss: string;
+    realisedProfitLoss: string;
+  }>();
+  const [realisedProfitLossArray, setRealisedProfitLossArray] =
+    useState<ProfitLoss[]>();
+  const [unrealisedProfitLossArray, setUnrealisedProfitLossArray] = useState<
+    {
+      type: string;
+      symbol: string;
+      compareValue: string;
+      currentValue: string;
+      prevClose: string;
+      interval: string;
+      unrealisedProfitLoss: string;
+    }[]
+  >();
 
   const assetHistory: any[] = [];
   if (assetToView?.symbol !== "") {
@@ -56,6 +75,36 @@ function ViewAsset({
     assetHistory.splice(0, assetHistory.length, ...manualHistory);
   }
   const lineChartData = accumulateLineChartData(assetHistory);
+
+  useEffect(() => {
+    async function fetchData() {
+      if (assetToView) {
+        const conversionRate = await getConversionRate();
+        const unrealisedResults = getUnrealisedProfitLossArray(
+          historicalData,
+          [assetToView],
+          conversionRate
+        );
+        setUnrealisedProfitLossArray(unrealisedResults);
+        const realisedProfitLossResults = calculateRealisedProfitLoss(
+          [assetToView],
+          conversionRate
+        );
+        setRealisedProfitLossArray(realisedProfitLossResults);
+        setAssetSummary({
+          compareValue: assetToView.compareValue.toFixed(2),
+          currentValue: assetToView.currentValue.toFixed(2),
+          unrealisedProfitLoss: calculateUnrealisedProfitLoss([
+            assetToView,
+          ]).toString(),
+          realisedProfitLoss: realisedProfitLossResults.filter(
+            (res) => res.interval === "All"
+          )[0].realisedProfitLoss,
+        });
+      }
+    }
+    fetchData();
+  }, [assetToView, historicalData]);
 
   // // Handle change in interval
   function onChange(value: Interval) {
@@ -81,6 +130,22 @@ function ViewAsset({
             ? assetHistory[0].values[assetHistory[0].values.length - 1].close
             : assetHistory[0].values[assetHistory[0].values.length - 1].value
         );
+        unrealisedProfitLossArray &&
+          realisedProfitLossArray &&
+          setAssetSummary({
+            compareValue: unrealisedProfitLossArray.filter(
+              (res) => res.interval === "1d"
+            )[0].compareValue,
+            currentValue: unrealisedProfitLossArray.filter(
+              (res) => res.interval === "1d"
+            )[0].currentValue,
+            unrealisedProfitLoss: unrealisedProfitLossArray.filter(
+              (res) => res.interval === "1d"
+            )[0].unrealisedProfitLoss,
+            realisedProfitLoss: realisedProfitLossArray.filter(
+              (res) => res.interval === "1d"
+            )[0].realisedProfitLoss,
+          });
         break;
       case "1w":
         setCompareLabel(
@@ -92,6 +157,22 @@ function ViewAsset({
             ? assetHistory[0].values[assetHistory[0].values.length - 1].close
             : assetHistory[0].values[assetHistory[0].values.length - 1].value
         );
+        unrealisedProfitLossArray &&
+          realisedProfitLossArray &&
+          setAssetSummary({
+            compareValue: unrealisedProfitLossArray.filter(
+              (res) => res.interval === "1w"
+            )[0].compareValue,
+            currentValue: unrealisedProfitLossArray.filter(
+              (res) => res.interval === "1w"
+            )[0].currentValue,
+            unrealisedProfitLoss: unrealisedProfitLossArray.filter(
+              (res) => res.interval === "1w"
+            )[0].unrealisedProfitLoss,
+            realisedProfitLoss: realisedProfitLossArray.filter(
+              (res) => res.interval === "1w"
+            )[0].realisedProfitLoss,
+          });
         break;
       case "1m":
         setCompareLabel(
@@ -103,6 +184,22 @@ function ViewAsset({
             ? assetHistory[0].values[assetHistory[0].values.length - 1].close
             : assetHistory[0].values[assetHistory[0].values.length - 1].value
         );
+        unrealisedProfitLossArray &&
+          realisedProfitLossArray &&
+          setAssetSummary({
+            compareValue: unrealisedProfitLossArray.filter(
+              (res) => res.interval === "1m"
+            )[0].compareValue,
+            currentValue: unrealisedProfitLossArray.filter(
+              (res) => res.interval === "1m"
+            )[0].currentValue,
+            unrealisedProfitLoss: unrealisedProfitLossArray.filter(
+              (res) => res.interval === "1m"
+            )[0].unrealisedProfitLoss,
+            realisedProfitLoss: realisedProfitLossArray.filter(
+              (res) => res.interval === "1m"
+            )[0].realisedProfitLoss,
+          });
         break;
       case "1y":
         setCompareLabel(
@@ -115,6 +212,22 @@ function ViewAsset({
             ? assetHistory[0].values[assetHistory[0].values.length - 1].close
             : assetHistory[0].values[assetHistory[0].values.length - 1].value
         );
+        unrealisedProfitLossArray &&
+          realisedProfitLossArray &&
+          setAssetSummary({
+            compareValue: unrealisedProfitLossArray.filter(
+              (res) => res.interval === "1y"
+            )[0].compareValue,
+            currentValue: unrealisedProfitLossArray.filter(
+              (res) => res.interval === "1y"
+            )[0].currentValue,
+            unrealisedProfitLoss: unrealisedProfitLossArray.filter(
+              (res) => res.interval === "1y"
+            )[0].unrealisedProfitLoss,
+            realisedProfitLoss: realisedProfitLossArray.filter(
+              (res) => res.interval === "1y"
+            )[0].realisedProfitLoss,
+          });
         break;
       case "All":
         setCompareLabel(
@@ -122,6 +235,18 @@ function ViewAsset({
             ? assetHistory[0].values[assetHistory[0].values.length - 1].close
             : assetHistory[0].values[assetHistory[0].values.length - 1].value
         );
+        assetToView &&
+          realisedProfitLossArray &&
+          setAssetSummary({
+            compareValue: assetToView.compareValue.toFixed(2),
+            currentValue: assetToView.currentValue.toFixed(2),
+            unrealisedProfitLoss: calculateUnrealisedProfitLoss([
+              assetToView,
+            ]).toString(),
+            realisedProfitLoss: realisedProfitLossArray.filter(
+              (res) => res.interval === "All"
+            )[0].realisedProfitLoss,
+          });
         break;
       default:
         throw new Error("Invalid interval value");
@@ -137,7 +262,7 @@ function ViewAsset({
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogContent className="h-[47vh] min-w-[50vw]">
+      <DialogContent className="h-[516px] min-w-[50vw]">
         <Tabs defaultValue="summary" className="w-full">
           <TabsList>
             <TabsTrigger value="summary">Summary</TabsTrigger>
@@ -201,6 +326,52 @@ function ViewAsset({
               </div>
             </div>
             {dataToShow && <AssetLineChart dataToShow={dataToShow} />}
+            {assetSummary && assetToView ? (
+              <div className="mt-8 grid grid-cols-4 grid-rows-2 gap-4">
+                <div className="">
+                  <p className="text-muted-foreground text-sm">
+                    Avg. buying price
+                  </p>
+                  {(+assetToView.buyPrice).toLocaleString("en-IN")}
+                </div>
+                <div className="">
+                  <p className="text-muted-foreground text-sm">Quantity</p>
+                  {(+assetToView.quantity).toLocaleString("en-IN")}
+                </div>
+                <div className="">
+                  <p className="text-muted-foreground text-sm">
+                    Previous close
+                  </p>
+                  {(+assetToView.prevClose).toLocaleString("en-IN")}
+                </div>
+                <div className="">
+                  <p className="text-muted-foreground text-sm">
+                    Invested value
+                  </p>
+                  {(+assetSummary.compareValue).toLocaleString("en-IN")}
+                </div>
+                <div className="">
+                  <p className="text-muted-foreground text-sm">Current value</p>
+                  {assetSummary.currentValue}
+                </div>
+                <div className="">
+                  <p className="text-muted-foreground text-sm">
+                    Realised profit/loss
+                  </p>
+                  {assetSummary.realisedProfitLoss}
+                </div>
+                <div className="">
+                  <p className="text-muted-foreground text-sm">
+                    Unrealised profit/loss
+                  </p>
+                  {assetSummary.unrealisedProfitLoss}
+                </div>
+              </div>
+            ) : (
+              <div className="mt-12">
+                <LoadingSpinner />
+              </div>
+            )}
           </TabsContent>
           <TabsContent value="transactions">
             {assetToView?.symbol !== ""

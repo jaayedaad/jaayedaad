@@ -8,20 +8,16 @@ import {
   TableHeader,
   TableRow,
 } from "./ui/table";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { Separator } from "./ui/separator";
 import EditTransaction from "./editTransaction";
 import { Button } from "./ui/button";
 import { Transaction } from "@prisma/client";
 import { ScrollArea } from "./ui/scroll-area";
 import TransactionForm from "./transactionForm";
+import { Plus, Trash } from "lucide-react";
+import { toast } from "sonner";
+import RemoveAssetButton from "./removeAssetButton";
 
 function TransactionHistory({ assetName }: { assetName: string }) {
   const { assets } = useData();
@@ -30,10 +26,21 @@ function TransactionHistory({ assetName }: { assetName: string }) {
   const [transactionToEdit, setTransactionToEdit] = useState<Transaction>();
 
   const assetToView = assets?.find((asset) => asset.name === assetName);
+
+  const handleRemoveAsset = async (id: string) => {
+    fetch("/api/assets/remove", {
+      method: "POST",
+      body: JSON.stringify(id),
+    }).then(() => {
+      toast.success("Asset removed successfully!");
+      setOpen(false);
+    });
+  };
+
   return (
     <div className="mt-4">
       <Separator />
-      <ScrollArea className="h-[212px]">
+      <ScrollArea className="h-[360px]">
         <Table>
           <TableHeader>
             <TableRow>
@@ -85,25 +92,28 @@ function TransactionHistory({ assetName }: { assetName: string }) {
         </Table>
       </ScrollArea>
       <div className="w-full mt-2 flex justify-end">
-        <div className="flex gap-2 w-1/5">
+        <div className="flex gap-2">
           <Dialog
             open={showTransactionForm}
             onOpenChange={setShowTransactionForm}
           >
             <DialogTrigger asChild>
               <Button
-                className="w-full"
+                className="w-fit pr-6"
                 onClick={() => setShowTransactionForm(true)}
               >
+                <Plus className="h-4 w-4 mr-2" />
                 Add
               </Button>
             </DialogTrigger>
+            {assetToView && <RemoveAssetButton assetId={assetToView.id} />}
             <DialogContent>
               {assetToView && (
                 <TransactionForm
                   selectedAsset={{
                     instrument_name: assetToView.name,
                     symbol: assetToView.symbol,
+                    prevClose: assetToView.prevClose,
                     instrument_type: assetToView.type,
                     exchange: assetToView.exchange,
                   }}

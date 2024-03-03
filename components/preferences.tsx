@@ -14,16 +14,19 @@ import {
   SelectTrigger,
   SelectValue,
 } from "./ui/select";
+import { numberSystem } from "@/constants/numberSystems";
 
 function Preferences() {
   const [publicProfile, setPublicProfile] = useState(false);
   const [defaultCurrency, setDefaultCurrency] = useState("INR");
+  const [defaultNumberSystem, setDefaultNumberSystem] = useState("Indian");
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     getPreferences().then((preferences: Preference) => {
       setPublicProfile(preferences.publicProfile);
       setDefaultCurrency(preferences.defaultCurrency);
+      setDefaultNumberSystem(preferences.numberSystem);
     });
   }, []);
 
@@ -33,6 +36,7 @@ function Preferences() {
       const preferences = {
         publicProfile: publicProfile,
         defaultCurrency: defaultCurrency,
+        numberSystem: defaultNumberSystem,
       };
       await fetch("/api/user/preferences", {
         method: "POST",
@@ -80,13 +84,43 @@ function Preferences() {
               value={defaultCurrency}
             >
               <SelectTrigger className="w-full">
-                <SelectValue placeholder="" />
+                <SelectValue />
               </SelectTrigger>
               <SelectContent>
                 {currencies.map((currency) => {
                   return (
                     <SelectItem key={currency.label} value={currency.label}>
                       {currency.value}
+                    </SelectItem>
+                  );
+                })}
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
+        <div className="py-5 px-4 flex items-center justify-between border rounded-md w-full">
+          <div>
+            <h2>Default numbering system</h2>
+            <p className="text-muted-foreground text-sm">
+              Set your default numbering system
+            </p>
+          </div>
+          <div>
+            <Select
+              onValueChange={(value) => {
+                console.log(value);
+                setDefaultNumberSystem(value);
+              }}
+              value={defaultNumberSystem}
+            >
+              <SelectTrigger className="w-full">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {numberSystem.map((system) => {
+                  return (
+                    <SelectItem key={system.label} value={system.label}>
+                      {system.value}
                     </SelectItem>
                   );
                 })}

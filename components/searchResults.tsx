@@ -39,59 +39,61 @@ const SearchResults = ({ results, handleModalState }: searchResultProps) => {
     setSelectedAsset({ instrument_name, symbol, instrument_type, exchange });
   };
 
-  return (
-    results.length > 0 && (
+  return results.length > 0 && !showForm ? (
+    <ScrollArea className={cn("mb-4", showForm ? "h-[16vh]" : "h-[24vh]")}>
+      <Table>
+        <TableHeader className="bg-secondary">
+          <TableRow>
+            <TableHead>Name</TableHead>
+            <TableHead className="w-[100px] text-right">Exchange</TableHead>
+            <TableHead className="w-[100px] text-right">Symbol</TableHead>
+            <TableHead className="w-[100px]"></TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody className="overflow-y-hidden">
+          {results.map((result, index) => {
+            return (
+              result.instrument_name && (
+                <TableRow key={index}>
+                  <TableCell>{result?.instrument_name}</TableCell>
+                  <TableCell className="text-right">
+                    {result?.exchange}
+                  </TableCell>
+                  <TableCell className="text-right">{result?.symbol}</TableCell>
+                  <TableCell>
+                    <Button
+                      onClick={() =>
+                        handleAddClick(
+                          result.instrument_name,
+                          result.symbol,
+                          result.instrument_type,
+                          result.exchange
+                        )
+                      }
+                      className="w-full"
+                    >
+                      Add
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              )
+            );
+          })}
+        </TableBody>
+      </Table>
+    </ScrollArea>
+  ) : (
+    selectedAsset && (
       <>
-        <ScrollArea className={cn("mb-4", showForm ? "h-[16vh]" : "h-[24vh]")}>
-          <Table>
-            <TableHeader className="bg-secondary">
-              <TableRow>
-                <TableHead>Name</TableHead>
-                <TableHead className="w-[100px] text-right">Exchange</TableHead>
-                <TableHead className="w-[100px] text-right">Symbol</TableHead>
-                <TableHead className="w-[100px]"></TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody className="overflow-y-hidden">
-              {results.map((result, index) => {
-                return (
-                  result.instrument_name && (
-                    <TableRow key={index}>
-                      <TableCell>{result?.instrument_name}</TableCell>
-                      <TableCell className="text-right">
-                        {result?.exchange}
-                      </TableCell>
-                      <TableCell className="text-right">
-                        {result?.symbol}
-                      </TableCell>
-                      <TableCell>
-                        <Button
-                          onClick={() =>
-                            handleAddClick(
-                              result.instrument_name,
-                              result.symbol,
-                              result.instrument_type,
-                              result.exchange
-                            )
-                          }
-                          className="w-full"
-                        >
-                          Add
-                        </Button>
-                      </TableCell>
-                    </TableRow>
-                  )
-                );
-              })}
-            </TableBody>
-          </Table>
-        </ScrollArea>
-        {showForm && selectedAsset && (
-          <TransactionForm
-            selectedAsset={selectedAsset}
-            modalOpen={handleModalState}
-          />
-        )}
+        <div className="grid grid-cols-4 gap-4 grid-rows-1 bg-secondary p-2">
+          <div className="col-span-2">{selectedAsset.instrument_name}</div>
+          <div className="text-right">{selectedAsset.exchange}</div>
+          <div className="text-right">{selectedAsset.symbol}</div>
+        </div>
+        <TransactionForm
+          selectedAsset={selectedAsset}
+          modalOpen={handleModalState}
+        />
       </>
     )
   );

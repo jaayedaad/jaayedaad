@@ -17,6 +17,7 @@ interface transactionFormPropsType {
   selectedAsset: {
     instrument_name: string;
     symbol: string;
+    prevClose?: string;
     instrument_type: string;
     exchange: string;
   };
@@ -30,7 +31,7 @@ function TransactionForm({
   const { updateData } = useData();
   const [loading, setLoading] = useState(false);
   const [assetQuantity, setAssetQuantity] = useState<string>("");
-  const [assetPrice, setAssetPrice] = useState<string>("");
+  const [assetPrice, setAssetPrice] = useState(selectedAsset?.prevClose);
   const [date, setDate] = useState<string>("");
   const [currency, setCurrency] = useState("INR");
   // Add assets handler
@@ -116,9 +117,6 @@ function TransactionForm({
   return (
     <>
       <div>
-        <div className="text-sm text-muted-foreground">
-          Making transaction for {selectedAsset.instrument_name}
-        </div>
         <div className="grid grid-cols-4 py-4 gap-4">
           <div className="text-md col-span-1">Quantity</div>
           <Input
