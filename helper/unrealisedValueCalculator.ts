@@ -28,10 +28,25 @@ type AssetHistory = {
 };
 
 // Function to calculate unrealized profit/loss for each asset
-export function calculateUnrealisedProfitLoss(assets: Asset[]) {
+export function calculateUnrealisedProfitLoss(
+  assets: Asset[],
+  conversionRates: {
+    [currency: string]: number;
+  }
+) {
   const value = (
-    +assets?.reduce((acc, asset) => acc + (asset.currentValue || 0), 0) -
-    +assets?.reduce((acc, asset) => acc + (asset.compareValue || 0), 0)
+    +assets?.reduce((acc, asset) => {
+      const assetCurrency = asset.buyCurrency.toLowerCase();
+      const currencyConversion = conversionRates[assetCurrency];
+      const multiplier = 1 / currencyConversion;
+      return acc + (asset.currentValue * multiplier || 0);
+    }, 0) -
+    +assets?.reduce((acc, asset) => {
+      const assetCurrency = asset.buyCurrency.toLowerCase();
+      const currencyConversion = conversionRates[assetCurrency];
+      const multiplier = 1 / currencyConversion;
+      return acc + (asset.compareValue * multiplier || 0);
+    }, 0)
   ).toFixed(2);
 
   return parseFloat(value);
@@ -40,7 +55,9 @@ export function calculateUnrealisedProfitLoss(assets: Asset[]) {
 export function getUnrealisedProfitLossArray(
   historicalData: AssetHistory[],
   assets: Asset[],
-  conversionRate: string
+  conversionRate: {
+    [currency: string]: number;
+  }
 ) {
   const results: {
     type: string;
@@ -65,6 +82,9 @@ export function getUnrealisedProfitLossArray(
     pastDate.setDate(currentDate.getDate() - days);
 
     assets.forEach((asset) => {
+      const assetCurrency = asset.buyCurrency.toLowerCase();
+      const currencyConversion = conversionRate[assetCurrency];
+      const multiplier = 1 / currencyConversion;
       const transactions = asset.transactions.filter(
         (transaction) => new Date(transaction.date) <= pastDate
       );
@@ -96,7 +116,7 @@ export function getUnrealisedProfitLossArray(
           compareValue: (
             quantityTillInterval *
             +asset.buyPrice *
-            (asset.buyCurrency === "USD" ? +conversionRate : 1)
+            multiplier
           ).toFixed(2),
           currentValue: (
             parseFloat(
@@ -105,7 +125,7 @@ export function getUnrealisedProfitLossArray(
                 : valueOfInterval[valueOfInterval.length - 2].close
             ) *
             quantityTillInterval *
-            (asset.buyCurrency === "USD" ? +conversionRate : 1)
+            multiplier
           ).toFixed(2),
           prevClose:
             transactions.length > 0
@@ -120,7 +140,7 @@ export function getUnrealisedProfitLossArray(
             ) -
               parseFloat(asset.buyPrice)) *
             quantityTillInterval *
-            (asset.buyCurrency === "USD" ? +conversionRate : 1)
+            multiplier
           ).toFixed(2),
         };
 

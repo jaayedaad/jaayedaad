@@ -13,7 +13,9 @@ export interface ProfitLoss {
 // Function to make realized profit/loss array based on interval
 export function calculateRealisedProfitLoss(
   assets: Asset[] | undefined,
-  conversionRate: string
+  conversionRate: {
+    [currency: string]: number;
+  }
 ): ProfitLoss[] {
   const realisedProfitsLosses: ProfitLoss[] = [];
 
@@ -36,6 +38,9 @@ export function calculateRealisedProfitLoss(
     let realisedProfitLoss = 0;
 
     assets.forEach((asset) => {
+      const assetCurrency = asset.buyCurrency.toLowerCase();
+      const currencyConversion = conversionRate[assetCurrency];
+      const multiplier = 1 / currencyConversion;
       const transactions = asset.transactions.filter(
         (transaction) =>
           new Date(transaction.date) >= pastDate &&
@@ -54,7 +59,7 @@ export function calculateRealisedProfitLoss(
           realisedProfitLoss +=
             (+transaction.price - avgBuyPrice) *
             +transaction.quantity *
-            (asset.buyCurrency === "USD" ? +conversionRate : 1);
+            multiplier;
         }
       });
     });
@@ -79,7 +84,9 @@ export function calculateRealisedProfitLoss(
 // Function to calculate realized profit/loss for each asset
 function calculateRealisedProfitLossAll(
   assets: Asset[] | undefined,
-  conversionRate: string
+  conversionRate: {
+    [currency: string]: number;
+  }
 ) {
   const realisedProfitsLosses: {
     id: string;
@@ -91,6 +98,9 @@ function calculateRealisedProfitLossAll(
     let realisedProfitLoss = 0;
 
     asset.transactions.forEach((transaction) => {
+      const assetCurrency = asset.buyCurrency.toLowerCase();
+      const currencyConversion = conversionRate[assetCurrency];
+      const multiplier = 1 / currencyConversion;
       if (transaction.type === "sell") {
         const sortedTransactions = asset.transactions.sort(
           (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
@@ -114,7 +124,7 @@ function calculateRealisedProfitLossAll(
         realisedProfitLoss +=
           (+transaction.price - avgBuyPrice) *
           +transaction.quantity *
-          (asset.buyCurrency === "USD" ? +conversionRate : 1);
+          multiplier;
       }
     });
 
