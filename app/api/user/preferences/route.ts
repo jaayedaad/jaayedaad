@@ -19,10 +19,7 @@ export async function POST(req: Request) {
       where: {
         userId: user?.id,
       },
-      data: {
-        publicProfile: preferences.publicProfile,
-        defaultCurrency: preferences.defaultCurrency,
-      },
+      data: preferences,
     });
 
     return new Response("OK");
