@@ -80,6 +80,7 @@ model Preference {
   id              String  @id @default(cuid())
   publicProfile   Boolean @default(false)
   defaultCurrency String  @default("INR")
+  numberSystem    String  @default("Indian")
   userId          String  @unique
   user            User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
