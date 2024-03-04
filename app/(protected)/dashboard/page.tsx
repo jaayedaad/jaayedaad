@@ -12,15 +12,11 @@ import {
   ProfitLoss,
   calculateRealisedProfitLoss,
 } from "@/helper/realisedValueCalculator";
-import {
-  calculateUnrealisedProfitLoss,
-  getUnrealisedProfitLossArray,
-} from "@/helper/unrealisedValueCalculator";
+import { getUnrealisedProfitLossArray } from "@/helper/unrealisedValueCalculator";
 import { useEffect, useState } from "react";
 
 function Dashboard() {
-  const { defaultCurrency, conversionRates } = useCurrency();
-  const [unrealisedProfitLoss, setUnrealisedProfitLoss] = useState<number>();
+  const { conversionRates } = useCurrency();
   const [realisedProfitLoss, setRealisedProfitLoss] = useState<string>();
   const [timeInterval, setTimeInterval] = useState<Interval>("All");
   const [unrealisedProfitLossArray, setUnrealisedProfitLossArray] = useState<
@@ -39,33 +35,29 @@ function Dashboard() {
   const { assets, historicalData } = useData();
 
   useEffect(() => {
-    async function calculateProfitLoss() {
-      if (assets && conversionRates) {
-        if (historicalData) {
-          const unrealisedResults = getUnrealisedProfitLossArray(
-            historicalData,
-            assets,
-            conversionRates
-          );
-          setUnrealisedProfitLossArray(unrealisedResults);
-        }
-        const realisedProfitLossResults = calculateRealisedProfitLoss(
+    if (assets && conversionRates) {
+      if (historicalData?.length) {
+        const unrealisedResults = getUnrealisedProfitLossArray(
+          historicalData,
           assets,
           conversionRates
         );
-        if (timeInterval === "All") {
-          setRealisedProfitLoss(
-            realisedProfitLossResults.filter(
-              (profitLoss) => profitLoss.interval === "All"
-            )[0].realisedProfitLoss
-          );
-        }
-        setRealisedProfitLossArray(realisedProfitLossResults);
+        setUnrealisedProfitLossArray(unrealisedResults);
       }
+      const realisedProfitLossResults = calculateRealisedProfitLoss(
+        assets,
+        conversionRates
+      );
+      if (timeInterval === "All") {
+        setRealisedProfitLoss(
+          realisedProfitLossResults.filter(
+            (profitLoss) => profitLoss.interval === "All"
+          )[0].realisedProfitLoss
+        );
+      }
+      setRealisedProfitLossArray(realisedProfitLossResults);
     }
-
-    calculateProfitLoss();
-  }, [assets, timeInterval, historicalData, defaultCurrency, conversionRates]);
+  }, [assets, timeInterval, historicalData, conversionRates]);
 
   // Get today's date
   const today = new Date();
@@ -76,23 +68,6 @@ function Dashboard() {
 
   const onChange = (value: Interval) => {
     setTimeInterval(value);
-    if (value === "All" && assets && conversionRates) {
-      const unrealisedProfitsLosses = calculateUnrealisedProfitLoss(
-        assets,
-        conversionRates
-      );
-      setUnrealisedProfitLoss(unrealisedProfitsLosses);
-    } else {
-      const filteredUnrealizedProfitsLosses = unrealisedProfitLossArray?.filter(
-        (res) => res.interval === value
-      );
-      const unrealisedProfitLoss = filteredUnrealizedProfitsLosses?.reduce(
-        (acc, entry) => acc + parseFloat(entry.unrealisedProfitLoss),
-        0
-      );
-
-      setUnrealisedProfitLoss(unrealisedProfitLoss);
-    }
     const profitLoss = realisedProfitLossArray?.filter(
       (profitLoss) => profitLoss.interval === value
     )[0].realisedProfitLoss;
@@ -177,11 +152,12 @@ function Dashboard() {
             <p className="text-muted-foreground text-sm">
               Analyzing Your Investment Performance
             </p>
-            {assets ? (
+            {assets && unrealisedProfitLossArray ? (
               <PerformanceMetrics
                 assets={assets}
                 realisedProfitLoss={realisedProfitLoss}
-                unrealisedProfitLoss={unrealisedProfitLoss}
+                unrealisedProfitLossArray={unrealisedProfitLossArray}
+                timeInterval={timeInterval}
               />
             ) : (
               <div className="h-72 w-full flex items-center">
