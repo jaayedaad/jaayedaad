@@ -1,11 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { Area, AreaChart, Tooltip, XAxis, YAxis } from "recharts";
 import { Interval } from "./changeInterval";
-import { IndianRupee } from "lucide-react";
 import { accumulateLineChartData } from "@/helper/lineChartDataAccumulator";
 import { useVisibility } from "@/contexts/visibility-context";
-import { formatIndianNumber } from "@/helper/indianNumberingFormatter";
+import {
+  formatIndianNumber,
+  formatInternationalNumber,
+} from "@/helper/indianNumberingFormatter";
 import { prepareLineChartData } from "@/helper/prepareLineChartData";
+import { useCurrency } from "@/contexts/currency-context";
 
 interface FilterMap {
   [key: string]: () => { name: string; amt: number }[];
@@ -21,6 +24,16 @@ function PortfolioLineChart({
   timeInterval?: Interval;
 }) {
   const { visible } = useVisibility();
+  const { numberSystem, defaultCurrency } = useCurrency();
+  const formatter = new Intl.NumberFormat(
+    numberSystem === "Indian" ? "en-IN" : "en-US",
+    {
+      style: "currency",
+      currency: defaultCurrency,
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    }
+  );
   const [dataToShow, setDataToShow] = useState<
     {
       name: string;
@@ -120,7 +133,11 @@ function PortfolioLineChart({
               tickLine={false}
               axisLine={false}
               tickFormatter={(tick) =>
-                visible ? formatIndianNumber(tick) : "**"
+                visible
+                  ? numberSystem === "Indian"
+                    ? formatIndianNumber(tick)
+                    : formatInternationalNumber(tick)
+                  : "**"
               }
             />
             <Tooltip
@@ -131,11 +148,8 @@ function PortfolioLineChart({
                     <div className="rounded-lg border bg-background p-2 shadow-sm">
                       <div className="flex flex-col">
                         <span className="font-bold text-muted-foreground flex items-center">
-                          <IndianRupee className="h-4 w-4" />
                           {visible
-                            ? parseFloat(
-                                parseFloat(value!).toFixed(2)
-                              ).toLocaleString("en-IN")
+                            ? formatter.format(parseFloat(value!))
                             : "* ".repeat(5)}
                         </span>
                       </div>

@@ -1,5 +1,8 @@
-import { formatIndianNumber } from "@/helper/indianNumberingFormatter";
-import { IndianRupee } from "lucide-react";
+import { useCurrency } from "@/contexts/currency-context";
+import {
+  formatIndianNumber,
+  formatInternationalNumber,
+} from "@/helper/indianNumberingFormatter";
 import React from "react";
 import { Area, AreaChart, Tooltip, XAxis, YAxis } from "recharts";
 
@@ -11,6 +14,16 @@ function AssetLineChart({
     amt: number;
   }[];
 }) {
+  const { numberSystem, defaultCurrency } = useCurrency();
+  const formatter = new Intl.NumberFormat(
+    numberSystem === "Indian" ? "en-IN" : "en-US",
+    {
+      style: "currency",
+      currency: defaultCurrency,
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    }
+  );
   return (
     <AreaChart
       width={670}
@@ -61,7 +74,11 @@ function AssetLineChart({
         ]}
         tickLine={false}
         axisLine={false}
-        tickFormatter={(tick) => formatIndianNumber(tick)}
+        tickFormatter={(tick) =>
+          numberSystem === "Indian"
+            ? formatIndianNumber(tick)
+            : formatInternationalNumber(tick)
+        }
       />
       <Tooltip
         content={({ active, payload }) => {
@@ -71,10 +88,7 @@ function AssetLineChart({
               <div className="rounded-lg border bg-background p-2 shadow-sm">
                 <div className="flex flex-col">
                   <span className="font-bold text-muted-foreground flex items-center">
-                    <IndianRupee className="h-4 w-4" />
-                    {parseFloat(parseFloat(value!).toFixed(2)).toLocaleString(
-                      "en-IN"
-                    )}
+                    {formatter.format(parseFloat(value!))}
                   </span>
                 </div>
               </div>

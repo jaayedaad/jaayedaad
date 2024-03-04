@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs";
 import { Dialog, DialogContent } from "./ui/dialog";
-import { IndianRupee, Trash } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { accumulateLineChartData } from "@/helper/lineChartDataAccumulator";
 import ChangeInterval, { Interval } from "./changeInterval";
@@ -21,6 +20,7 @@ import {
   calculateRealisedProfitLoss,
 } from "@/helper/realisedValueCalculator";
 import LoadingSpinner from "./ui/loading-spinner";
+import { useCurrency } from "@/contexts/currency-context";
 
 interface ViewAssetProps {
   open: boolean;
@@ -28,6 +28,9 @@ interface ViewAssetProps {
   assetToView?: Asset;
   manualAsset?: Asset;
   historicalData: any[];
+  conversionRates: {
+    [currency: string]: number;
+  };
 }
 
 function ViewAsset({
@@ -36,7 +39,9 @@ function ViewAsset({
   assetToView,
   manualAsset,
   historicalData,
+  conversionRates,
 }: ViewAssetProps) {
+  const { numberSystem, defaultCurrency } = useCurrency();
   const [dataToShow, setDataToShow] = useState<
     {
       name: string;
@@ -94,9 +99,10 @@ function ViewAsset({
         setAssetSummary({
           compareValue: assetToView.compareValue.toFixed(2),
           currentValue: assetToView.currentValue.toFixed(2),
-          unrealisedProfitLoss: calculateUnrealisedProfitLoss([
-            assetToView,
-          ]).toString(),
+          unrealisedProfitLoss: calculateUnrealisedProfitLoss(
+            [assetToView],
+            conversionRates
+          ).toString(),
           realisedProfitLoss: realisedProfitLossResults.filter(
             (res) => res.interval === "All"
           )[0].realisedProfitLoss,
@@ -116,7 +122,7 @@ function ViewAsset({
     prepareLineChartData(value, lineChartData, setDataToShow);
     setCurrentValue(
       assetToView?.symbol !== ""
-        ? assetHistory[0].values[0].close
+        ? assetHistory[0].values[assetHistory[0].values.length - 1].close
         : assetHistory[0].values[0].value
     );
     switch (value) {
@@ -127,8 +133,8 @@ function ViewAsset({
               ? assetHistory[0].values[1].close
               : assetHistory[0].values[assetHistory[0].values.length - 2].value
             : assetToView?.symbol !== ""
-            ? assetHistory[0].values[assetHistory[0].values.length - 1].close
-            : assetHistory[0].values[assetHistory[0].values.length - 1].value
+            ? assetHistory[0].values[0].close
+            : assetHistory[0].values[0].value
         );
         unrealisedProfitLossArray &&
           realisedProfitLossArray &&
@@ -154,8 +160,8 @@ function ViewAsset({
               ? assetHistory[0].values[7].close
               : assetHistory[0].values[assetHistory[0].values.length - 8].value
             : assetToView?.symbol !== ""
-            ? assetHistory[0].values[assetHistory[0].values.length - 1].close
-            : assetHistory[0].values[assetHistory[0].values.length - 1].value
+            ? assetHistory[0].values[0].close
+            : assetHistory[0].values[0].value
         );
         unrealisedProfitLossArray &&
           realisedProfitLossArray &&
@@ -181,8 +187,8 @@ function ViewAsset({
               ? assetHistory[0].values[30].close
               : assetHistory[0].values[assetHistory[0].values.length - 30].value
             : assetToView?.symbol !== ""
-            ? assetHistory[0].values[assetHistory[0].values.length - 1].close
-            : assetHistory[0].values[assetHistory[0].values.length - 1].value
+            ? assetHistory[0].values[0].close
+            : assetHistory[0].values[0].value
         );
         unrealisedProfitLossArray &&
           realisedProfitLossArray &&
@@ -209,8 +215,8 @@ function ViewAsset({
               : assetHistory[0].values[assetHistory[0].values.length - 366]
                   .value
             : assetToView?.symbol !== ""
-            ? assetHistory[0].values[assetHistory[0].values.length - 1].close
-            : assetHistory[0].values[assetHistory[0].values.length - 1].value
+            ? assetHistory[0].values[0].close
+            : assetHistory[0].values[0].value
         );
         unrealisedProfitLossArray &&
           realisedProfitLossArray &&
@@ -232,17 +238,24 @@ function ViewAsset({
       case "All":
         setCompareLabel(
           assetToView?.symbol !== ""
-            ? assetHistory[0].values[assetHistory[0].values.length - 1].close
-            : assetHistory[0].values[assetHistory[0].values.length - 1].value
+            ? assetHistory[0].values[0].close
+            : assetHistory[0].values[0].value
         );
         assetToView &&
           realisedProfitLossArray &&
           setAssetSummary({
-            compareValue: assetToView.compareValue.toFixed(2),
-            currentValue: assetToView.currentValue.toFixed(2),
-            unrealisedProfitLoss: calculateUnrealisedProfitLoss([
-              assetToView,
-            ]).toString(),
+            compareValue: (
+              assetToView.compareValue /
+              conversionRates[assetToView.buyCurrency.toLowerCase()]
+            ).toFixed(2),
+            currentValue: (
+              assetToView.currentValue /
+              conversionRates[assetToView.buyCurrency.toLowerCase()]
+            ).toFixed(2),
+            unrealisedProfitLoss: calculateUnrealisedProfitLoss(
+              [assetToView],
+              conversionRates
+            ).toString(),
             realisedProfitLoss: realisedProfitLossArray.filter(
               (res) => res.interval === "All"
             )[0].realisedProfitLoss,
@@ -259,6 +272,16 @@ function ViewAsset({
   // Subtract one day
   const yesterday = new Date(new Date());
   yesterday.setDate(today.getDate() - 1);
+
+  const formatter = new Intl.NumberFormat(
+    numberSystem === "Indian" ? "en-IN" : "en-US",
+    {
+      style: "currency",
+      currency: defaultCurrency,
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    }
+  );
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -284,10 +307,15 @@ function ViewAsset({
               <div className="flex justify-between">
                 <div>
                   <h3 className="text-3xl font-bold flex items-center">
-                    <IndianRupee strokeWidth={3} />
-                    {parseFloat(
-                      parseFloat(currentValue).toFixed(2)
-                    ).toLocaleString("en-IN")}
+                    {new Intl.NumberFormat(
+                      numberSystem === "Indian" ? "en-IN" : "en-US",
+                      {
+                        style: "currency",
+                        currency: assetToView?.buyCurrency,
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2,
+                      }
+                    ).format(+currentValue)}
                   </h3>
                   <div className="flex gap-1">
                     <p
@@ -328,43 +356,55 @@ function ViewAsset({
             {dataToShow && <AssetLineChart dataToShow={dataToShow} />}
             {assetSummary && assetToView ? (
               <div className="mt-8 grid grid-cols-4 grid-rows-2 gap-4">
-                <div className="">
+                <div>
                   <p className="text-muted-foreground text-sm">
                     Avg. buying price
                   </p>
-                  {(+assetToView.buyPrice).toLocaleString("en-IN")}
+                  {(+assetToView.buyPrice).toLocaleString(
+                    numberSystem === "Indian" ? "en-IN" : "en-US"
+                  )}
                 </div>
-                <div className="">
+                <div>
                   <p className="text-muted-foreground text-sm">Quantity</p>
-                  {(+assetToView.quantity).toLocaleString("en-IN")}
+                  {(+assetToView.quantity).toLocaleString(
+                    numberSystem === "Indian" ? "en-IN" : "en-US"
+                  )}
                 </div>
-                <div className="">
+                <div>
                   <p className="text-muted-foreground text-sm">
                     Previous close
                   </p>
-                  {(+assetToView.prevClose).toLocaleString("en-IN")}
+                  {(+assetToView.prevClose).toLocaleString(
+                    numberSystem === "Indian" ? "en-IN" : "en-US"
+                  )}
                 </div>
-                <div className="">
+                <div>
+                  <p className="text-muted-foreground text-sm">
+                    Buying currency
+                  </p>
+                  {assetToView.buyCurrency}
+                </div>
+                <div>
                   <p className="text-muted-foreground text-sm">
                     Invested value
                   </p>
-                  {(+assetSummary.compareValue).toLocaleString("en-IN")}
+                  {formatter.format(+assetSummary.compareValue)}
                 </div>
-                <div className="">
+                <div>
                   <p className="text-muted-foreground text-sm">Current value</p>
-                  {assetSummary.currentValue}
+                  {formatter.format(+assetSummary.currentValue)}
                 </div>
-                <div className="">
+                <div>
                   <p className="text-muted-foreground text-sm">
                     Realised profit/loss
                   </p>
-                  {assetSummary.realisedProfitLoss}
+                  {formatter.format(+assetSummary.realisedProfitLoss)}
                 </div>
-                <div className="">
+                <div>
                   <p className="text-muted-foreground text-sm">
                     Unrealised profit/loss
                   </p>
-                  {assetSummary.unrealisedProfitLoss}
+                  {formatter.format(+assetSummary.unrealisedProfitLoss)}
                 </div>
               </div>
             ) : (

@@ -1,12 +1,12 @@
 "use client";
 import { Asset } from "@/actions/getAssetsAction";
 import { useData } from "@/contexts/data-context";
-import { IndianRupee } from "lucide-react";
 import { useState } from "react";
 import { PieChart, Pie, Sector, Cell, Tooltip } from "recharts";
 import LoadingSpinner from "./ui/loading-spinner";
 import { useVisibility } from "@/contexts/visibility-context";
 import colors from "@/constants/colors";
+import { useCurrency } from "@/contexts/currency-context";
 
 const COLORS = colors;
 
@@ -84,6 +84,16 @@ interface PieChartProps {
 function AssetPieChart({ view }: PieChartProps) {
   const { visible } = useVisibility();
   let { assets: data } = useData();
+  const { numberSystem, defaultCurrency, conversionRates } = useCurrency();
+  const formatter = new Intl.NumberFormat(
+    numberSystem === "Indian" ? "en-IN" : "en-US",
+    {
+      style: "currency",
+      currency: defaultCurrency,
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    }
+  );
   const [activeIndex, setActiveIndex] = useState(-1);
   // Create an object to store the sum of values for each type
   const sumByType: {
@@ -93,9 +103,14 @@ function AssetPieChart({ view }: PieChartProps) {
   // Iterate over each data object and sum the values for each type
   if (view === "dashboard") {
     data?.forEach((item) => {
-      if (item.quantity !== "0") {
+      if (item.quantity !== "0" && conversionRates) {
+        const currencyConversion =
+          conversionRates[item.buyCurrency.toLowerCase()];
+        const multiplier = 1 / currencyConversion;
         const type: string = item.type;
-        const value = item.symbol ? item.currentValue : +item.currentPrice;
+        const value = item.symbol
+          ? item.currentValue * multiplier
+          : +item.currentPrice;
         sumByType[type] = (sumByType[type] || 0) + value;
       }
     });
@@ -171,11 +186,8 @@ function AssetPieChart({ view }: PieChartProps) {
                     <div className="rounded-lg border bg-background p-2 shadow-sm">
                       <div className="flex flex-col">
                         <span className="font-bold flex items-center">
-                          <IndianRupee className="h-4 w-4" />
                           {visible
-                            ? parseFloat(
-                                parseFloat(value!).toFixed(2)
-                              ).toLocaleString("en-IN")
+                            ? formatter.format(parseFloat(value!))
                             : "* ".repeat(5)}
                         </span>
                       </div>

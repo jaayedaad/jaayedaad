@@ -2,20 +2,62 @@ import { Asset } from "@/actions/getAssetsAction";
 import { useCurrency } from "@/contexts/currency-context";
 import { useVisibility } from "@/contexts/visibility-context";
 import { cn } from "@/lib/utils";
-import { ArrowDown, ArrowUp, IndianRupee } from "lucide-react";
-import React from "react";
+import { ArrowDown, ArrowUp } from "lucide-react";
+import React, { useEffect, useState } from "react";
+import { Interval } from "./changeInterval";
+import { calculateUnrealisedProfitLoss } from "@/helper/unrealisedValueCalculator";
 
 function PerformanceMetrics({
   assets,
-  unrealisedProfitLoss,
   realisedProfitLoss,
+  unrealisedProfitLossArray,
+  timeInterval,
 }: {
   assets: Asset[];
-  unrealisedProfitLoss: number | undefined;
   realisedProfitLoss: string | undefined;
+  unrealisedProfitLossArray: {
+    type: string;
+    symbol: string;
+    compareValue: string;
+    currentValue: string;
+    prevClose: string;
+    interval: string;
+    unrealisedProfitLoss: string;
+  }[];
+  timeInterval: Interval;
 }) {
   const { visible } = useVisibility();
-  const { conversionRates } = useCurrency();
+  const { conversionRates, numberSystem, defaultCurrency } = useCurrency();
+  const [unrealisedProfitLoss, setUnrealisedProfitLoss] = useState<number>();
+
+  useEffect(() => {
+    if (timeInterval === "All" && assets && conversionRates) {
+      const unrealisedProfitsLosses = calculateUnrealisedProfitLoss(
+        assets,
+        conversionRates
+      );
+      setUnrealisedProfitLoss(unrealisedProfitsLosses);
+    } else {
+      const filteredUnrealizedProfitsLosses = unrealisedProfitLossArray?.filter(
+        (res) => res.interval === timeInterval
+      );
+      const unrealisedProfitLoss = filteredUnrealizedProfitsLosses?.reduce(
+        (acc, entry) => acc + parseFloat(entry.unrealisedProfitLoss),
+        0
+      );
+
+      setUnrealisedProfitLoss(unrealisedProfitLoss);
+    }
+  }, [assets, conversionRates, timeInterval, unrealisedProfitLossArray]);
+  const formatter = new Intl.NumberFormat(
+    numberSystem === "Indian" ? "en-IN" : "en-US",
+    {
+      style: "currency",
+      currency: defaultCurrency,
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    }
+  );
 
   return (
     <div className="mt-4">
@@ -23,28 +65,29 @@ function PerformanceMetrics({
         <div>
           <p className="text-muted-foreground text-xs">Current Value</p>
           <div className="flex items-center gap-1">
-            <IndianRupee className="h-6 w-6" strokeWidth={3} />
             <span className="text-2xl font-bold">
               {visible
                 ? conversionRates &&
-                  parseFloat(
-                    assets
-                      ?.reduce((acc, asset) => {
-                        const assetCurrency = asset.buyCurrency.toLowerCase();
-                        const currencyConversion =
-                          conversionRates[assetCurrency];
-                        const multiplier = 1 / currencyConversion;
-                        return (
-                          acc +
-                          (asset.quantity > "0"
-                            ? asset.symbol
-                              ? asset.currentValue * multiplier
-                              : +asset.currentPrice * multiplier || 0
-                            : 0)
-                        );
-                      }, 0)
-                      .toFixed(2)
-                  ).toLocaleString("en-IN")
+                  formatter.format(
+                    parseFloat(
+                      assets
+                        ?.reduce((acc, asset) => {
+                          const assetCurrency = asset.buyCurrency.toLowerCase();
+                          const currencyConversion =
+                            conversionRates[assetCurrency];
+                          const multiplier = 1 / currencyConversion;
+                          return (
+                            acc +
+                            (asset.quantity > "0"
+                              ? asset.symbol
+                                ? asset.currentValue * multiplier
+                                : +asset.currentPrice * multiplier || 0
+                              : 0)
+                          );
+                        }, 0)
+                        .toFixed(2)
+                    )
+                  )
                 : "* ".repeat(5)}
             </span>
           </div>
@@ -53,7 +96,14 @@ function PerformanceMetrics({
       <div className="flex flex-col gap-4">
         <div className="p-3 rounded-md border w-full">
           <p className="text-sm flex items-center justify-between mb-2">
-            Unrealised Profit / Loss <IndianRupee className="h-4 w-4" />
+            Unrealised Profit / Loss
+            <div className="text-md">
+              {
+                formatter
+                  .formatToParts(0)
+                  .find((part) => part.type === "currency")?.value
+              }
+            </div>
           </p>
           <div
             className={cn(
@@ -81,10 +131,9 @@ function PerformanceMetrics({
                 </div>
               )}
               <div className="text-sm flex items-center">
-                <IndianRupee className="h-3 w-3" />
                 {unrealisedProfitLoss &&
                   (visible
-                    ? unrealisedProfitLoss.toLocaleString("en-IN")
+                    ? formatter.format(unrealisedProfitLoss)
                     : "* ".repeat(5))}
               </div>
             </div>
@@ -92,7 +141,14 @@ function PerformanceMetrics({
         </div>
         <div className="p-3 rounded-md border w-full">
           <p className="text-sm flex items-center justify-between mb-2">
-            Realised Profit / Loss <IndianRupee className="h-4 w-4" />
+            Realised Profit / Loss
+            <div className="text-md">
+              {
+                formatter
+                  .formatToParts(0)
+                  .find((part) => part.type === "currency")?.value
+              }
+            </div>
           </p>
           <div
             className={cn(
@@ -102,13 +158,9 @@ function PerformanceMetrics({
                 : "text-green-400"
             )}
           >
-            <IndianRupee className="h-6 w-6" strokeWidth={3} />
             <span className="text-2xl font-bold">
               {visible
-                ? realisedProfitLoss &&
-                  parseFloat((+realisedProfitLoss).toFixed(2)).toLocaleString(
-                    "en-IN"
-                  )
+                ? realisedProfitLoss && formatter.format(+realisedProfitLoss)
                 : "* ".repeat(5)}
             </span>
           </div>
