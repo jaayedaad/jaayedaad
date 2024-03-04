@@ -48,7 +48,6 @@ export function calculateUnrealisedProfitLoss(
       return acc + (asset.compareValue * multiplier || 0);
     }, 0)
   ).toFixed(2);
-
   return parseFloat(value);
 }
 
@@ -77,9 +76,11 @@ export function getUnrealisedProfitLossArray(
   ];
 
   intervals.forEach(({ label, days }) => {
-    const currentDate = new Date();
-    const pastDate = new Date(currentDate);
-    pastDate.setDate(currentDate.getDate() - days);
+    const latestDate = new Date(
+      historicalData[0].values[historicalData[0].values.length - 1].date * 1000
+    );
+    const pastDate = new Date(latestDate);
+    pastDate.setDate(latestDate.getDate() - days);
 
     assets.forEach((asset) => {
       const assetCurrency = asset.buyCurrency.toLowerCase();

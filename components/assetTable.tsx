@@ -132,15 +132,15 @@ function AssetTable({
             );
 
             if (existingType) {
-              existingType.currentValue += asset.currentValue * multiplier;
-              existingType.compareValue += asset.compareValue * multiplier;
+              existingType.currentValue += asset.currentValue;
+              existingType.compareValue += asset.compareValue;
             } else {
               groupedAssets.push({
                 type: asset.type,
                 currentValue: asset.symbol
                   ? asset.currentValue * multiplier
                   : asset.currentValue * multiplier,
-                compareValue: asset.compareValue * multiplier,
+                compareValue: asset.compareValue,
               });
             }
           }
@@ -523,13 +523,14 @@ function AssetTable({
             </TableBody>
           </ScrollArea>
         </Table>
-        {historicalData && open && (
+        {historicalData && open && conversionRates && (
           <ViewAsset
             open={open}
             setOpen={setOpen}
             assetToView={assetToView}
             manualAsset={manualAsset}
             historicalData={historicalData}
+            conversionRates={conversionRates}
           />
         )}
       </>
