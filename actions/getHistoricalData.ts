@@ -3,6 +3,18 @@
 import { Asset } from "@/actions/getAssetsAction";
 import { getConversionRate } from "./getConversionRateAction";
 
+function areDatesEqual(date1: Date, date2: Date): boolean {
+  const d1 = new Date(date1);
+  const d2 = new Date(date2);
+
+  // Set time components to 0 to ignore time
+  d1.setHours(0, 0, 0, 0);
+  d2.setHours(0, 0, 0, 0);
+
+  // Compare year, month, and day
+  return d1.getTime() === d2.getTime();
+}
+
 export async function getHistoricalData(assets: Asset[]) {
   const conversionRate = await getConversionRate();
   let historicalData = [];
@@ -52,16 +64,32 @@ export async function getHistoricalData(assets: Asset[]) {
         .toString()
         .padStart(2, "0")}:${today.getSeconds().toString().padStart(2, "0")}`;
 
-      const newRes = await fetch(
-        `https://api.twelvedata.com/time_series?symbol=${symbol}&interval=1day&dp=2&previous_close=true&start_date=${formattedStartDate}&end_date=${formattedToday}`,
-        {
-          method: "GET",
-          headers: {
-            Authorization: `apikey ${process.env.NEXT_PUBLIC_TWELVEDATA_API_KEY}`,
-          },
-        }
-      );
-      const data = await newRes.json();
+      let res: Response;
+      if (
+        areDatesEqual(new Date(formattedToday), new Date(formattedStartDate))
+      ) {
+        res = await fetch(
+          `https://api.twelvedata.com/time_series?symbol=${symbol}&interval=1day&dp=2&previous_close=true&end_date=${formattedToday}`,
+          {
+            method: "GET",
+            headers: {
+              Authorization: `apikey ${process.env.NEXT_PUBLIC_TWELVEDATA_API_KEY}`,
+            },
+          }
+        );
+      } else {
+        res = await fetch(
+          `https://api.twelvedata.com/time_series?symbol=${symbol}&interval=1day&dp=2&previous_close=true&start_date=${formattedStartDate}&end_date=${formattedToday}`,
+          {
+            method: "GET",
+            headers: {
+              Authorization: `apikey ${process.env.NEXT_PUBLIC_TWELVEDATA_API_KEY}`,
+            },
+          }
+        );
+      }
+
+      const data = await res.json();
       if (data.code !== 429) {
         // Calculate total value of asset and add it to the data object
         data.values.forEach((dayData: any) => {
@@ -105,6 +133,5 @@ export async function getHistoricalData(assets: Asset[]) {
       }
     }
   });
-
   return historicalData;
 }

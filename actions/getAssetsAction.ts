@@ -1,6 +1,5 @@
 "use server";
 import { cookies } from "next/headers";
-import { getConversionRate } from "./getConversionRateAction";
 
 const calculateCurrentValue = (asset: Asset) => {
   const calculateBaseValue = () => {
@@ -87,28 +86,32 @@ export async function getAssets() {
   });
   const assets: Asset[] = await data.json();
 
-  if (assets.length > 0) {
+  if (assets.length) {
     const assetQuotesPromises = assets.map(async (asset) => {
-      const quoteResponse = await fetch(
-        `https://api.twelvedata.com/quote?symbol=${asset.symbol}`,
-        {
-          method: "GET",
-          headers: {
-            Authorization: `apikey ${process.env.NEXT_PUBLIC_TWELVEDATA_API_KEY}`,
-          },
+      if (asset.symbol !== null) {
+        const quoteResponse = await fetch(
+          `https://api.twelvedata.com/quote?symbol=${asset.symbol}`,
+          {
+            method: "GET",
+            headers: {
+              Authorization: `apikey ${process.env.NEXT_PUBLIC_TWELVEDATA_API_KEY}`,
+            },
+          }
+        );
+
+        const quote = await quoteResponse.json();
+
+        if (quote.code && quote.code === 404) {
+          asset.prevClose = asset.currentPrice;
+        } else {
+          asset.prevClose = (+quote.previous_close).toFixed(2);
         }
-      );
+        calculateCurrentValue(asset);
 
-      const quote = await quoteResponse.json();
-
-      if (quote.code && quote.code === 404) {
-        asset.prevClose = asset.currentPrice;
+        return asset;
       } else {
-        asset.prevClose = (+quote.previous_close).toFixed(2);
+        return asset;
       }
-      calculateCurrentValue(asset);
-
-      return asset;
     });
 
     const updatedAssets = await Promise.all(assetQuotesPromises);
