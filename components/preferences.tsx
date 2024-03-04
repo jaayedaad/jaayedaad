@@ -15,8 +15,10 @@ import {
   SelectValue,
 } from "./ui/select";
 import { numberSystem } from "@/constants/numberSystems";
+import { useCurrency } from "@/contexts/currency-context";
 
 function Preferences() {
+  const { setNumberSystem, setGlobalCurrency } = useCurrency();
   const [publicProfile, setPublicProfile] = useState(false);
   const [defaultCurrency, setDefaultCurrency] = useState("INR");
   const [defaultNumberSystem, setDefaultNumberSystem] = useState("Indian");
@@ -43,6 +45,8 @@ function Preferences() {
         body: JSON.stringify(preferences),
       });
     } finally {
+      setNumberSystem(defaultNumberSystem);
+      setGlobalCurrency(defaultCurrency);
       setLoading(false);
     }
   };
@@ -108,7 +112,6 @@ function Preferences() {
           <div>
             <Select
               onValueChange={(value) => {
-                console.log(value);
                 setDefaultNumberSystem(value);
               }}
               value={defaultNumberSystem}

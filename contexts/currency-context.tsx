@@ -13,6 +13,8 @@ export const CurrencyContext = createContext<
             [currency: string]: number;
           }
         | undefined;
+      numberSystem: string;
+      setNumberSystem: React.Dispatch<React.SetStateAction<string>>;
     }
   | undefined
 >(undefined);
@@ -23,18 +25,26 @@ export default function CurrencyProvider({
   children: React.ReactNode;
 }) {
   const [defaultCurrency, setGlobalCurrency] = useState("");
+  const [numberSystem, setNumberSystem] = useState("Indian");
   const [conversionRates, setConversionRates] = useState<{
     [currency: string]: number;
   }>();
   useEffect(() => {
     getConversionRate().then((rate) => setConversionRates(rate));
-    getPreferences().then((preferences) =>
-      setGlobalCurrency(preferences.defaultCurrency.toLowerCase())
-    );
+    getPreferences().then((preferences) => {
+      setGlobalCurrency(preferences.defaultCurrency.toLowerCase());
+      setNumberSystem(preferences.numberSystem);
+    });
   }, [defaultCurrency]);
   return (
     <CurrencyContext.Provider
-      value={{ defaultCurrency, setGlobalCurrency, conversionRates }}
+      value={{
+        defaultCurrency,
+        setGlobalCurrency,
+        conversionRates,
+        numberSystem,
+        setNumberSystem,
+      }}
     >
       {children}
     </CurrencyContext.Provider>
