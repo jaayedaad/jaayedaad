@@ -81,6 +81,8 @@ model Preference {
   publicProfile   Boolean @default(false)
   defaultCurrency String  @default("INR")
   numberSystem    String  @default("Indian")
+  showHoldings    Boolean @default(false)
+  showMetrics     Boolean @default(false)
   userId          String  @unique
   user            User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
