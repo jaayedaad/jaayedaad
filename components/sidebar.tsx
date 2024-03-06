@@ -143,7 +143,7 @@ function Sidebar() {
             variant="ghost"
             className={cn(
               `w-full justify-start pr-8`,
-              currentTab === `/dashboard/profile/${user?.userData.username}` &&
+              currentTab.includes("profile") &&
                 "bg-secondary text-foreground hover:bg-primary/20"
             )}
           >
