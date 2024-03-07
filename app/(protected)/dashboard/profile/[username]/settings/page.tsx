@@ -9,6 +9,7 @@ import { useEffect, useState } from "react";
 import AccountSettings from "@/components/accountSettings";
 import { Preference } from "@prisma/client";
 import { getPreferences } from "@/actions/getPreferencesAction";
+import LoadingSpinner from "@/components/ui/loading-spinner";
 
 function SettingsPage() {
   const { data: session } = useSession();
@@ -68,20 +69,24 @@ function SettingsPage() {
               <UserRound className="mr-2" /> Account
             </Button>
           </div>
-          <div className="w-full mr-28">
-            {selectedOption === "Preferences" && preferences && (
-              <Preferences
-                preferences={preferences}
-                setPreferences={setPreferences}
-              />
-            )}
-            {selectedOption === "Account" && preferences && (
-              <AccountSettings
-                preferences={preferences}
-                setPreferences={setPreferences}
-              />
-            )}
-          </div>
+          {preferences ? (
+            <div className="w-full mr-28">
+              {selectedOption === "Preferences" && (
+                <Preferences
+                  preferences={preferences}
+                  setPreferences={setPreferences}
+                />
+              )}
+              {selectedOption === "Account" && (
+                <AccountSettings
+                  preferences={preferences}
+                  setPreferences={setPreferences}
+                />
+              )}
+            </div>
+          ) : (
+            <LoadingSpinner />
+          )}
         </div>
       </div>
     )

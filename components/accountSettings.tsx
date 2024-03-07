@@ -1,12 +1,20 @@
 import React, { useEffect, useState } from "react";
 import { Switch } from "./ui/switch";
 import { Button } from "./ui/button";
-import { Loader2 } from "lucide-react";
+import { Loader2, Trash2 } from "lucide-react";
 import { Separator } from "./ui/separator";
 import { getPreferences } from "@/actions/getPreferencesAction";
 import { Preference } from "@prisma/client";
 import { toast } from "sonner";
 import LoadingSpinner from "./ui/loading-spinner";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "./ui/dialog";
 
 interface AccountSettingsProps {
   preferences: Preference;
@@ -63,6 +71,8 @@ function AccountSettings({
     }
   };
 
+  const handleDeleteAccount = async () => {};
+
   return (
     <>
       <div className="flex justify-between">
@@ -78,7 +88,7 @@ function AccountSettings({
         </Button>
       </div>
       <Separator className="my-4" />
-      {showMetrics !== undefined && showHoldings !== undefined ? (
+      {preferences ? (
         <div className="flex flex-col gap-4">
           <div className="py-5 px-4 flex items-center justify-between border rounded-md w-full">
             <div>
@@ -105,6 +115,42 @@ function AccountSettings({
               checked={showMetrics}
               onCheckedChange={(value) => setShowMetrics(value)}
             />
+          </div>
+          <div className="py-5 px-4 flex items-center justify-between border rounded-md w-full">
+            <div>
+              <h2 className="text-red-600">Danger Zone</h2>
+              <p className="text-muted-foreground text-sm">
+                Be Careful. Account deletion cannot be undone
+              </p>
+            </div>
+            <Dialog>
+              <DialogTrigger asChild>
+                <Button variant="destructive">
+                  <Trash2 className="h-4 w-4 mr-2" /> Delete account
+                </Button>
+              </DialogTrigger>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>Delete Account</DialogTitle>
+                  <DialogDescription>
+                    Are you sure you want to delete your Jaayedaad account?
+                  </DialogDescription>
+                </DialogHeader>
+                <div>
+                  Your account & data and any preferences you have saved will be
+                  lost permanently.
+                </div>
+                <div className="flex justify-end">
+                  <Button
+                    onClick={() => handleDeleteAccount()}
+                    variant="destructive"
+                    className="w-fit"
+                  >
+                    Remove
+                  </Button>
+                </div>
+              </DialogContent>
+            </Dialog>
           </div>
         </div>
       ) : (

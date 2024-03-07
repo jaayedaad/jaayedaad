@@ -87,9 +87,7 @@ function Preferences({ preferences, setPreferences }: PreferenceProps) {
         </Button>
       </div>
       <Separator className="my-4" />
-      {publicProfile !== undefined &&
-      defaultCurrency !== undefined &&
-      defaultNumberSystem !== undefined ? (
+      {preferences ? (
         <div className="flex flex-col gap-4">
           <div className="py-5 px-4 flex items-center justify-between border rounded-md w-full">
             <div>

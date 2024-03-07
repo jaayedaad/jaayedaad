@@ -1,13 +1,11 @@
 import { getCurrentUser } from "@/actions/getCurrentUser";
 import Image from "next/image";
 import { Settings } from "lucide-react";
-import { getAssets } from "@/actions/getAssetsAction";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 
 async function Profile({ params }: { params: { username: string } }) {
   const userResponse = await getCurrentUser();
-  const assets = await getAssets();
 
   return (
     <div className="my-6 px-6 w-full flex">
