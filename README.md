@@ -1,22 +1,36 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+<h1 style="text-align: center;">Welcome to Jaayedaad</h1>
 
-## Getting Started
+---
 
-First, run the development server:
+## Description
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+`Jaayedaad` is a portfolio management application where users can track their investments by adding transactions for buying and selling various assets. The application provides features such as viewing line charts, doughnut charts, realized profit/loss, unrealized profit/loss, current asset values and much more.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Table of Contents
 
-## Development
+- [Description](#description)
+- [Table of Contents](#table-of-contents)
+- [Features](#features)
+- [Tech Stack](#tech-stack)
+- [Setup](#setup)
+- [Usage](#usage)
+
+## Features
+
+1. Add transactions for buying and selling assets of various types.
+2. View line charts and doughnut charts for better visualization of investments.
+3. Track realized and unrealized profit/loss.
+4. Track your current asset values.
+
+## Tech Stack
+
+- **Next.js**: Used for building the frontend/backend of the application.
+- **Prisma**: ORM used for database operations.
+- **PostgreSQL**: Database used for storing user and transaction data.
+
+## Setup
+
+To set up the project locally, follow these steps:
 
 1.  Clone the repo into a public GitHub repository:
 
@@ -28,7 +42,7 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 
 3.  Install packages with npm
 
-        npm i
+        npm install
 
 4.  Set up your `.env` file
     - Duplicate `.env.example`to `.env`
@@ -38,3 +52,10 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
         npx prisma migrate dev
 
 6.  Quick start with `npm run dev`
+7.  Access the application at `http://localhost:3000`
+
+## Usage
+
+- Register a new account or log in if you already have one.
+- Add transactions for buying and selling assets.
+- Navigate through different sections to view graphs, charts, and profit/loss information.
