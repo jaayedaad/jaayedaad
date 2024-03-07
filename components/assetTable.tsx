@@ -132,15 +132,15 @@ function AssetTable({
             );
 
             if (existingType) {
-              existingType.currentValue += asset.currentValue;
-              existingType.compareValue += asset.compareValue;
+              existingType.currentValue += asset.currentValue * multiplier;
+              existingType.compareValue += asset.compareValue * multiplier;
             } else {
               groupedAssets.push({
                 type: asset.type,
                 currentValue: asset.symbol
                   ? asset.currentValue * multiplier
                   : asset.currentValue * multiplier,
-                compareValue: asset.compareValue,
+                compareValue: asset.compareValue * multiplier,
               });
             }
           }
