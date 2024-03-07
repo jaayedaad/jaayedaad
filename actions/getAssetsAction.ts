@@ -3,8 +3,8 @@ import { cookies } from "next/headers";
 
 const calculateCurrentValue = (asset: Asset) => {
   const calculateBaseValue = () => {
-    const currentValue = +asset.buyPrice * +asset.quantity;
-    return currentValue;
+    const investedValue = +asset.buyPrice * +asset.quantity;
+    return investedValue;
   };
 
   const calculateYearsSinceCreated = () => {
@@ -110,6 +110,7 @@ export async function getAssets() {
 
         return asset;
       } else {
+        calculateCurrentValue(asset);
         return asset;
       }
     });

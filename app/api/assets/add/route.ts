@@ -100,17 +100,27 @@ export async function POST(req: Request) {
       existingAsset.transactions.push(newTransaction);
       const avgBuyPrice = calculateAvgBuyPrice(existingAsset.transactions);
 
-      const asset = await prisma.asset.update({
-        where: {
-          id: existingAsset.id,
-        },
-        data: {
-          quantity: updatedQuantity.toString(),
-          buyPrice: avgBuyPrice.toString(),
-        },
-      });
-
-      if (body.isManualEntry) {
+      if (!body.isManualEntry) {
+        const asset = await prisma.asset.update({
+          where: {
+            id: existingAsset.id,
+          },
+          data: {
+            quantity: updatedQuantity.toString(),
+            buyPrice: avgBuyPrice.toString(),
+          },
+        });
+      } else {
+        const asset = await prisma.asset.update({
+          where: {
+            id: existingAsset.id,
+          },
+          data: {
+            quantity: updatedQuantity.toString(),
+            buyPrice: avgBuyPrice.toString(),
+            currentPrice: body.currentPrice.toString(),
+          },
+        });
         const assetPriceUpdate = await prisma.assetPriceUpdate.create({
           data: {
             assetId: asset.id,

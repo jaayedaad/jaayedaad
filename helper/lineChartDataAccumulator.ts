@@ -98,7 +98,7 @@ export function accumulateLineChartData(historicalData: any[]) {
 
   // Create an object to store aggregated amounts for each date
   let aggregatedAssetAmounts: { [date: string]: number }[] = [];
-
+  console.log(historicalData[0]);
   // Iterate through each asset in historicalData
   historicalData.forEach((asset) => {
     let aggregatedAmountsForAsset: { [date: string]: number } = {};

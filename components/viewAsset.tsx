@@ -71,7 +71,7 @@ function ViewAsset({
   >();
 
   const assetHistory: any[] = [];
-  if (assetToView?.symbol !== "") {
+  if (assetToView?.symbol !== undefined) {
     assetHistory.push(
       historicalData.find((data) => data.assetSymbol === assetToView?.symbol)
     );
@@ -301,7 +301,9 @@ function ViewAsset({
                   ? assetToView?.symbol
                   : manualAsset?.name}
               </span>
-              {assetToView?.exchange !== "" && <>({assetToView?.exchange})</>}
+              {assetToView?.exchange !== undefined && (
+                <>({assetToView?.exchange})</>
+              )}
             </div>
             <div>
               <div className="flex justify-between">
@@ -311,25 +313,34 @@ function ViewAsset({
                       numberSystem === "Indian" ? "en-IN" : "en-US",
                       {
                         style: "currency",
-                        currency: assetToView?.buyCurrency,
+                        currency:
+                          assetToView?.buyCurrency || manualAsset?.buyCurrency,
                         minimumFractionDigits: 2,
                         maximumFractionDigits: 2,
                       }
-                    ).format(+currentValue)}
+                    ).format(+currentValue || +manualAsset?.currentValue!)}
                   </h3>
                   <div className="flex gap-1">
                     <p
                       className={cn(
                         "ml-1 text-sm",
-                        compareLabel < currentValue
+                        assetToView
+                          ? compareLabel < currentValue
+                          : manualAsset &&
+                            manualAsset.currentValue > manualAsset.compareValue
                           ? "text-green-400"
                           : "text-red-400"
                       )}
                     >
                       {currentValue > compareLabel && "+"}
-                      {(
-                        parseFloat(currentValue) - parseFloat(compareLabel)
-                      ).toLocaleString("en-IN")}
+                      {assetToView
+                        ? (
+                            parseFloat(currentValue) - parseFloat(compareLabel)
+                          ).toLocaleString("en-IN")
+                        : manualAsset &&
+                          (
+                            manualAsset.currentValue - manualAsset.compareValue
+                          ).toLocaleString("en-IN")}
                     </p>
                     <p
                       className={cn(
@@ -340,12 +351,20 @@ function ViewAsset({
                       )}
                     >
                       {currentValue > compareLabel && "+"}
-                      {(
-                        ((+parseFloat(currentValue) -
-                          +parseFloat(compareLabel)) *
-                          100) /
-                        +compareLabel
-                      ).toFixed(2)}
+                      {assetToView
+                        ? (
+                            ((+parseFloat(currentValue) -
+                              +parseFloat(compareLabel)) *
+                              100) /
+                            +compareLabel
+                          ).toFixed(2)
+                        : manualAsset &&
+                          (
+                            ((manualAsset.currentValue -
+                              manualAsset.compareValue) *
+                              100) /
+                            manualAsset.compareValue
+                          ).toFixed(2)}
                       %
                     </p>
                   </div>
@@ -408,13 +427,15 @@ function ViewAsset({
                 </div>
               </div>
             ) : (
-              <div className="mt-12">
-                <LoadingSpinner />
-              </div>
+              !manualAsset && (
+                <div className="mt-12">
+                  <LoadingSpinner />
+                </div>
+              )
             )}
           </TabsContent>
           <TabsContent value="transactions">
-            {assetToView?.symbol !== ""
+            {assetToView?.symbol !== undefined
               ? assetToView && (
                   <TransactionHistory assetName={assetToView.name} />
                 )

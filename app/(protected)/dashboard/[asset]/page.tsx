@@ -28,7 +28,20 @@ function Page({ params }: { params: { asset: string } }) {
     filteredAssets
   );
 
-  const [manualCategoryAssets, setManualCategoryAssets] = useState<Asset[]>();
+  const categoryExist = filteredAssets.some(
+    (asset) => asset.type.toLowerCase() === param.toLowerCase()
+  );
+
+  let manualCategoryAsset: Asset[] | undefined;
+  if (categoryExist) {
+    manualCategoryAsset = filteredAssets.filter(
+      (asset) => asset.type.toLowerCase() === param.toLowerCase()
+    );
+  }
+
+  const [manualCategoryAssets, setManualCategoryAssets] = useState<
+    Asset[] | undefined
+  >(manualCategoryAsset);
   const [timeInterval, setTimeInterval] = useState<Interval>("1d");
   const [unrealisedProfitLossArray, setUnrealisedProfitLossArray] = useState<
     {
@@ -46,16 +59,7 @@ function Page({ params }: { params: { asset: string } }) {
     async function getPageData() {
       if (filteredAssets) {
         if (!defaultCategories.includes(param)) {
-          const categoryExist = filteredAssets.some(
-            (asset) => asset.type.toLowerCase() === param.toLowerCase()
-          );
-          if (categoryExist) {
-            setManualCategoryAssets(
-              filteredAssets.filter(
-                (asset) => asset.type.toLowerCase() === param.toLowerCase()
-              )
-            );
-          } else {
+          if (!categoryExist) {
             redirect("/dashboard");
           }
         } else {
