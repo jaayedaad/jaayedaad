@@ -1,19 +1,8 @@
-<h1 style="text-align: center;">Welcome to Jaayedaad</h1>
-
----
+# Welcome to Jaayedaad
 
 ## Description
 
 `Jaayedaad` is a portfolio management application where users can track their investments by adding transactions for buying and selling various assets. The application provides features such as viewing line charts, doughnut charts, realized profit/loss, unrealized profit/loss, current asset values and much more.
-
-## Table of Contents
-
-- [Description](#description)
-- [Table of Contents](#table-of-contents)
-- [Features](#features)
-- [Tech Stack](#tech-stack)
-- [Setup](#setup)
-- [Usage](#usage)
 
 ## Features
 
