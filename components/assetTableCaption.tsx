@@ -22,6 +22,7 @@ import { getPreferences } from "@/actions/getPreferencesAction";
 import { Preference } from "@prisma/client";
 import { Loader2 } from "lucide-react";
 import { useCurrency } from "@/contexts/currency-context";
+import { cn } from "@/lib/utils";
 
 function AssetTableCaption() {
   const { setGlobalCurrency } = useCurrency();
@@ -73,25 +74,43 @@ function AssetTableCaption() {
                 Set the default currency of your choice
               </DialogDescription>
             </DialogHeader>
-            <Select
-              onValueChange={(value) => {
-                setDefaultCurrency(value);
-              }}
-              value={defaultCurrency}
-            >
-              <SelectTrigger className="w-fit">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent className="h-72">
-                {currencies.map((currency) => {
-                  return (
-                    <SelectItem key={currency.label} value={currency.label}>
-                      {currency.value}
-                    </SelectItem>
-                  );
-                })}
-              </SelectContent>
-            </Select>
+            <div className="grid grid-cols-5 grid-rows-2 gap-1">
+              {currencies.slice(0, 9).map((currency) => {
+                return (
+                  <Button
+                    className={cn(
+                      "text-muted-foreground",
+                      defaultCurrency.toUpperCase() === currency.label &&
+                        "bg-secondary hover:bg-primary/20 text-primary"
+                    )}
+                    onClick={() => setDefaultCurrency(currency.label)}
+                    variant="ghost"
+                    key={currency.label}
+                  >
+                    {currency.label}
+                  </Button>
+                );
+              })}
+
+              <Select
+                onValueChange={(value) => {
+                  setDefaultCurrency(value);
+                }}
+              >
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="More" />
+                </SelectTrigger>
+                <SelectContent className="h-72">
+                  {currencies.slice(9).map((currency) => {
+                    return (
+                      <SelectItem key={currency.label} value={currency.label}>
+                        {currency.value}
+                      </SelectItem>
+                    );
+                  })}
+                </SelectContent>
+              </Select>
+            </div>
             <div className="inline-flex justify-end">
               <Button onClick={() => hadnleConfirmCurrency()}>
                 {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
