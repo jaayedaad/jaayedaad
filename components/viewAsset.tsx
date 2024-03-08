@@ -121,18 +121,18 @@ function ViewAsset({
     }
     prepareLineChartData(value, lineChartData, setDataToShow);
     setCurrentValue(
-      assetToView?.symbol !== ""
+      assetToView?.symbol !== undefined
         ? assetHistory[0].values[assetHistory[0].values.length - 1].close
-        : assetHistory[0].values[0].value
+        : assetHistory[0].values[assetHistory[0].values.length - 1].value
     );
     switch (value) {
       case "1d":
         setCompareLabel(
           assetHistory[0].values.length > 0
-            ? assetToView?.symbol !== ""
+            ? assetToView?.symbol !== undefined
               ? assetHistory[0].values[1].close
               : assetHistory[0].values[assetHistory[0].values.length - 2].value
-            : assetToView?.symbol !== ""
+            : assetToView?.symbol !== undefined
             ? assetHistory[0].values[0].close
             : assetHistory[0].values[0].value
         );
@@ -156,10 +156,10 @@ function ViewAsset({
       case "1w":
         setCompareLabel(
           assetHistory[0].values.length > 6
-            ? assetToView?.symbol !== ""
+            ? assetToView?.symbol !== undefined
               ? assetHistory[0].values[7].close
               : assetHistory[0].values[assetHistory[0].values.length - 8].value
-            : assetToView?.symbol !== ""
+            : assetToView?.symbol !== undefined
             ? assetHistory[0].values[0].close
             : assetHistory[0].values[0].value
         );
@@ -183,10 +183,10 @@ function ViewAsset({
       case "1m":
         setCompareLabel(
           assetHistory[0].values.length > 29
-            ? assetToView?.symbol !== ""
+            ? assetToView?.symbol !== undefined
               ? assetHistory[0].values[30].close
               : assetHistory[0].values[assetHistory[0].values.length - 30].value
-            : assetToView?.symbol !== ""
+            : assetToView?.symbol !== undefined
             ? assetHistory[0].values[0].close
             : assetHistory[0].values[0].value
         );
@@ -209,12 +209,12 @@ function ViewAsset({
         break;
       case "1y":
         setCompareLabel(
-          assetHistory[0].values.length > 364
-            ? assetToView?.symbol !== ""
+          assetHistory[0].values.length > 365
+            ? assetToView?.symbol !== undefined
               ? assetHistory[0].values[365].close
               : assetHistory[0].values[assetHistory[0].values.length - 366]
                   .value
-            : assetToView?.symbol !== ""
+            : assetToView?.symbol !== undefined
             ? assetHistory[0].values[0].close
             : assetHistory[0].values[0].value
         );
@@ -237,7 +237,7 @@ function ViewAsset({
         break;
       case "All":
         setCompareLabel(
-          assetToView?.symbol !== ""
+          assetToView?.symbol !== undefined
             ? assetHistory[0].values[0].close
             : assetHistory[0].values[0].value
         );
@@ -282,7 +282,6 @@ function ViewAsset({
       maximumFractionDigits: 2,
     }
   );
-
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogContent className="h-[516px] min-w-[50vw]">
@@ -297,7 +296,7 @@ function ViewAsset({
           <TabsContent value="summary" className="mt-4">
             <div className="text-sm text-muted-foreground">
               <span className="text-foreground pr-1">
-                {assetToView?.symbol !== ""
+                {assetToView?.symbol !== undefined
                   ? assetToView?.symbol
                   : manualAsset?.name}
               </span>
@@ -324,28 +323,20 @@ function ViewAsset({
                     <p
                       className={cn(
                         "ml-1 text-sm",
-                        assetToView
-                          ? compareLabel < currentValue
-                          : manualAsset &&
-                            manualAsset.currentValue > manualAsset.compareValue
+                        compareLabel <= currentValue
                           ? "text-green-400"
                           : "text-red-400"
                       )}
                     >
                       {currentValue > compareLabel && "+"}
-                      {assetToView
-                        ? (
-                            parseFloat(currentValue) - parseFloat(compareLabel)
-                          ).toLocaleString("en-IN")
-                        : manualAsset &&
-                          (
-                            manualAsset.currentValue - manualAsset.compareValue
-                          ).toLocaleString("en-IN")}
+                      {(
+                        parseFloat(currentValue) - parseFloat(compareLabel)
+                      ).toLocaleString("en-IN")}
                     </p>
                     <p
                       className={cn(
                         "text-sm rounded-sm px-0.5",
-                        currentValue > compareLabel
+                        currentValue >= compareLabel
                           ? "text-green-400 bg-green-400/30"
                           : "text-red-400 bg-red-400/30"
                       )}
@@ -360,10 +351,8 @@ function ViewAsset({
                           ).toFixed(2)
                         : manualAsset &&
                           (
-                            ((manualAsset.currentValue -
-                              manualAsset.compareValue) *
-                              100) /
-                            manualAsset.compareValue
+                            ((manualAsset.currentValue - +compareLabel) * 100) /
+                            +compareLabel
                           ).toFixed(2)}
                       %
                     </p>

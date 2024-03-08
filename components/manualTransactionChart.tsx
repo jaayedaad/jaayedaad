@@ -37,7 +37,6 @@ function ManualTransactionChart({
       amt: number;
     }[]
   >();
-  console.log(manualCategoryAssets);
   const historicalData =
     prepareHistoricalDataForManualCategory(manualCategoryAssets);
 
