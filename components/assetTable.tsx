@@ -256,9 +256,11 @@ function AssetTable({
                   <TableHead className="text-right w-[128px]">
                     Avg. Buying Price
                   </TableHead>
-                  <TableHead className="text-right w-[128px]">
-                    Exchange
-                  </TableHead>
+                  {filteredAsset[0].symbol !== null && (
+                    <TableHead className="text-right w-[128px]">
+                      Exchange
+                    </TableHead>
+                  )}
                   <TableHead className="text-right w-[136px]">
                     {filteredAsset[0].symbol !== null
                       ? "Previous close"
@@ -365,15 +367,23 @@ function AssetTable({
                                 ).toFixed(2)
                               ).toLocaleString("en-IN")}
                           </TableCell>
+                          {filteredAsset[0].symbol !== null && (
+                            <TableCell className="text-right">
+                              {asset.exchange}
+                            </TableCell>
+                          )}
                           <TableCell className="text-right">
-                            {asset.exchange}
-                          </TableCell>
-                          <TableCell className="text-right">
-                            {conversionRates &&
-                              (
-                                parseFloat(asset.prevClose) /
-                                conversionRates[asset.buyCurrency.toLowerCase()]
-                              ).toLocaleString("en-IN")}
+                            {filteredAsset[0].symbol !== null
+                              ? conversionRates &&
+                                (
+                                  parseFloat(asset.prevClose) /
+                                  conversionRates[
+                                    asset.buyCurrency.toLowerCase()
+                                  ]
+                                ).toLocaleString("en-IN")
+                              : parseFloat(
+                                  filteredAsset[0].currentPrice
+                                ).toLocaleString("en-IN")}
                           </TableCell>
                           <TableCell className="text-right px-8">
                             <div className="flex flex-col">
@@ -390,9 +400,9 @@ function AssetTable({
                           </TableCell>
                           <TableCell
                             className={`text-right px-8 ${
-                              +asset.prevClose > +asset.buyPrice
+                              +asset.currentValue > +asset.compareValue
                                 ? "text-green-400"
-                                : +asset.prevClose < +asset.buyPrice
+                                : +asset.currentValue < +asset.compareValue
                                 ? "text-red-400"
                                 : ""
                             }`}
@@ -407,24 +417,26 @@ function AssetTable({
                                     ]
                                   ).toLocaleString("en-IN")
                                 : "* ".repeat(5)}
-                              {+asset.prevClose > +asset.buyPrice ? (
+                              {+asset.currentValue > +asset.compareValue ? (
                                 <span className="flex items-center justify-end">
                                   (
                                   {(
-                                    ((+asset.prevClose - +asset.buyPrice) *
+                                    ((+asset.currentValue -
+                                      +asset.compareValue) *
                                       100) /
-                                    +asset.buyPrice
+                                    +asset.compareValue
                                   ).toFixed(2)}
                                   %
                                   <ArrowUpIcon className="h-4 w-4 ml-2" />)
                                 </span>
-                              ) : +asset.prevClose < +asset.buyPrice ? (
+                              ) : +asset.currentValue < +asset.compareValue ? (
                                 <span className="flex items-center justify-end">
                                   (
                                   {(
-                                    ((+asset.buyPrice - +asset.prevClose) *
+                                    ((+asset.compareValue -
+                                      +asset.currentValue) *
                                       100) /
-                                    +asset.buyPrice
+                                    +asset.compareValue
                                   ).toFixed(2)}
                                   %
                                   <ArrowDownIcon className="h-4 w-4 ml-2" />)
