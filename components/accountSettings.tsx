@@ -90,7 +90,7 @@ function AccountSettings({
       <Separator className="my-4" />
       {preferences ? (
         <div className="flex flex-col gap-4">
-          <div className="py-5 px-4 flex items-center justify-between border rounded-md w-full">
+          <div className="py-5 px-4 flex gap-2 items-center justify-between border rounded-md w-full">
             <div>
               <h2>Holdings</h2>
               <p className="text-muted-foreground text-sm">
@@ -103,7 +103,7 @@ function AccountSettings({
               onCheckedChange={(value) => setShowHoldings(value)}
             />
           </div>
-          <div className="py-5 px-4 flex items-center justify-between border rounded-md w-full">
+          <div className="py-5 px-4 flex gap-2 items-center justify-between border rounded-md w-full">
             <div>
               <h2>Portfolio metrics</h2>
               <p className="text-muted-foreground text-sm">
@@ -116,7 +116,7 @@ function AccountSettings({
               onCheckedChange={(value) => setShowMetrics(value)}
             />
           </div>
-          <div className="py-5 px-4 flex items-center justify-between border rounded-md w-full">
+          <div className="py-5 px-4 flex gap-2 items-center justify-between border rounded-md w-full">
             <div>
               <h2 className="text-red-600">Danger Zone</h2>
               <p className="text-muted-foreground text-sm">

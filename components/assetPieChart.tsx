@@ -148,8 +148,8 @@ function AssetPieChart({ view }: PieChartProps) {
   return (
     <>
       <h3 className="font-semibold">Asset Distribution</h3>
-      <p className="text-muted-foreground text-sm">
-        Visual breakdown of your investments
+      <p className="text-muted-foreground text-xs xl:text-sm">
+        Breakdown of your investments
       </p>
       <div className="flex justify-center mt-2">
         {data ? (

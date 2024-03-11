@@ -1,4 +1,5 @@
 import { getCurrentUser } from "@/actions/getCurrentUser";
+import BottomBar from "@/components/bottomBar";
 import Sidebar from "@/components/sidebar";
 import CurrencyProvider from "@/contexts/currency-context";
 import DataProvider from "@/contexts/data-context";
@@ -12,16 +13,17 @@ async function DashboardLayout({ children }: { children: React.ReactNode }) {
     redirect("/auth/onboarding");
   }
   return (
-    <main className="flex">
-      <VisibilityProvider>
-        <DataProvider>
-          <CurrencyProvider>
+    <VisibilityProvider>
+      <DataProvider>
+        <CurrencyProvider>
+          <main className="flex">
             <Sidebar />
             {children}
-          </CurrencyProvider>
-        </DataProvider>
-      </VisibilityProvider>
-    </main>
+          </main>
+          <BottomBar />
+        </CurrencyProvider>
+      </DataProvider>
+    </VisibilityProvider>
   );
 }
 

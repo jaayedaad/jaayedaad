@@ -284,7 +284,7 @@ function ViewAsset({
   );
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogContent className="h-[516px] min-w-[50vw]">
+      <DialogContent className="w-[90vw] lg:min-w-[50vw]">
         <Tabs defaultValue="summary" className="w-full">
           <TabsList>
             <TabsTrigger value="summary">Summary</TabsTrigger>
@@ -305,8 +305,8 @@ function ViewAsset({
               )}
             </div>
             <div>
-              <div className="flex justify-between">
-                <div>
+              <div>
+                <div className="mb-2">
                   <h3 className="text-3xl font-bold flex items-center">
                     {new Intl.NumberFormat(
                       numberSystem === "Indian" ? "en-IN" : "en-US",
@@ -363,7 +363,7 @@ function ViewAsset({
             </div>
             {dataToShow && <AssetLineChart dataToShow={dataToShow} />}
             {assetSummary && assetToView ? (
-              <div className="mt-8 grid grid-cols-4 grid-rows-2 gap-4">
+              <div className="mt-8 grid grid-cols-2 grid-rows-4 lg:grid-cols-4 lg:grid-rows-2 gap-4">
                 <div>
                   <p className="text-muted-foreground text-sm">
                     Avg. buying price

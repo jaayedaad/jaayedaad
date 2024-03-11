@@ -1,10 +1,9 @@
 "use client";
-import { Asterisk, Bell, UserRound } from "lucide-react";
+import { Bell, UserRound } from "lucide-react";
 import Preferences from "@/components/preferences";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useSession } from "next-auth/react";
-import Image from "next/image";
 import { useEffect, useState } from "react";
 import AccountSettings from "@/components/accountSettings";
 import { Preference } from "@prisma/client";
@@ -33,19 +32,8 @@ function SettingsPage() {
   return (
     session && (
       <div className="py-6 px-6 w-full">
-        <div className="text-5xl font-bold flex items-center gap-4 py-4">
-          Settings <Asterisk />
-          <Image
-            src={session?.user?.image!}
-            alt="Profile picture"
-            height={64}
-            width={64}
-            className="rounded-full border-2 border-foreground"
-            priority
-          />
-        </div>
-        <div className="flex mt-4">
-          <div className="text-muted-foreground flex flex-col gap-1 mx-16 w-52 min-w-fit">
+        <div>
+          <div className="text-muted-foreground flex gap-1 mb-4">
             <Button
               variant="ghost"
               className={cn(

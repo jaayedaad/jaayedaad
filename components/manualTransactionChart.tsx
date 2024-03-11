@@ -6,7 +6,7 @@ import {
   formatInternationalNumber,
 } from "@/helper/indianNumberingFormatter";
 import { prepareHistoricalDataForManualCategory } from "@/helper/manualAssetsHistoryMaker";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Area, AreaChart, Tooltip, XAxis, YAxis } from "recharts";
 import ChangeInterval, { Interval } from "./changeInterval";
 import { prepareLineChartData } from "@/helper/prepareLineChartData";
@@ -15,10 +15,12 @@ import { useCurrency } from "@/contexts/currency-context";
 
 interface ManualTransactionChartProps {
   manualCategoryAssets: Asset[];
+  timeInterval?: Interval | undefined;
 }
 
 function ManualTransactionChart({
   manualCategoryAssets,
+  timeInterval,
 }: ManualTransactionChartProps) {
   const { visible } = useVisibility();
   const { numberSystem, defaultCurrency } = useCurrency();
@@ -55,9 +57,10 @@ function ManualTransactionChart({
     (a, b) => new Date(b.name).getTime() - new Date(a.name).getTime()
   );
 
-  function onChange(value: Interval) {
-    prepareLineChartData(value, uniqueData, setDataToShow);
-  }
+  useEffect(() => {
+    timeInterval &&
+      prepareLineChartData(timeInterval, uniqueData, setDataToShow);
+  }, [timeInterval]);
 
   return (
     <div>
@@ -68,7 +71,6 @@ function ManualTransactionChart({
             Insight into your portfolio&apos;s value dynamics
           </p>
         </div>
-        <ChangeInterval onChange={onChange} />
       </div>
       <div className="flex justify-center mt-2">
         {dataToShow && dataToShow.length > 0 && (

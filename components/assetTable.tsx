@@ -234,7 +234,7 @@ function AssetTable({
       <>
         <Table>
           <AssetTableCaption />
-          <ScrollArea className="w-full h-[33vh]">
+          <ScrollArea className="w-full xl:h-[33vh] lg:h-[30vh]">
             <TableHeader className="bg-secondary sticky top-0">
               {view ? (
                 <TableRow>
@@ -250,7 +250,7 @@ function AssetTable({
                       {filteredAsset.find((asset) => asset.type === "DEPOSITS")
                         ? "Interest rate (%)"
                         : "Quantity"}
-                      <ArrowUpDown className="ml-4 h-4 w-4" />
+                      <ArrowUpDown className="ml-2 h-4 w-4" />
                     </Button>
                   </TableHead>
                   <TableHead className="text-right w-[128px]">
@@ -275,7 +275,7 @@ function AssetTable({
                       }}
                     >
                       Invested Value
-                      <ArrowUpDown className="ml-4 h-4 w-4" />
+                      <ArrowUpDown className="ml-2 h-4 w-4" />
                     </Button>
                   </TableHead>
                   <TableHead className="text-right w-[128px]">
@@ -287,14 +287,14 @@ function AssetTable({
                       }}
                     >
                       Current Value
-                      <ArrowUpDown className="ml-4 h-4 w-4" />
+                      <ArrowUpDown className="ml-2 h-4 w-4" />
                     </Button>
                   </TableHead>
                 </TableRow>
               ) : (
                 <TableRow>
                   <TableHead>Category</TableHead>
-                  <TableHead className="text-right">
+                  <TableHead className="text-right lg:w-16 xl:w-auto">
                     <Button
                       variant="ghost"
                       onClick={() => {
@@ -303,7 +303,7 @@ function AssetTable({
                       }}
                     >
                       Invested Amount
-                      <ArrowUpDown className="ml-4 h-4 w-4" />
+                      <ArrowUpDown className="ml-2 h-4 w-4" />
                     </Button>
                   </TableHead>
                   <TableHead className="text-right">
@@ -315,7 +315,7 @@ function AssetTable({
                       }}
                     >
                       Current Value
-                      <ArrowUpDown className="ml-4 h-4 w-4" />
+                      <ArrowUpDown className="ml-2 h-4 w-4" />
                     </Button>
                   </TableHead>
                   <TableHead className="text-right">

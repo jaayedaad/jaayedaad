@@ -77,7 +77,7 @@ function PortfolioLineChart({
       <div className="flex gap-64">
         <div>
           <h3 className="font-semibold">Portfolio Performance</h3>
-          <p className="text-muted-foreground text-sm">
+          <p className="text-muted-foreground text-xs xl:text-sm">
             Insight into your portfolio&apos;s value dynamics
           </p>
         </div>

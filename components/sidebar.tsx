@@ -10,7 +10,6 @@ import {
   Home,
   LandPlot,
   Landmark,
-  LogOut,
   Plus,
   Shapes,
   SquareStack,
@@ -21,14 +20,7 @@ import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { Toggle } from "./ui/toggle";
 import { useVisibility } from "@/contexts/visibility-context";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "./ui/dialog";
+import { Dialog, DialogContent, DialogTitle, DialogTrigger } from "./ui/dialog";
 import AddTransaction from "./addTransaction";
 import { useData } from "@/contexts/data-context";
 
@@ -51,8 +43,8 @@ function Sidebar() {
   const manualCategoryList = Array.from(uniqueCategorySet);
 
   return (
-    <div className="py-6 px-4 border-r h-screen w-fit">
-      <div className="flex flex-col justify-between h-full">
+    <div className="hidden lg:block py-6 px-4 border-r lg:h-screen w-fit">
+      <div className="flex flex-col justify-between lg:h-full xl:h-full">
         <div className="flex flex-col gap-1 text-muted-foreground">
           <Button
             asChild
@@ -143,12 +135,12 @@ function Sidebar() {
             variant="ghost"
             className={cn(
               `w-full justify-start pr-8`,
-              currentTab.includes("profile") &&
+              currentTab === "/dashboard/settings" &&
                 "bg-secondary text-foreground hover:bg-primary/20"
             )}
           >
-            <Link href={`/dashboard/profile/${user?.userData.username}`}>
-              <UserIcon className="mr-2" size={20} /> Profile
+            <Link href={"/dashboard/settings"}>
+              <UserIcon className="mr-2" size={20} /> Settings
             </Link>
           </Button>
         </div>
@@ -165,7 +157,7 @@ function Sidebar() {
           </div>
           <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
-              <Button className="justify-start w-fit pr-8">
+              <Button className="justify-start w-fit xl:pr-8">
                 <Plus className="mr-2" size={20} /> Add transaction
               </Button>
             </DialogTrigger>

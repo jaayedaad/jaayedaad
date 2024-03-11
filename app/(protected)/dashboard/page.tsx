@@ -75,12 +75,12 @@ function Dashboard() {
   };
 
   return assets ? (
-    <div className="px-6 py-6 w-full h-screen flex flex-col">
+    <div className="px-6 sm:px-8 pt-6 pb-20 md:pb-24 lg:py-6 w-full lg:h-screen xl:h-screen flex flex-col">
       <div className="inline-flex justify-end">
         <ChangeInterval onChange={onChange} />
       </div>
       <div className="min-h-[85vh] h-full mt-4">
-        <div className="grid grid-rows-7 grid-cols-3 gap-4 h-full text-foreground">
+        <div className="flex flex-col gap-4 sm:gap-6 md:gap-6 lg:gap-4 lg:grid lg:grid-rows-7 lg:grid-cols-3 lg:h-full text-foreground">
           {/* Asset distribution pie chart */}
           <div className="col-span-1 row-span-3 bg-card border rounded-xl p-4">
             <AssetPieChart view="dashboard" />
@@ -97,7 +97,7 @@ function Dashboard() {
               ) : (
                 <div>
                   <h3 className="font-semibold">Portfolio Performance</h3>
-                  <p className="text-muted-foreground text-sm">
+                  <p className="text-muted-foreground text-xs xl:text-sm">
                     Insight into your portfolio&apos;s value dynamics
                   </p>
                   <div className="h-40 flex items-center justify-center">
@@ -108,7 +108,7 @@ function Dashboard() {
             ) : (
               <div>
                 <h3 className="font-semibold">Portfolio Performance</h3>
-                <p className="text-muted-foreground text-sm">
+                <p className="text-muted-foreground text-xs xl:text-sm">
                   Insight into your portfolio&apos;s value dynamics
                 </p>
                 <div className="h-40 flex items-center">
@@ -120,15 +120,15 @@ function Dashboard() {
           {/* Asset Table */}
           <div className="col-span-2 row-span-4 bg-card border rounded-xl p-4">
             <div className="flex justify-between">
-              <div className="flex items-center gap-1">
+              <div className="xl:flex xl:items-center xl:gap-1">
                 <h3 className="font-semibold">Asset Overview</h3>
-                <p className="text-muted-foreground text-sm">
-                  (Comprehensive list of your owned assets)
+                <p className="text-muted-foreground text-xs xl:text-sm">
+                  Collection of your assets
                 </p>
               </div>
               <div>
-                <p className="text-muted-foreground text-sm">
-                  Last update on ({yesterday.toLocaleDateString("en-GB")})
+                <p className="text-muted-foreground text-end text-xs xl:text-sm">
+                  As on ({yesterday.toLocaleDateString("en-GB")})
                 </p>
               </div>
             </div>
@@ -149,8 +149,8 @@ function Dashboard() {
           {/* Performance metrics */}
           <div className="col-span-1 row-span-4 bg-card border rounded-xl p-4">
             <h3 className="font-semibold">Performance Metrics</h3>
-            <p className="text-muted-foreground text-sm">
-              Analyzing Your Investment Performance
+            <p className="text-muted-foreground text-xs xl:text-sm">
+              Analyze investment performance
             </p>
             {assets && unrealisedProfitLossArray ? (
               <PerformanceMetrics

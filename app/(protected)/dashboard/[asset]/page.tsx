@@ -119,12 +119,12 @@ function Page({ params }: { params: { asset: string } }) {
   };
 
   return (
-    <div className="px-6 py-6 w-full h-screen flex flex-col">
+    <div className="px-6 sm:px-8 pt-6 pb-20 md:pb-24 lg:py-6 w-full lg:h-screen xl:h-screen flex flex-col">
       <div className="inline-flex justify-end">
         <ChangeInterval onChange={onChange} />
       </div>
       <div className="min-h-[85vh] h-full mt-4">
-        <div className="grid grid-rows-7 grid-cols-3 gap-4 h-full">
+        <div className="flex flex-col gap-4 sm:gap-6 md:gap-6 lg:gap-4 lg:grid lg:grid-rows-7 lg:grid-cols-3 lg:h-full text-foreground">
           <div className="row-span-3 col-span-1 border rounded-xl p-4">
             <AssetPieChart view={params.asset} />
           </div>
@@ -140,6 +140,7 @@ function Page({ params }: { params: { asset: string } }) {
                 manualCategoryAssets && (
                   <ManualTransactionChart
                     manualCategoryAssets={manualCategoryAssets}
+                    timeInterval={timeInterval}
                   />
                 )
               )
@@ -157,14 +158,14 @@ function Page({ params }: { params: { asset: string } }) {
           </div>
           <div className="row-span-4 flex flex-col col-span-3 border rounded-xl p-4">
             <div className="flex justify-between">
-              <div className="flex items-center gap-1">
+              <div className="xl:flex xl:items-center xl:gap-1">
                 <h3 className="font-semibold">Asset Overview</h3>
-                <p className="text-muted-foreground text-sm">
-                  (Comprehensive list of your owned {param})
+                <p className="text-muted-foreground text-xs xl:text-sm">
+                  Collection of your {param}
                 </p>
               </div>
               <div>
-                <p className="text-muted-foreground text-sm">
+                <p className="text-muted-foreground text-right text-xs xl:text-sm">
                   Last update on ({yesterday.toLocaleDateString("en-GB")})
                 </p>
               </div>

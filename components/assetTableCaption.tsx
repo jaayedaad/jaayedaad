@@ -56,13 +56,13 @@ function AssetTableCaption() {
   };
   return (
     defaultCurrency && (
-      <TableCaption className="text-right">
-        *All values are in{" "}
+      <TableCaption className="text-right xl:text-sm lg:text-xs">
+        *All values are in
         <Dialog open={open} onOpenChange={setOpen}>
           <DialogTrigger>
             <Button
               variant="link"
-              className="text-sm p-0 underline text-muted-foreground"
+              className="xl:text-sm lg:text-xs ml-1 p-0 underline text-muted-foreground"
             >
               {defaultCurrency}.
             </Button>

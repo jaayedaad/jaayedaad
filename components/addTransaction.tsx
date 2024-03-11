@@ -95,7 +95,7 @@ export default function AddTransaction({
 
   return (
     <div className="flex w-full flex-col">
-      <div className="flex gap-6 items-center">
+      <div className="flex md:gap-6 items-center">
         {/* Search Field */}
         <SearchField
           searchQuery={searchQuery}
@@ -107,7 +107,7 @@ export default function AddTransaction({
             className="text-muted-foreground text-center"
             variant="ghost"
           >
-            + Or add it manually
+            + add manually
           </Button>
         </div>
       </div>
