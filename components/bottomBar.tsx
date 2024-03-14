@@ -42,7 +42,7 @@ function BottomBar() {
   });
   const manualCategoryList = Array.from(uniqueCategorySet);
   return (
-    <div className="w-full px-6 sm:px-12 pb-4 fixed bottom-0 flex gap-1 bg-background sm:gap-6 h-16 md:h-20 justify-between lg:hidden">
+    <div className="w-full px-6 sm:px-12 py-4 fixed bottom-0 flex gap-1 bg-background border-t sm:gap-6 h-20 md:h-24 justify-between lg:hidden">
       <Button
         asChild
         variant="ghost"

@@ -15,7 +15,7 @@ function ChangeInterval({ onChange }: ChildProps) {
 
   return (
     <div className="flex gap-1 justify-center items-center">
-      <Button
+      {/* <Button
         variant={activeInterval === "1d" ? "secondary" : "ghost"}
         size="icon"
         onClick={() => {
@@ -24,7 +24,7 @@ function ChangeInterval({ onChange }: ChildProps) {
         }}
       >
         1d
-      </Button>
+      </Button> */}
       <Button
         variant={activeInterval === "1w" ? "secondary" : "ghost"}
         size="icon"

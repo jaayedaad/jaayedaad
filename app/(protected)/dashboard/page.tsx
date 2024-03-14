@@ -1,5 +1,4 @@
 "use client";
-import { getConversionRate } from "@/actions/getConversionRateAction";
 import AssetPieChart from "@/components/assetPieChart";
 import AssetTable from "@/components/assetTable";
 import ChangeInterval, { Interval } from "@/components/changeInterval";
@@ -14,6 +13,8 @@ import {
 } from "@/helper/realisedValueCalculator";
 import { getUnrealisedProfitLossArray } from "@/helper/unrealisedValueCalculator";
 import { useEffect, useState } from "react";
+import jaayedaad_logo from "@/public/jaayedaad_logo.svg";
+import Image from "next/image";
 
 function Dashboard() {
   const { conversionRates } = useCurrency();
@@ -76,7 +77,12 @@ function Dashboard() {
 
   return assets ? (
     <div className="px-6 sm:px-8 pt-6 pb-20 md:pb-24 lg:py-6 w-full lg:h-screen xl:h-screen flex flex-col">
-      <div className="inline-flex justify-end">
+      <div className="inline-flex justify-between lg:justify-end items-center">
+        <Image
+          src={jaayedaad_logo}
+          alt="Jaayedaad logo"
+          className="h-10 lg:hidden"
+        />
         <ChangeInterval onChange={onChange} />
       </div>
       <div className="min-h-[85vh] h-full mt-4">
@@ -147,7 +153,7 @@ function Dashboard() {
             </div>
           </div>
           {/* Performance metrics */}
-          <div className="col-span-1 row-span-4 bg-card border rounded-xl p-4">
+          <div className="col-span-1 row-span-4 bg-card border rounded-xl p-4 mb-4 md:mb-6 lg:mb-0">
             <h3 className="font-semibold">Performance Metrics</h3>
             <p className="text-muted-foreground text-xs xl:text-sm">
               Analyze investment performance
