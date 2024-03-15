@@ -58,7 +58,7 @@ function Dashboard() {
       }
       setRealisedProfitLossArray(realisedProfitLossResults);
     }
-  }, [assets, timeInterval, historicalData, conversionRates]);
+  }, [historicalData, timeInterval, conversionRates]);
 
   // Get today's date
   const today = new Date();
