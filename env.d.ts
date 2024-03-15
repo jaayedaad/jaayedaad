@@ -10,8 +10,14 @@ declare global {
       NODE_ENV: string;
       NEXT_PUBLIC_APP_URL: string;
 
-      // Prisma
+      // Postgres db url
       DATABASE_URL: string;
+
+      // Sia url
+      SIA_API_URL: string;
+
+      // Sia data encryption key
+      SIA_ENCRYPTION_KEY: string;
 
       // TWELVE DATA API KEY
       NEXT_PUBLIC_TWELVEDATA_API_KEY: string;
