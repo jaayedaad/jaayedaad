@@ -1,4 +1,5 @@
 "use server";
+import getAllAssets from "@/sia/getAllAssets";
 import { cookies } from "next/headers";
 
 const calculateCurrentValue = (asset: Asset) => {
@@ -77,16 +78,22 @@ export async function getAssets() {
     .map((cookie) => `${cookie.name}=${cookie.value}`)
     .join(";");
 
-  const data = await fetch(`${process.env.NEXT_PUBLIC_APP_URL}/api/assets`, {
-    method: "GET",
-    headers: {
-      Cookie: cookiesString,
-    },
-    credentials: "include",
-  });
-  const assets: Asset[] = await data.json();
+  let assets: Asset[] | undefined;
 
-  if (assets.length) {
+  if (process.env.SIA_API_URL) {
+    assets = await getAllAssets();
+  } else if (process.env.DATABASE_URL) {
+    const data = await fetch(`${process.env.NEXT_PUBLIC_APP_URL}/api/assets`, {
+      method: "GET",
+      headers: {
+        Cookie: cookiesString,
+      },
+      credentials: "include",
+    });
+    assets = await data.json();
+  }
+
+  if (assets && assets.length) {
     const assetQuotesPromises = assets.map(async (asset) => {
       if (asset.symbol !== null) {
         const quoteResponse = await fetch(
