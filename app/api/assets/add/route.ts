@@ -9,6 +9,10 @@ import findExistingAssetFromSia from "@/helper/sia/findExisitingAsset";
 import findExistingCategoryFromSia from "@/helper/sia/findExisitingCategory";
 
 export async function POST(req: Request) {
+  const assetId = createId();
+  const transactionId = createId();
+  const assetPriceUpdateId = createId();
+
   const body = await req.json();
   const session = await getServerSession(authOptions);
 
@@ -32,8 +36,6 @@ export async function POST(req: Request) {
         body.name,
         body.isManualEntry
       );
-      const assetId = createId();
-      const transactionId = createId();
       const username = "username";
       const password = "1234";
       const basicAuth =
@@ -128,7 +130,7 @@ export async function POST(req: Request) {
               }
             );
           }
-          const assetPriceUpdateId = createId();
+
           await fetch(
             `${process.env.SIA_API_URL}/worker/objects/${user.id}/assets/${assetId}/assetPriceUpdates/${assetPriceUpdateId}`,
             {
@@ -223,6 +225,7 @@ export async function POST(req: Request) {
             asset = await prisma.asset.create({
               data: {
                 ...body,
+                id: assetId,
                 userId: user.id,
                 manualCategoryId: existingCategory.id,
               },
@@ -239,6 +242,7 @@ export async function POST(req: Request) {
             asset = await prisma.asset.create({
               data: {
                 ...body,
+                id: assetId,
                 userId: user.id,
                 manualCategoryId: usersManualCategory.id,
               },
@@ -247,6 +251,7 @@ export async function POST(req: Request) {
 
           const assetPriceUpdate = await prisma.assetPriceUpdate.create({
             data: {
+              id: assetPriceUpdateId,
               assetId: asset.id,
               price: body.currentPrice,
               date: body.buyDate,
@@ -256,12 +261,14 @@ export async function POST(req: Request) {
           asset = await prisma.asset.create({
             data: {
               ...body,
+              id: assetId,
               userId: user.id,
             },
           });
         }
         await prisma.transaction.create({
           data: {
+            id: transactionId,
             date: body.buyDate,
             quantity: body.quantity,
             price: body.buyPrice,
@@ -274,6 +281,7 @@ export async function POST(req: Request) {
 
         const newTransaction = await prisma.transaction.create({
           data: {
+            id: transactionId,
             date: body.buyDate,
             quantity: body.quantity,
             price: body.buyPrice,
@@ -309,6 +317,7 @@ export async function POST(req: Request) {
           });
           const assetPriceUpdate = await prisma.assetPriceUpdate.create({
             data: {
+              id: assetPriceUpdateId,
               assetId: asset.id,
               price: body.currentPrice,
               date: body.buyDate,

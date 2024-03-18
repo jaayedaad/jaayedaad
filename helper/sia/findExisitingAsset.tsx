@@ -1,3 +1,5 @@
+import CryptoJS from "crypto-js";
+
 export interface siaObject {
   eTag: string;
   health: number;
@@ -38,9 +40,12 @@ export default async function findExistingAssetFromSia(
     const assetAddressArray = response.map((res: siaObject) => res.name);
 
     const requests = assetAddressArray.map((address) =>
-      fetch(`${process.env.SIA_API_URL}/worker/objects${address}`).then(
-        (response) => response.json()
-      )
+      fetch(`${process.env.SIA_API_URL}/worker/objects${address}data`, {
+        method: "GET",
+        headers: {
+          AUthorization: basicAuth,
+        },
+      }).then((response) => response.json())
     );
     const responses = await Promise.all(requests);
 
