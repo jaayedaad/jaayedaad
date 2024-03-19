@@ -114,8 +114,14 @@ function calculateRealisedProfitLossAll(
         let avgBuyPrice: number;
         if (asset.symbol) {
           const valueTillTransaction = calculateTotalValue(pastTransactions);
-          const quantityTillTransaction =
-            calculateTotalQuantity(pastTransactions);
+          const quantityTillTransaction = pastTransactions.reduce(
+            (sum, transaction) => {
+              return transaction.type === "buy"
+                ? sum + parseFloat(transaction.quantity)
+                : sum;
+            },
+            0
+          );
 
           avgBuyPrice = valueTillTransaction / quantityTillTransaction;
         } else {
@@ -133,7 +139,6 @@ function calculateRealisedProfitLossAll(
       realisedProfitLoss: realisedProfitLoss.toFixed(2),
     });
   });
-
   const value = realisedProfitsLosses?.reduce((acc, current) => {
     return acc + parseFloat(current.realisedProfitLoss);
   }, 0);
