@@ -1,3 +1,5 @@
+import CryptoJS from "crypto-js";
+
 export async function getAssetById(userId: string, assetId: string) {
   const username = "username";
   const password = "1234";

@@ -1,3 +1,4 @@
+import CryptoJS from "crypto-js";
 import { siaObject } from "./findExisitingAsset";
 
 export default async function findExistingCategoryFromSia(
