@@ -15,8 +15,7 @@ import { Button } from "./ui/button";
 import { Transaction } from "@prisma/client";
 import { ScrollArea } from "./ui/scroll-area";
 import TransactionForm from "./transactionForm";
-import { Plus, Trash } from "lucide-react";
-import { toast } from "sonner";
+import { Plus } from "lucide-react";
 import RemoveAssetButton from "./removeAssetButton";
 
 function TransactionHistory({ assetName }: { assetName: string }) {
@@ -26,16 +25,6 @@ function TransactionHistory({ assetName }: { assetName: string }) {
   const [transactionToEdit, setTransactionToEdit] = useState<Transaction>();
 
   const assetToView = assets?.find((asset) => asset.name === assetName);
-
-  const handleRemoveAsset = async (id: string) => {
-    fetch("/api/assets/remove", {
-      method: "POST",
-      body: JSON.stringify(id),
-    }).then(() => {
-      toast.success("Asset removed successfully!");
-      setOpen(false);
-    });
-  };
 
   return (
     <div className="mt-4 flex flex-col justify-between">
