@@ -23,7 +23,7 @@ function RemoveAssetButton({ assetId }: RemoveAssetButtonProps) {
   const handleRemoveAsset = async (assetId: string) => {
     fetch("/api/assets/remove", {
       method: "POST",
-      body: JSON.stringify(assetId),
+      body: JSON.stringify({ assetId }),
     })
       .then((res) => res.json())
       .then((res) => {
