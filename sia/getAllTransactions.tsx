@@ -50,7 +50,14 @@ export default async function getAllTransactions(assetId: string) {
 
       const responses = await Promise.all(requests);
 
-      const transactions = responses.map((response) => {
+      const transactions: {
+        id: string;
+        date: Date;
+        quantity: string;
+        price: string;
+        type: string;
+        assetId: string;
+      }[] = responses.map((response) => {
         const encryptedData = response.data;
 
         // Decrypting the encrypted data
