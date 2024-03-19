@@ -1,6 +1,8 @@
 import { prisma } from "@/lib/prisma";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/utils/authOptions";
+import { createId } from "@paralleldrive/cuid2";
+import CryptoJS from "crypto-js";
 
 export async function POST(req: Request) {
   const body: {
@@ -24,18 +26,48 @@ export async function POST(req: Request) {
   });
 
   if (user) {
-    const priceUpdate = await prisma.assetPriceUpdate.create({
-      data: {
-        price: body.price,
-        date: body.date,
-        assetId: body.assetId,
-      },
-    });
+    const username = "username";
+    const password = "1234";
+    const basicAuth =
+      "Basic " + Buffer.from(username + ":" + password).toString("base64");
 
-    if (priceUpdate) {
-      return Response.json({ success: "Price update successful!" });
-    } else {
-      return Response.json({ error: "Price update unsuccessful!" });
+    const encryptionKey =
+      user.id.slice(0, 4) + process.env.SIA_ENCRYPTION_KEY + user.id.slice(-4);
+
+    if (process.env.DATABASE_URL) {
+      const priceUpdate = await prisma.assetPriceUpdate.create({
+        data: {
+          price: body.price,
+          date: body.date,
+          assetId: body.assetId,
+        },
+      });
     }
+    if (process.env.SIA_API_URL) {
+      const assetPriceUpdateId = createId();
+      await fetch(
+        `${process.env.SIA_API_URL}/worker/objects/${user.id}/assets/${body.assetId}/assetPriceUpdates/${assetPriceUpdateId}`,
+        {
+          method: "PUT",
+          headers: {
+            Authorization: basicAuth,
+          },
+          body: JSON.stringify({
+            data: CryptoJS.AES.encrypt(
+              JSON.stringify({
+                id: assetPriceUpdateId,
+                price: body.price,
+                date: body.date,
+                assetId: body.assetId,
+              }),
+              encryptionKey
+            ).toString(),
+          }),
+        }
+      );
+    }
+    return Response.json({ success: "Price update successful!" });
+  } else {
+    return Response.json({ error: "Price update unsuccessful!" });
   }
 }
