@@ -7,6 +7,7 @@ import CryptoJS from "crypto-js";
 import { createId } from "@paralleldrive/cuid2";
 import findExistingAssetFromSia from "@/helper/sia/findExisitingAsset";
 import findExistingCategoryFromSia from "@/helper/sia/findExisitingCategory";
+import getAllTransactions from "@/sia/getAllTransactions";
 
 export async function POST(req: Request) {
   const assetId = createId();
@@ -52,13 +53,12 @@ export async function POST(req: Request) {
           method: "GET",
         }
       );
+      const existingCategoryId = await findExistingCategoryFromSia(
+        user.id,
+        body.type
+      );
       if (!existingAsset) {
         if (body.isManualEntry) {
-          const existingCategoryId = await findExistingCategoryFromSia(
-            user.id,
-            body.type
-          );
-
           if (existingCategoryId) {
             // add asset to sia
             fetch(
@@ -204,6 +204,140 @@ export async function POST(req: Request) {
             throw new Error(`HTTP error! Status: ${response.status}`);
           }
         });
+      } else {
+        const updatedQuantity = +existingAsset.quantity + +body.quantity;
+        console.log(body.buyDate);
+        const transaction = {
+          id: transactionId,
+          date: body.buyDate,
+          quantity: body.quantity,
+          price: body.buyPrice,
+          type: "buy",
+          assetId: existingAsset.id,
+        };
+        // add asset's transaction to sia
+        fetch(
+          `${process.env.SIA_API_URL}/worker/objects/${user.id}/assets/${existingAsset.id}/transactions/${transactionId}`,
+          {
+            method: "PUT",
+            headers: {
+              Authorization: basicAuth,
+            },
+            body: JSON.stringify({
+              data: CryptoJS.AES.encrypt(
+                JSON.stringify(transaction),
+                encryptionKey
+              ).toString(),
+            }),
+          }
+        ).then((response) => {
+          if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+          }
+        });
+
+        const existingAssetTransactions = await getAllTransactions(
+          existingAsset.id
+        );
+        console.log(existingAssetTransactions);
+        if (existingAssetTransactions) {
+          existingAssetTransactions.push(transaction);
+
+          const avgBuyPrice = calculateAvgBuyPrice(existingAssetTransactions);
+          if (!body.isManualEntry) {
+            // add asset to sia
+            fetch(
+              `${process.env.SIA_API_URL}/worker/objects/${user.id}/assets/${existingAsset.id}/data`,
+              {
+                method: "PUT",
+                headers: {
+                  Authorization: basicAuth,
+                },
+                body: JSON.stringify({
+                  data: CryptoJS.AES.encrypt(
+                    JSON.stringify({
+                      ...existingAsset,
+                      quantity: updatedQuantity.toString(),
+                      buyPrice: avgBuyPrice.toString(),
+                    }),
+                    encryptionKey
+                  ).toString(),
+                }),
+              }
+            ).then((response) => {
+              if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+              }
+            });
+          } else {
+            // add asset to sia
+            fetch(
+              `${process.env.SIA_API_URL}/worker/objects/${user.id}/assets/${existingAsset.id}/data`,
+              {
+                method: "PUT",
+                headers: {
+                  Authorization: basicAuth,
+                },
+                body: JSON.stringify({
+                  data: CryptoJS.AES.encrypt(
+                    JSON.stringify({
+                      ...existingAsset,
+                      quantity: updatedQuantity.toString(),
+                      buyPrice: avgBuyPrice.toString(),
+                      currentPrice: body.currentPrice.toString(),
+                    }),
+                    encryptionKey
+                  ).toString(),
+                }),
+              }
+            ).then((response) => {
+              if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+              }
+            });
+
+            await fetch(
+              `${process.env.SIA_API_URL}/worker/objects/${user.id}/assets/${existingAsset.id}/assetPriceUpdates/${assetPriceUpdateId}`,
+              {
+                method: "PUT",
+                headers: {
+                  Authorization: basicAuth,
+                },
+                body: JSON.stringify({
+                  data: CryptoJS.AES.encrypt(
+                    JSON.stringify({
+                      id: assetPriceUpdateId,
+                      assetId: assetId,
+                      price: body.currentPrice,
+                      date: body.buyDate,
+                    }),
+                    encryptionKey
+                  ).toString(),
+                }),
+              }
+            );
+            await fetch(
+              `${process.env.SIA_API_URL}/worker/objects/${user.id}/assets/${existingAsset.id}/assetPriceUpdates/${assetPriceUpdateId}`,
+              {
+                method: "PUT",
+                headers: {
+                  Authorization: basicAuth,
+                },
+                body: JSON.stringify({
+                  data: CryptoJS.AES.encrypt(
+                    JSON.stringify({
+                      id: assetPriceUpdateId,
+                      assetId: existingAsset.id,
+                      price: body.currentPrice,
+                      date: body.buyDate,
+                    }),
+                    encryptionKey
+                  ).toString(),
+                }),
+              }
+            );
+          }
+        }
       }
     }
     if (process.env.DATABASE_URL) {
