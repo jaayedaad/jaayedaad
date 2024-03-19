@@ -2,6 +2,21 @@ import { getServerSession } from "next-auth";
 import { prisma } from "@/lib/prisma";
 import { authOptions } from "@/utils/authOptions";
 import { canSellAssets } from "@/helper/canSellAssets";
+import getAllAssets from "@/sia/getAllAssets";
+import {
+  Asset as PrismaAsset,
+  AssetPriceUpdate,
+  Transaction,
+} from "@prisma/client";
+import { Asset } from "@/actions/getAssetsAction";
+import CryptoJS from "crypto-js";
+import { createId } from "@paralleldrive/cuid2";
+import { getAssetById } from "@/sia/getAssetById";
+
+interface AssetWithTransaction extends PrismaAsset {
+  transactions: Transaction[];
+  assetPriceUpdates: AssetPriceUpdate[];
+}
 
 export async function PUT(req: Request) {
   const sellRequest: {
@@ -18,90 +33,145 @@ export async function PUT(req: Request) {
       assets: {
         include: {
           transactions: true,
+          assetPriceUpdates: true,
         },
       },
     },
   });
 
   if (user) {
-    const ownedAsset = user.assets.filter(
-      (asset) => asset.name === sellRequest.name
-    );
-    if (ownedAsset.length > 0) {
+    const username = "username";
+    const password = "1234";
+    const basicAuth =
+      "Basic " + Buffer.from(username + ":" + password).toString("base64");
+
+    const encryptionKey =
+      user.id.slice(0, 4) + process.env.SIA_ENCRYPTION_KEY + user.id.slice(-4);
+    let ownedAsset: AssetWithTransaction[] | Asset[] | undefined;
+    if (process.env.SIA_API_URL) {
+      const userAssets = await getAllAssets();
+      ownedAsset = userAssets?.filter(
+        (asset) => asset.name === sellRequest.name
+      );
+    } else if (process.env.DATABASE_URL) {
+      ownedAsset = user.assets.filter(
+        (asset) => asset.name === sellRequest.name
+      );
+    }
+    if (ownedAsset && ownedAsset.length > 0) {
       // Get the required asset
       const assets = ownedAsset;
-
       if (canSellAssets(sellRequest, assets[0].transactions)) {
-        let remainingQuantity: string = sellRequest.quantity;
+        const transactionId = createId();
+        let sellQuantity: string = sellRequest.quantity;
 
         for (const asset of assets) {
-          // Remove asset if sell quantiy is same as asset quantity
-          if (+asset.quantity - +remainingQuantity == 0) {
+          // Parsing decrypted data
+          const assetToSell = await getAssetById(user.id, asset.id);
+
+          // set asset quantity to 0 if sell quantiy is same as asset quantity
+          if (+asset.quantity - +sellQuantity == 0) {
+            if (process.env.SIA_API_URL) {
+              // update asset
+              await fetch(
+                `${process.env.SIA_API_URL}/worker/objects/${user.id}/assets/${assetToSell.id}/data`,
+                {
+                  method: "PUT",
+                  headers: {
+                    Authorization: basicAuth,
+                  },
+                  body: JSON.stringify({
+                    data: CryptoJS.AES.encrypt(
+                      JSON.stringify({
+                        ...assetToSell,
+                        quantity: "0",
+                      }),
+                      encryptionKey
+                    ).toString(),
+                  }),
+                }
+              );
+            }
+            if (process.env.DATABASE_URL) {
+              // update asset
+              await prisma.asset.update({
+                where: {
+                  id: asset.id,
+                },
+                data: {
+                  quantity: "0",
+                },
+              });
+            }
+          }
+          // Update asset quantity if asset quantity is greater than sell quantity
+          else if (+asset.quantity - +sellQuantity > 0) {
+            if (process.env.SIA_API_URL) {
+              // update asset's quantity
+              await fetch(
+                `${process.env.SIA_API_URL}/worker/objects/${user.id}/assets/${assetToSell.id}/data`,
+                {
+                  method: "PUT",
+                  headers: {
+                    Authorization: basicAuth,
+                  },
+                  body: JSON.stringify({
+                    data: CryptoJS.AES.encrypt(
+                      JSON.stringify({
+                        ...assetToSell,
+                        quantity: (+asset.quantity - +sellQuantity).toString(),
+                      }),
+                      encryptionKey
+                    ).toString(),
+                  }),
+                }
+              );
+            }
+            if (process.env.DATABASE_URL) {
+              // update asset's quantity
+              await prisma.asset.update({
+                where: {
+                  id: asset.id,
+                },
+                data: {
+                  quantity: (+asset.quantity - +sellQuantity).toString(),
+                },
+              });
+            }
+          }
+
+          // make transaction
+          if (process.env.SIA_API_URL) {
+            // make transaction
+            await fetch(
+              `${process.env.SIA_API_URL}/worker/objects/${user.id}/assets/${assetToSell.id}/transactions/${transactionId}`,
+              {
+                method: "PUT",
+                headers: {
+                  Authorization: basicAuth,
+                },
+                body: JSON.stringify({
+                  data: CryptoJS.AES.encrypt(
+                    JSON.stringify({
+                      id: transactionId,
+                      date: sellRequest.date,
+                      quantity: sellQuantity,
+                      price: sellRequest.price,
+                      type: "sell",
+                      assetId: assetToSell.id,
+                    }),
+                    encryptionKey
+                  ).toString(),
+                }),
+              }
+            );
+          }
+          if (process.env.DATABASE_URL) {
             // make transaction
             await prisma.transaction.create({
               data: {
                 date: sellRequest.date,
-                quantity: remainingQuantity,
-                price: sellRequest.price,
-                type: "sell",
-                assetId: asset.id,
-              },
-            });
-
-            // update asset
-            await prisma.asset.update({
-              where: {
-                id: asset.id,
-              },
-              data: {
-                quantity: "0",
-              },
-            });
-          }
-          // Update asset quantity if asset quantity is greater than sell quantity
-          else if (+asset.quantity - +remainingQuantity > 0) {
-            // Add transaction
-            await prisma.transaction.create({
-              data: {
-                date: sellRequest.date,
-                quantity: (+remainingQuantity).toString(),
-                price: sellRequest.price,
-                type: "sell",
-                assetId: asset.id,
-              },
-            });
-
-            // Remove assets
-            await prisma.asset.update({
-              where: {
-                id: asset.id,
-              },
-              data: {
-                quantity: (+asset.quantity - +remainingQuantity).toString(),
-              },
-            });
-
-            return Response.json({ success: "Successfully sold asset" });
-          }
-          // Update sell quantity and remove current asset instance
-          else {
-            remainingQuantity = (
-              +remainingQuantity - +asset.quantity
-            ).toString();
-            await prisma.asset.update({
-              where: {
-                id: asset.id,
-              },
-              data: {
-                quantity: "0",
-              },
-            });
-
-            // Add transaction
-            await prisma.transaction.create({
-              data: {
-                date: sellRequest.date,
-                quantity: asset.quantity,
+                quantity: sellQuantity,
                 price: sellRequest.price,
                 type: "sell",
                 assetId: asset.id,
