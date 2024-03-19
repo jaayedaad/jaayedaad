@@ -206,7 +206,6 @@ export async function POST(req: Request) {
         });
       } else {
         const updatedQuantity = +existingAsset.quantity + +body.quantity;
-        console.log(body.buyDate);
         const transaction = {
           id: transactionId,
           date: body.buyDate,
@@ -239,7 +238,6 @@ export async function POST(req: Request) {
         const existingAssetTransactions = await getAllTransactions(
           existingAsset.id
         );
-        console.log(existingAssetTransactions);
         if (existingAssetTransactions) {
           existingAssetTransactions.push(transaction);
 

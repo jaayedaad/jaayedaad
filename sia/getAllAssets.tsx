@@ -78,8 +78,6 @@ export default async function getAllAssets() {
 
               return asset;
             } catch (error) {
-              // Handle errors gracefully
-              console.error("Error processing asset:", error);
               return null; // or throw error if you want to stop the process entirely
             }
           })
