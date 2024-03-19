@@ -1,3 +1,4 @@
+import { Asset } from "@prisma/client";
 import CryptoJS from "crypto-js";
 
 export interface siaObject {
@@ -22,9 +23,8 @@ export default async function findExistingAssetFromSia(
 
   const encryptionKey =
     userId.slice(0, 4) + process.env.SIA_ENCRYPTION_KEY + userId.slice(-4);
-
   const res = await fetch(
-    `${process.env.SIA_API_URL}/workers/object/${userId}/assets/`,
+    `${process.env.SIA_API_URL}/worker/objects/${userId}/assets/`,
     {
       method: "GET",
       headers: {
@@ -33,8 +33,10 @@ export default async function findExistingAssetFromSia(
     }
   );
 
+  let existingAsset: Asset | undefined;
+
   if (!res.ok) {
-    return false;
+    return existingAsset;
   } else {
     const response: siaObject[] = await res.json();
     const assetAddressArray = response.map((res: siaObject) => res.name);
@@ -49,8 +51,6 @@ export default async function findExistingAssetFromSia(
     );
     const responses = await Promise.all(requests);
 
-    let assetFound = false;
-
     responses.forEach((response) => {
       const encryptedData = response.data;
 
@@ -62,15 +62,14 @@ export default async function findExistingAssetFromSia(
       const decryptedObject = JSON.parse(decryptedData);
       if (!isManualEntry) {
         if (decryptedObject.symbol === assetSymbol) {
-          assetFound = true; // Set assetFound to true if symbol matches
+          existingAsset = decryptedObject;
         }
       } else {
         if (decryptedObject.name === assetName) {
-          assetFound = true; // Set assetFound to true if name matches
+          existingAsset = decryptedObject;
         }
       }
     });
-
-    return assetFound;
+    return existingAsset;
   }
 }
