@@ -41,25 +41,30 @@ function AccountSettings({
   const [showHoldings, setShowHoldings] = useState(preferences.showHoldings);
   const [showMetrics, setShowMetrics] = useState(preferences.showMetrics);
   const [loading, setLoading] = useState(false);
+  const [userPreferences, setUserPreferences] = useState<Preference>();
 
   useEffect(() => {
     getPreferences().then((preferences: Preference) => {
       setShowHoldings(preferences.showHoldings);
       setShowMetrics(preferences.showMetrics);
+      setUserPreferences(preferences);
     });
   }, []);
 
   const handleSave = async () => {
     try {
       setLoading(true);
-      const preferences = {
-        showHoldings,
-        showMetrics,
-      };
-      await fetch("/api/user/preferences", {
-        method: "POST",
-        body: JSON.stringify(preferences),
-      });
+      if (userPreferences) {
+        const preferences = {
+          ...userPreferences,
+          showHoldings,
+          showMetrics,
+        };
+        await fetch("/api/user/preferences", {
+          method: "POST",
+          body: JSON.stringify(preferences),
+        });
+      }
     } finally {
       setPreferences({
         ...preferences,

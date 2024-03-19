@@ -29,18 +29,21 @@ function AssetTableCaption() {
   const [open, setOpen] = useState(false);
   const [defaultCurrency, setDefaultCurrency] = useState<string>();
   const [loading, setLoading] = useState(false);
+  const [userPreferences, setUserPreferences] = useState<Preference>();
 
   useEffect(() => {
     getPreferences().then((preferences: Preference) => {
       setDefaultCurrency(preferences.defaultCurrency);
+      setUserPreferences(preferences);
     });
   }, []);
 
   const hadnleConfirmCurrency = async () => {
-    if (defaultCurrency) {
+    if (defaultCurrency && userPreferences) {
       try {
         setLoading(true);
         const preferences = {
+          ...userPreferences,
           defaultCurrency: defaultCurrency,
         };
         await fetch("/api/user/preferences", {

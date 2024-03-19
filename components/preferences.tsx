@@ -50,14 +50,15 @@ function Preferences({ preferences, setPreferences }: PreferenceProps) {
   const handleSave = async () => {
     try {
       setLoading(true);
-      const preferences = {
+      const updatedPreferences = {
+        ...preferences,
         publicProfile: publicProfile,
         defaultCurrency: defaultCurrency,
         numberSystem: defaultNumberSystem,
       };
       await fetch("/api/user/preferences", {
         method: "POST",
-        body: JSON.stringify(preferences),
+        body: JSON.stringify(updatedPreferences),
       });
     } finally {
       setPreferences({

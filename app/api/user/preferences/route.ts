@@ -3,7 +3,16 @@ import { authOptions } from "@/utils/authOptions";
 import { prisma } from "@/lib/prisma";
 
 export async function POST(req: Request) {
-  const preferences = await req.json();
+  const preferences: {
+    id: string;
+    publicProfile: boolean;
+    defaultCurrency: string;
+    numberSystem: string;
+    showHoldings: boolean;
+    showMetrics: boolean;
+    userId: string;
+  } = await req.json();
+
   const session = await getServerSession(authOptions);
 
   if (session) {
