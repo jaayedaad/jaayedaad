@@ -23,11 +23,11 @@ export async function POST(req: Request) {
       "Basic " + Buffer.from(username + ":" + password).toString("base64");
 
     try {
-      const assetId = await req.json();
-      if (assetId) {
+      const body = await req.json();
+      if (body.assetId) {
         if (process.env.SIA_API_URL) {
           await fetch(
-            `${process.env.SIA_API_URL}/worker/objects/${user.id}/assets/${assetId}?batch=true`,
+            `${process.env.SIA_API_URL}/worker/objects/${user.id}/assets/${body.assetId}?batch=true`,
             {
               method: "DELETE",
               headers: {
@@ -38,7 +38,7 @@ export async function POST(req: Request) {
         }
         if (process.env.DATABASE_URL) {
           await prisma.asset.delete({
-            where: { id: assetId },
+            where: { id: body.assetId },
           });
         }
         return Response.json({ success: "Asset removed successfully!" });
