@@ -28,6 +28,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Check, ChevronsUpDown } from "lucide-react";
+import { useCurrency } from "@/contexts/currency-context";
 
 interface ManualTransactionFormPropsType {
   modalOpen: React.Dispatch<React.SetStateAction<boolean>>;
@@ -35,6 +36,7 @@ interface ManualTransactionFormPropsType {
 
 function ManualTransactionForm({ modalOpen }: ManualTransactionFormPropsType) {
   const { updateData, user } = useData();
+  const { defaultCurrency } = useCurrency();
   user?.usersManualCategories.forEach((manualCategory) => {
     const existingCategory = builtInCategories.some(
       (category) => category.value === manualCategory.name
@@ -51,7 +53,7 @@ function ManualTransactionForm({ modalOpen }: ManualTransactionFormPropsType) {
     name: "",
     type: "Property",
     quantity: "",
-    buyCurrency: "INR",
+    buyCurrency: defaultCurrency.toUpperCase(),
     price: "",
     currentPrice: "",
     date: "",
@@ -93,7 +95,7 @@ function ManualTransactionForm({ modalOpen }: ManualTransactionFormPropsType) {
       name: "",
       type: "Property",
       quantity: "",
-      buyCurrency: "",
+      buyCurrency: defaultCurrency.toUpperCase(),
       price: "",
       currentPrice: "",
       date: "",
@@ -124,7 +126,7 @@ function ManualTransactionForm({ modalOpen }: ManualTransactionFormPropsType) {
             name: "",
             type: "Property",
             quantity: "",
-            buyCurrency: "",
+            buyCurrency: defaultCurrency.toUpperCase(),
             price: "",
             currentPrice: "",
             date: "",
@@ -140,7 +142,7 @@ function ManualTransactionForm({ modalOpen }: ManualTransactionFormPropsType) {
             name: "",
             type: "Property",
             quantity: "",
-            buyCurrency: "",
+            buyCurrency: defaultCurrency.toUpperCase(),
             price: "",
             currentPrice: "",
             date: "",
@@ -280,7 +282,7 @@ function ManualTransactionForm({ modalOpen }: ManualTransactionFormPropsType) {
                 buyCurrency: value,
               }));
             }}
-            defaultValue="INR"
+            defaultValue={defaultCurrency.toUpperCase()}
           >
             <SelectTrigger className="w-full">
               <SelectValue placeholder="" />

@@ -12,6 +12,7 @@ import { currencies } from "@/constants/currency";
 import { Button } from "./ui/button";
 import { useData } from "@/contexts/data-context";
 import { toast } from "sonner";
+import { useCurrency } from "@/contexts/currency-context";
 
 interface transactionFormPropsType {
   selectedAsset: {
@@ -29,11 +30,12 @@ function TransactionForm({
   modalOpen,
 }: transactionFormPropsType) {
   const { updateData } = useData();
+  const { defaultCurrency } = useCurrency();
   const [loading, setLoading] = useState(false);
   const [assetQuantity, setAssetQuantity] = useState<string>("");
   const [assetPrice, setAssetPrice] = useState(selectedAsset?.prevClose);
   const [date, setDate] = useState<string>("");
-  const [currency, setCurrency] = useState("INR");
+  const [currency, setCurrency] = useState(defaultCurrency.toUpperCase());
   // Add assets handler
   const handleAddAssets = async (
     name: string,
@@ -63,7 +65,7 @@ function TransactionForm({
     setAssetQuantity("");
     setAssetPrice("");
     setDate("");
-    setCurrency("INR");
+    setCurrency(defaultCurrency.toUpperCase());
     updateData();
   };
 
@@ -90,7 +92,7 @@ function TransactionForm({
           setAssetQuantity("");
           setAssetPrice("");
           setDate("");
-          setCurrency("INR");
+          setCurrency(defaultCurrency.toUpperCase());
         }
         if (data.success) {
           setLoading(false);
@@ -99,7 +101,7 @@ function TransactionForm({
           setAssetQuantity("");
           setAssetPrice("");
           setDate("");
-          setCurrency("INR");
+          setCurrency(defaultCurrency.toUpperCase());
           updateData();
         }
       });
@@ -147,7 +149,7 @@ function TransactionForm({
               onValueChange={(value) => {
                 setCurrency(value);
               }}
-              defaultValue="INR"
+              defaultValue={defaultCurrency.toUpperCase()}
             >
               <SelectTrigger className="w-full">
                 <SelectValue placeholder="" />
