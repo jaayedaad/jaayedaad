@@ -15,8 +15,11 @@ import { getUnrealisedProfitLossArray } from "@/helper/unrealisedValueCalculator
 import { useEffect, useState } from "react";
 import jaayedaad_logo from "@/public/jaayedaad_logo.svg";
 import Image from "next/image";
+import AssetMarqueeBar from "@/components/assetMarqueeBar";
+import { Asset } from "@/actions/getAssetsAction";
 
 function Dashboard() {
+  const { assets, historicalData } = useData();
   const { conversionRates } = useCurrency();
   const [realisedProfitLoss, setRealisedProfitLoss] = useState<string>();
   const [timeInterval, setTimeInterval] = useState<Interval>("All");
@@ -33,7 +36,9 @@ function Dashboard() {
   >();
   const [realisedProfitLossArray, setRealisedProfitLossArray] =
     useState<ProfitLoss[]>();
-  const { assets, historicalData } = useData();
+  const [marqueeBarAssets, setMarqueeBarAssets] = useState<Asset[] | undefined>(
+    assets
+  );
 
   useEffect(() => {
     if (assets && conversionRates) {
@@ -73,11 +78,37 @@ function Dashboard() {
       (profitLoss) => profitLoss.interval === value
     )[0].realisedProfitLoss;
     setRealisedProfitLoss(profitLoss);
+
+    if (value !== "All" && assets) {
+      const updatedAssetsToView = assets.map((asset) => {
+        const matchingIntervalData = unrealisedProfitLossArray?.find(
+          (data) => data.symbol === asset.symbol && data.interval === value
+        );
+        if (matchingIntervalData) {
+          return {
+            ...asset,
+            compareValue: +matchingIntervalData.compareValue,
+            currentValue: +matchingIntervalData.currentValue,
+            prevClose: matchingIntervalData.prevClose,
+          };
+        }
+        return asset;
+      });
+      setMarqueeBarAssets(updatedAssetsToView);
+    } else {
+      setMarqueeBarAssets(assets);
+    }
   };
 
   return assets ? (
     <div className="px-6 sm:px-8 pt-6 pb-20 md:pb-24 lg:py-6 w-full lg:h-screen xl:h-screen flex flex-col">
-      <div className="inline-flex justify-between lg:justify-end items-center">
+      <div className="inline-flex justify-between items-center lg:gap-6">
+        {marqueeBarAssets && (
+          <AssetMarqueeBar
+            data={marqueeBarAssets}
+            timeInterval={timeInterval}
+          />
+        )}
         <Image
           src={jaayedaad_logo}
           alt="Jaayedaad logo"

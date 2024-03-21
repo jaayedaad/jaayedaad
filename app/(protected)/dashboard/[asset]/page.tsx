@@ -14,6 +14,7 @@ import { redirect } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import jaayedaad_logo from "@/public/jaayedaad_logo.svg";
 import Image from "next/image";
+import AssetMarqueeBar from "@/components/assetMarqueeBar";
 
 function Page({ params }: { params: { asset: string } }) {
   let param = decodeURIComponent(params.asset);
@@ -130,7 +131,10 @@ function Page({ params }: { params: { asset: string } }) {
 
   return (
     <div className="px-6 sm:px-8 pt-6 pb-24 lg:py-6 w-full lg:h-screen xl:h-screen flex flex-col">
-      <div className="inline-flex justify-between lg:justify-end items-center">
+      <div className="inline-flex justify-between items-center lg:gap-6">
+        {assetsToView && (
+          <AssetMarqueeBar data={assetsToView} timeInterval={timeInterval} />
+        )}
         <Image
           src={jaayedaad_logo}
           alt="Jaayedaad logo"
