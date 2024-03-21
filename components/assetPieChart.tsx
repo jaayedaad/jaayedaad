@@ -10,6 +10,12 @@ import { useCurrency } from "@/contexts/currency-context";
 
 const COLORS = colors;
 
+const payloadNameMappings: Record<string, string> = {
+  "Common Stock": "Stocks",
+  "Digital Currency": "Crypto",
+  // Add other mappings here
+};
+
 const label = (props: any) => {
   const RADIAN = Math.PI / 180;
   const { cx, cy, midAngle, outerRadius, fill, payload, percent } = props;
@@ -45,7 +51,7 @@ const label = (props: any) => {
         textAnchor={textAnchor}
         fill="#fff"
         fontSize={11}
-      >{`${payload.name}`}</text>
+      >{`${payloadNameMappings[payload.name] || payload.name}`}</text>
       <text
         x={ex + (cos >= 0 ? 1 : -1) * 6}
         y={ey < cy ? ey + 18 : ey - 18}

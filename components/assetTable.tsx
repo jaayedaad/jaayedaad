@@ -63,6 +63,12 @@ function AssetTable({
     [currency: string]: number;
   }>();
 
+  const assetTypeMappings: Record<string, string> = {
+    "Common Stock": "Stocks",
+    "Digital Currency": "Crypto",
+    // Add other mappings here
+  };
+
   const filters: Record<string, (asset: Asset) => boolean> = {
     "common stock": (asset) => asset.type === "Common Stock",
     "digital currency": (asset) => asset.type === "Digital Currency",
@@ -454,13 +460,15 @@ function AssetTable({
                   groupedAsset.map((asset, index) => {
                     return (
                       <TableRow
-                        onClick={() => handleGroupRowClick(asset.type)}
+                        onClick={() =>
+                          handleGroupRowClick(
+                            assetTypeMappings[asset.type] || asset.type
+                          )
+                        }
                         key={index}
                       >
                         <TableCell>
-                          {asset.type === "Common Stock"
-                            ? "Stocks"
-                            : asset.type}
+                          {assetTypeMappings[asset.type] || asset.type}
                         </TableCell>
                         <TableCell className="text-right px-8">
                           {visible

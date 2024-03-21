@@ -72,11 +72,11 @@ function Sidebar() {
             variant="ghost"
             className={cn(
               `w-full justify-start pr-8`,
-              currentTab === "/dashboard/common stock" &&
+              currentTab === "/dashboard/stocks" &&
                 "bg-secondary text-foreground hover:bg-primary/20"
             )}
           >
-            <Link href="/dashboard/common stock">
+            <Link href="/dashboard/stocks">
               <CandlestickChart className="mr-2" size={20} />
               Stocks
             </Link>
@@ -86,11 +86,11 @@ function Sidebar() {
             variant="ghost"
             className={cn(
               `w-full justify-start pr-8`,
-              currentTab === "/dashboard/digital currency" &&
+              currentTab === "/dashboard/crypto" &&
                 "bg-secondary text-foreground hover:bg-primary/20"
             )}
           >
-            <Link href="/dashboard/digital currency">
+            <Link href="/dashboard/crypto">
               <Bitcoin className="mr-2" size={20} />
               Crypto
             </Link>
@@ -137,30 +137,32 @@ function Sidebar() {
               </Button>
             );
           })}
-          <Button
-            asChild
-            variant="ghost"
-            className={cn(
-              `w-full justify-start pr-8`,
-              currentTab === "/dashboard/settings" &&
-                "bg-secondary text-foreground hover:bg-primary/20"
-            )}
-          >
-            <Link href={"/dashboard/settings"}>
-              <Settings className="mr-2" size={20} /> Settings
-            </Link>
-          </Button>
         </div>
         <div className="flex flex-col gap-6">
-          <div className="flex items-center justify-between">
-            <p className="text-sm">{visible ? "Public" : "Private"} mode</p>
-            <Toggle onPressedChange={() => setVisible(!visible)}>
-              {visible ? (
-                <EyeIcon className="h-4 w-4" />
-              ) : (
-                <EyeOffIcon className="h-4 w-4" />
+          <div>
+            <Button
+              asChild
+              variant="ghost"
+              className={cn(
+                `w-full justify-start pr-8 text-muted-foreground`,
+                currentTab === "/dashboard/settings" &&
+                  "bg-secondary text-foreground hover:bg-primary/20"
               )}
-            </Toggle>
+            >
+              <Link href={"/dashboard/settings"}>
+                <Settings className="mr-2" size={20} /> Settings
+              </Link>
+            </Button>
+            <div className="flex items-center justify-between pl-4">
+              <p className="text-sm">{visible ? "Public" : "Private"} mode</p>
+              <Toggle onPressedChange={() => setVisible(!visible)}>
+                {visible ? (
+                  <EyeIcon className="h-4 w-4" />
+                ) : (
+                  <EyeOffIcon className="h-4 w-4" />
+                )}
+              </Toggle>
+            </div>
           </div>
           <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
