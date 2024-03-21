@@ -87,7 +87,7 @@ function Preferences({ preferences, setPreferences }: PreferenceProps) {
           Save
         </Button>
       </div>
-      <Separator className="my-4" />
+      <Separator className="mb-4" />
       {preferences ? (
         <div className="flex flex-col gap-4">
           <div className="py-5 px-4 flex items-center justify-between border rounded-md w-full">

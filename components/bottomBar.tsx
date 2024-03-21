@@ -20,8 +20,15 @@ import {
   Shapes,
   SquareStack,
 } from "lucide-react";
-import { Toggle } from "./ui/toggle";
 import { Dialog, DialogContent, DialogTitle, DialogTrigger } from "./ui/dialog";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import AddTransaction from "./addTransaction";
 
 function BottomBar() {
@@ -42,7 +49,8 @@ function BottomBar() {
   });
   const manualCategoryList = Array.from(uniqueCategorySet);
   return (
-    <div className="w-full px-6 sm:px-12 py-4 fixed bottom-0 flex gap-1 bg-background border-t sm:gap-6 h-20 md:h-24 justify-between lg:hidden">
+    <div className="w-full px-6 sm:px-12 py-4 fixed bottom-0 flex gap-2 bg-background border-t sm:gap-6 h-20 md:h-24 justify-between lg:hidden">
+      {/* dashboard */}
       <Button
         asChild
         variant="ghost"
@@ -54,37 +62,104 @@ function BottomBar() {
       >
         <Link href="/dashboard">
           <Home size={20} />
-          {/* Dashboard */}
         </Link>
       </Button>
-      <Button
-        asChild
-        variant="ghost"
-        className={cn(
-          `w-full h-full`,
-          currentTab === "/dashboard/common stock" &&
-            "bg-secondary text-foreground hover:bg-primary/20"
-        )}
-      >
-        <Link href="/dashboard/common stock">
-          <CandlestickChart size={20} />
-          {/* Stocks */}
-        </Link>
-      </Button>
-      <Button
-        asChild
-        variant="ghost"
-        className={cn(
-          `w-full h-full`,
-          currentTab === "/dashboard/digital currency" &&
-            "bg-secondary text-foreground hover:bg-primary/20"
-        )}
-      >
-        <Link href="/dashboard/digital currency">
-          <Bitcoin size={20} />
-          {/* Crypto */}
-        </Link>
-      </Button>
+
+      {/* categories */}
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button className="w-full h-full" variant="ghost">
+            <Shapes size={20} />
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent>
+          <DropdownMenuLabel className="pl-6">View</DropdownMenuLabel>
+          <DropdownMenuSeparator />
+          {/* stocks */}
+          <DropdownMenuItem>
+            <Button
+              asChild
+              variant="ghost"
+              className={cn(
+                "w-full justify-start gap-1",
+                currentTab === "/dashboard/stocks" &&
+                  "bg-secondary text-foreground hover:bg-primary/20"
+              )}
+            >
+              <Link href="/dashboard/stocks">
+                <CandlestickChart size={20} />
+                Stocks
+              </Link>
+            </Button>
+          </DropdownMenuItem>
+          {/* crypto */}
+          <DropdownMenuItem>
+            <Button
+              asChild
+              variant="ghost"
+              className={cn(
+                "w-full justify-start gap-1",
+                currentTab === "/dashboard/crypto" &&
+                  "bg-secondary text-foreground hover:bg-primary/20"
+              )}
+            >
+              <Link href="/dashboard/crypto">
+                <Bitcoin size={20} />
+                Crypto
+              </Link>
+            </Button>
+          </DropdownMenuItem>
+          {/* mutual fund */}
+          <DropdownMenuItem>
+            <Button
+              asChild
+              variant="ghost"
+              className={cn(
+                "w-full justify-start gap-1",
+                currentTab === "/dashboard/mutual fund" &&
+                  "bg-secondary text-foreground hover:bg-primary/20"
+              )}
+            >
+              <Link href="/dashboard/mutual fund">
+                <SquareStack size={20} />
+                Mutual Funds
+              </Link>
+            </Button>
+          </DropdownMenuItem>
+          {/* other categories */}
+          {manualCategoryList.map((category) => {
+            return (
+              <DropdownMenuItem key={category}>
+                <Button
+                  asChild
+                  variant="ghost"
+                  className={cn(
+                    "w-full justify-start gap-1",
+                    currentTab === `/dashboard/${category.toLowerCase()}` &&
+                      "bg-secondary text-foreground hover:bg-primary/20"
+                  )}
+                >
+                  <Link href={`/dashboard/${category.toLowerCase()}`}>
+                    {category === "Property" ? (
+                      <LandPlot size={20} />
+                    ) : category === "Jewellery" ? (
+                      <Gem size={20} />
+                    ) : category === "Deposits" ? (
+                      <Landmark size={20} />
+                    ) : (
+                      <Shapes size={20} />
+                    )}
+                    {category.charAt(0).toUpperCase() +
+                      category.slice(1).toLowerCase()}
+                  </Link>
+                </Button>
+              </DropdownMenuItem>
+            );
+          })}
+        </DropdownMenuContent>
+      </DropdownMenu>
+
+      {/* Make transaction button */}
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogTrigger asChild>
           <Button className="h-full rounded-full p-0 aspect-square">
@@ -102,48 +177,14 @@ function BottomBar() {
           <AddTransaction handleModalState={setOpen} />
         </DialogContent>
       </Dialog>
+
       <Button
-        asChild
+        className="w-full h-full"
         variant="ghost"
-        className={cn(
-          `w-full h-full`,
-          currentTab === "/dashboard/mutual fund" &&
-            "bg-secondary text-foreground hover:bg-primary/20"
-        )}
+        onClick={() => setVisible(!visible)}
       >
-        <Link href="/dashboard/mutual fund">
-          <SquareStack size={20} />
-          {/* Mutual Funds */}
-        </Link>
+        {visible ? <EyeIcon size={20} /> : <EyeOffIcon size={20} />}
       </Button>
-      {manualCategoryList.map((category) => {
-        return (
-          <Button
-            key={category}
-            asChild
-            variant="ghost"
-            className={cn(
-              `w-full h-full`,
-              currentTab === `/dashboard/${category.toLowerCase()}` &&
-                "bg-secondary text-foreground hover:bg-primary/20"
-            )}
-          >
-            <Link href={`/dashboard/${category.toLowerCase()}`}>
-              {category === "Property" ? (
-                <LandPlot size={20} />
-              ) : category === "Jewellery" ? (
-                <Gem size={20} />
-              ) : category === "Deposits" ? (
-                <Landmark size={20} />
-              ) : (
-                <Shapes size={20} />
-              )}
-              {/* {category.charAt(0).toUpperCase() +
-                category.slice(1).toLowerCase()} */}
-            </Link>
-          </Button>
-        );
-      })}
       <Button
         asChild
         variant="ghost"
@@ -158,12 +199,6 @@ function BottomBar() {
           {/* Settings */}
         </Link>
       </Button>
-      {/* <div className="flex items-center justify-between"> */}
-      {/* <p className="text-sm">{visible ? "Public" : "Private"} mode</p> */}
-      {/* <Toggle onPressedChange={() => setVisible(!visible)}>
-        {visible ? <EyeIcon size={20} /> : <EyeOffIcon size={20} />}
-      </Toggle> */}
-      {/* </div> */}
     </div>
   );
 }
