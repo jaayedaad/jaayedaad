@@ -11,9 +11,9 @@ import {
   LandPlot,
   Landmark,
   Plus,
+  Settings,
   Shapes,
   SquareStack,
-  UserIcon,
 } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
@@ -147,7 +147,7 @@ function Sidebar() {
             )}
           >
             <Link href={"/dashboard/settings"}>
-              <UserIcon className="mr-2" size={20} /> Settings
+              <Settings className="mr-2" size={20} /> Settings
             </Link>
           </Button>
         </div>
