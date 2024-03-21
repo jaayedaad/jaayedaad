@@ -120,7 +120,7 @@ function TransactionForm({
     <>
       <div>
         <div className="grid grid-cols-4 py-4 gap-4">
-          <div className="text-md col-span-1">Quantity</div>
+          <div className="text-base col-span-1">Quantity</div>
           <Input
             placeholder="Quantity"
             className="col-span-3 no-spinner"
@@ -130,7 +130,7 @@ function TransactionForm({
               handleAssetQuantiy(e.target.value);
             }}
           />
-          <div className="col-span-1 text-md">Date</div>
+          <div className="col-span-1 text-base">Date</div>
           <div className="col-span-3">
             <DatePicker onSelect={handleDateSelect} />
           </div>

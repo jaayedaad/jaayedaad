@@ -72,11 +72,12 @@ function ViewAsset({
   >();
 
   const assetHistory: any[] = [];
-  if (assetToView?.symbol !== null) {
+  if (assetToView) {
     assetHistory.push(
       historicalData.find((data) => data.assetSymbol === assetToView?.symbol)
     );
-  } else if (manualAsset) {
+  }
+  if (manualAsset) {
     const manualHistory = prepareHistoricalDataForManualCategory([manualAsset]);
     assetHistory.splice(0, assetHistory.length, ...manualHistory);
   }
@@ -298,9 +299,7 @@ function ViewAsset({
             <TabsContent value="summary" className="mt-4">
               <div className="text-sm text-muted-foreground">
                 <span className="text-foreground pr-1">
-                  {assetToView?.symbol !== null
-                    ? assetToView?.symbol
-                    : manualAsset?.name}
+                  {assetToView ? assetToView?.symbol : manualAsset?.name}
                 </span>
                 {assetToView?.exchange !== undefined && (
                   <>({assetToView?.exchange})</>
@@ -430,7 +429,7 @@ function ViewAsset({
               )}
             </TabsContent>
             <TabsContent value="transactions">
-              {assetToView?.symbol !== null
+              {assetToView
                 ? assetToView && (
                     <TransactionHistory assetName={assetToView.name} />
                   )

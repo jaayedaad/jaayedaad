@@ -191,7 +191,11 @@ function Page({ params }: { params: { asset: string } }) {
             </div>
             <div className="mt-6">
               {assetsToView ? (
-                <AssetTable data={assetsToView} view={param} />
+                <AssetTable
+                  data={assetsToView}
+                  view={param}
+                  timelineInterval={timeInterval}
+                />
               ) : (
                 <div className="h-56 flex items-center">
                   <LoadingSpinner />

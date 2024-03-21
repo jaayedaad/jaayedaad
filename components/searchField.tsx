@@ -10,7 +10,7 @@ type searchFieldProps = {
 function SearchField({ searchQuery, handleSearchChange }: searchFieldProps) {
   return (
     <div className="flex items-center gap-4">
-      <div className="text-sm md:text-md">Search:</div>
+      <div className="text-sm md:text-base">Search:</div>
       <div className="relative">
         <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
         <Input

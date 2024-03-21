@@ -85,17 +85,6 @@ function AssetTable({
       setConversionRates(conversionRate);
       if (view) {
         if (filters.hasOwnProperty(view)) {
-          const filteredAssets = data.filter(filters[view]);
-          filteredAssets.forEach((asset) => {
-            const matchingIntervalData = intervalChangeData?.filter(
-              (data) => data.symbol === asset.symbol
-            );
-            if (matchingIntervalData) {
-              asset.prevClose = matchingIntervalData[0].prevClose;
-              asset.compareValue = +matchingIntervalData[0].compareValue;
-              asset.currentValue = +matchingIntervalData[0].currentValue;
-            }
-          });
           setFilteredAsset(data.filter(filters[view]));
         } else {
           const param = decodeURIComponent(view);
@@ -233,7 +222,6 @@ function AssetTable({
   const handleGroupRowClick = (assetType: string) => {
     router.push(`/dashboard/${assetType.toLowerCase()}`);
   };
-
   return (
     filteredAsset &&
     filteredAsset.length > 0 && (

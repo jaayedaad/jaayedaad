@@ -97,7 +97,7 @@ function PerformanceMetrics({
         <div className="p-3 rounded-md border w-full">
           <p className="text-sm flex items-center justify-between mb-2">
             Unrealised Profit / Loss
-            <div className="text-md">
+            <div className="text-base">
               {
                 formatter
                   .formatToParts(0)
@@ -142,7 +142,7 @@ function PerformanceMetrics({
         <div className="p-3 rounded-md border w-full">
           <p className="text-sm flex items-center justify-between mb-2">
             Realised Profit / Loss
-            <div className="text-md">
+            <div className="text-base">
               {
                 formatter
                   .formatToParts(0)
