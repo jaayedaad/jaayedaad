@@ -74,6 +74,7 @@ export async function POST(req: Request) {
                       ...body,
                       id: assetId,
                       userId: user.id,
+                      symbol: null,
                       manualCategoryId: existingCategoryId,
                     }),
                     encryptionKey
@@ -122,6 +123,7 @@ export async function POST(req: Request) {
                       ...body,
                       id: assetId,
                       userId: user.id,
+                      symbol: null,
                       manualCategoryId: manualCategoryId,
                     }),
                     encryptionKey

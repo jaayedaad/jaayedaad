@@ -72,7 +72,7 @@ function ViewAsset({
   >();
 
   const assetHistory: any[] = [];
-  if (assetToView?.symbol !== undefined) {
+  if (assetToView?.symbol !== null) {
     assetHistory.push(
       historicalData.find((data) => data.assetSymbol === assetToView?.symbol)
     );
@@ -122,7 +122,7 @@ function ViewAsset({
     }
     prepareLineChartData(value, lineChartData, setDataToShow);
     setCurrentValue(
-      assetToView?.symbol !== undefined
+      assetToView?.symbol !== null
         ? assetHistory[0].values[assetHistory[0].values.length - 1].close
         : assetHistory[0].values[assetHistory[0].values.length - 1].value
     );
@@ -130,10 +130,10 @@ function ViewAsset({
       case "1d":
         setCompareLabel(
           assetHistory[0].values.length > 0
-            ? assetToView?.symbol !== undefined
+            ? assetToView?.symbol !== null
               ? assetHistory[0].values[1].close
               : assetHistory[0].values[assetHistory[0].values.length - 2].value
-            : assetToView?.symbol !== undefined
+            : assetToView?.symbol !== null
             ? assetHistory[0].values[0].close
             : assetHistory[0].values[0].value
         );
@@ -157,10 +157,10 @@ function ViewAsset({
       case "1w":
         setCompareLabel(
           assetHistory[0].values.length > 6
-            ? assetToView?.symbol !== undefined
+            ? assetToView?.symbol !== null
               ? assetHistory[0].values[7].close
               : assetHistory[0].values[assetHistory[0].values.length - 8].value
-            : assetToView?.symbol !== undefined
+            : assetToView?.symbol !== null
             ? assetHistory[0].values[0].close
             : assetHistory[0].values[0].value
         );
@@ -184,10 +184,10 @@ function ViewAsset({
       case "1m":
         setCompareLabel(
           assetHistory[0].values.length > 29
-            ? assetToView?.symbol !== undefined
+            ? assetToView?.symbol !== null
               ? assetHistory[0].values[30].close
               : assetHistory[0].values[assetHistory[0].values.length - 30].value
-            : assetToView?.symbol !== undefined
+            : assetToView?.symbol !== null
             ? assetHistory[0].values[0].close
             : assetHistory[0].values[0].value
         );
@@ -211,11 +211,11 @@ function ViewAsset({
       case "1y":
         setCompareLabel(
           assetHistory[0].values.length > 365
-            ? assetToView?.symbol !== undefined
+            ? assetToView?.symbol !== null
               ? assetHistory[0].values[365].close
               : assetHistory[0].values[assetHistory[0].values.length - 366]
                   .value
-            : assetToView?.symbol !== undefined
+            : assetToView?.symbol !== null
             ? assetHistory[0].values[0].close
             : assetHistory[0].values[0].value
         );
@@ -238,7 +238,7 @@ function ViewAsset({
         break;
       case "All":
         setCompareLabel(
-          assetToView?.symbol !== undefined
+          assetToView?.symbol !== null
             ? assetHistory[0].values[0].close
             : assetHistory[0].values[0].value
         );
@@ -298,7 +298,7 @@ function ViewAsset({
             <TabsContent value="summary" className="mt-4">
               <div className="text-sm text-muted-foreground">
                 <span className="text-foreground pr-1">
-                  {assetToView?.symbol !== undefined
+                  {assetToView?.symbol !== null
                     ? assetToView?.symbol
                     : manualAsset?.name}
                 </span>
@@ -430,7 +430,7 @@ function ViewAsset({
               )}
             </TabsContent>
             <TabsContent value="transactions">
-              {assetToView?.symbol !== undefined
+              {assetToView?.symbol !== null
                 ? assetToView && (
                     <TransactionHistory assetName={assetToView.name} />
                   )

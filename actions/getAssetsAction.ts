@@ -91,7 +91,7 @@ export async function getAssets() {
 
   if (assets && assets.length) {
     const assetQuotesPromises = assets.map(async (asset) => {
-      if (asset.symbol !== undefined) {
+      if (asset.symbol !== null) {
         const quoteResponse = await fetch(
           `https://api.twelvedata.com/quote?symbol=${asset.symbol}`,
           {
