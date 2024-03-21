@@ -12,10 +12,20 @@ import { useData } from "@/contexts/data-context";
 import { getUnrealisedProfitLossArray } from "@/helper/unrealisedValueCalculator";
 import { redirect } from "next/navigation";
 import React, { useEffect, useState } from "react";
+import jaayedaad_logo from "@/public/jaayedaad_logo.svg";
+import Image from "next/image";
 
 function Page({ params }: { params: { asset: string } }) {
-  const param = decodeURIComponent(params.asset);
+  let param = decodeURIComponent(params.asset);
   const { assets, historicalData } = useData();
+
+  const reverseAssetTypeMappings: Record<string, string> = {
+    stocks: "common stock",
+    crypto: "digital currency",
+    // Add other mappings here
+  };
+
+  param = reverseAssetTypeMappings[param] || param;
 
   const filteredAssets = assets?.filter(
     (asset) => asset.type.toLowerCase() === param.toLowerCase()
@@ -119,14 +129,19 @@ function Page({ params }: { params: { asset: string } }) {
   };
 
   return (
-    <div className="px-6 sm:px-8 pt-6 pb-20 md:pb-24 lg:py-6 w-full lg:h-screen xl:h-screen flex flex-col">
-      <div className="inline-flex justify-end">
+    <div className="px-6 sm:px-8 pt-6 pb-24 lg:py-6 w-full lg:h-screen xl:h-screen flex flex-col">
+      <div className="inline-flex justify-between lg:justify-end items-center">
+        <Image
+          src={jaayedaad_logo}
+          alt="Jaayedaad logo"
+          className="h-10 lg:hidden"
+        />
         <ChangeInterval onChange={onChange} />
       </div>
       <div className="min-h-[85vh] h-full mt-4">
         <div className="flex flex-col gap-4 sm:gap-6 md:gap-6 lg:gap-4 lg:grid lg:grid-rows-7 lg:grid-cols-3 lg:h-full text-foreground">
           <div className="row-span-3 col-span-1 border rounded-xl p-4">
-            <AssetPieChart view={params.asset} />
+            <AssetPieChart view={param} />
           </div>
           <div className="row-span-3 col-span-2 border rounded-xl p-4">
             {historicalData ? (
