@@ -80,22 +80,18 @@ export async function getAssets() {
 
   let assets: Asset[] | undefined;
 
-  if (process.env.SIA_API_URL) {
-    assets = await getAllAssets();
-  } else if (process.env.DATABASE_URL) {
-    const data = await fetch(`${process.env.NEXT_PUBLIC_APP_URL}/api/assets`, {
-      method: "GET",
-      headers: {
-        Cookie: cookiesString,
-      },
-      credentials: "include",
-    });
-    assets = await data.json();
-  }
+  const data = await fetch(`${process.env.NEXT_PUBLIC_APP_URL}/api/assets`, {
+    method: "GET",
+    headers: {
+      Cookie: cookiesString,
+    },
+    credentials: "include",
+  });
+  assets = await data.json();
 
   if (assets && assets.length) {
     const assetQuotesPromises = assets.map(async (asset) => {
-      if (asset.symbol !== null) {
+      if (asset.symbol !== undefined) {
         const quoteResponse = await fetch(
           `https://api.twelvedata.com/quote?symbol=${asset.symbol}`,
           {
