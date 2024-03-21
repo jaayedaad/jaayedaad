@@ -9,6 +9,7 @@ import AccountSettings from "@/components/accountSettings";
 import { Preference } from "@prisma/client";
 import { getPreferences } from "@/actions/getPreferencesAction";
 import LoadingSpinner from "@/components/ui/loading-spinner";
+import { getCurrentUser } from "@/actions/getCurrentUser";
 
 function SettingsPage() {
   const { data: session } = useSession();
@@ -22,10 +23,16 @@ function SettingsPage() {
     showMetrics: boolean;
     userId: string;
   }>();
+  const [username, setUsername] = useState<string | null>(null);
 
   useEffect(() => {
     getPreferences().then((preferences: Preference) => {
       setPreferences(preferences);
+    });
+    getCurrentUser().then((res) => {
+      if (res?.userData) {
+        setUsername(res.userData.username);
+      }
     });
   }, []);
 
@@ -65,8 +72,9 @@ function SettingsPage() {
                   setPreferences={setPreferences}
                 />
               )}
-              {selectedOption === "Account" && (
+              {selectedOption === "Account" && username !== null && (
                 <AccountSettings
+                  username={username}
                   preferences={preferences}
                   setPreferences={setPreferences}
                 />

@@ -14,7 +14,7 @@ function AssetMarqueeBar({ data, timeInterval }: AssetMarqueeBarProps) {
   useEffect(() => {}, [timeInterval]);
   return (
     <div className="hidden lg:block w-full">
-      <Marquee gradient gradientColor="black">
+      <Marquee gradient gradientColor="#0a0a0b">
         <div className="flex gap-6">
           {data.map((asset, index) => {
             return (
