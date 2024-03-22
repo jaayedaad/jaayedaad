@@ -17,7 +17,7 @@ import Image from "next/image";
 import AssetMarqueeBar from "@/components/assetMarqueeBar";
 
 function Page({ params }: { params: { asset: string } }) {
-  let param = decodeURIComponent(params.asset);
+  const pageParams = decodeURIComponent(params.asset);
   const { assets, historicalData } = useData();
 
   const reverseAssetTypeMappings: Record<string, string> = {
@@ -26,26 +26,23 @@ function Page({ params }: { params: { asset: string } }) {
     // Add other mappings here
   };
 
-  param = reverseAssetTypeMappings[param] || param;
+  const param = reverseAssetTypeMappings[pageParams] || pageParams;
 
   const filteredAssets = assets?.filter(
     (asset) => asset.type.toLowerCase() === param.toLowerCase()
   );
 
-  if (!filteredAssets?.length) {
-    redirect("/dashboard");
-  }
   const [assetsToView, setAssetsToView] = useState<Asset[] | undefined>(
     filteredAssets
   );
 
-  const categoryExist = filteredAssets.some(
+  const categoryExist = filteredAssets?.some(
     (asset) => asset.type.toLowerCase() === param.toLowerCase()
   );
 
   let manualCategoryAsset: Asset[] | undefined;
   if (categoryExist) {
-    manualCategoryAsset = filteredAssets.filter(
+    manualCategoryAsset = filteredAssets?.filter(
       (asset) => asset.type.toLowerCase() === param.toLowerCase()
     );
   }
@@ -68,7 +65,7 @@ function Page({ params }: { params: { asset: string } }) {
 
   useEffect(() => {
     async function getPageData() {
-      if (filteredAssets) {
+      if (filteredAssets && filteredAssets.length) {
         if (!defaultCategories.includes(param)) {
           if (!categoryExist) {
             redirect("/dashboard");
@@ -129,82 +126,92 @@ function Page({ params }: { params: { asset: string } }) {
     }
   };
 
-  return (
-    <div className="px-6 sm:px-8 pt-6 pb-24 lg:py-6 w-full lg:h-screen xl:h-screen flex flex-col">
-      <div className="inline-flex justify-between items-center lg:gap-6">
-        {assetsToView && (
-          <AssetMarqueeBar data={assetsToView} timeInterval={timeInterval} />
-        )}
-        <Image
-          src={jaayedaad_logo}
-          alt="Jaayedaad logo"
-          className="h-10 lg:hidden"
-        />
-        <ChangeInterval onChange={onChange} />
-      </div>
-      <div className="min-h-[85vh] h-full mt-4">
-        <div className="flex flex-col gap-4 sm:gap-6 md:gap-6 lg:gap-4 lg:grid lg:grid-rows-7 lg:grid-cols-3 lg:h-full text-foreground">
-          <div className="row-span-3 col-span-1 border rounded-xl p-4">
-            <AssetPieChart view={param} />
-          </div>
-          <div className="row-span-3 col-span-2 border rounded-xl p-4">
-            {historicalData ? (
-              defaultCategories.includes(param) ? (
-                <PortfolioLineChart
-                  data={historicalData}
-                  view={param}
-                  timeInterval={timeInterval}
-                />
-              ) : (
-                manualCategoryAssets && (
-                  <ManualTransactionChart
-                    manualCategoryAssets={manualCategoryAssets}
+  return filteredAssets ? (
+    filteredAssets.length && assetsToView ? (
+      <div className="px-6 sm:px-8 pt-6 pb-24 md:pb-32 lg:py-6 w-full lg:h-screen xl:h-screen flex flex-col">
+        <div className="inline-flex justify-between items-center lg:gap-6">
+          {assetsToView && (
+            <AssetMarqueeBar data={assetsToView} timeInterval={timeInterval} />
+          )}
+          <Image
+            src={jaayedaad_logo}
+            alt="Jaayedaad logo"
+            className="h-10 lg:hidden"
+          />
+          <ChangeInterval onChange={onChange} />
+        </div>
+        <div className="min-h-[85vh] h-full mt-4">
+          <div className="flex flex-col gap-4 sm:gap-6 md:gap-6 lg:gap-4 lg:grid lg:grid-rows-7 lg:grid-cols-3 lg:h-full text-foreground">
+            <div className="row-span-3 col-span-1 border rounded-xl p-4">
+              <AssetPieChart view={param} />
+            </div>
+            <div className="row-span-3 col-span-2 border rounded-xl p-4">
+              {historicalData ? (
+                defaultCategories.includes(param) ? (
+                  <PortfolioLineChart
+                    data={historicalData}
+                    view={param}
                     timeInterval={timeInterval}
                   />
+                ) : (
+                  manualCategoryAssets && (
+                    <ManualTransactionChart
+                      manualCategoryAssets={manualCategoryAssets}
+                      timeInterval={timeInterval}
+                    />
+                  )
                 )
-              )
-            ) : (
-              <div>
-                <h3 className="font-semibold">Portfolio Performance</h3>
-                <p className="text-muted-foreground text-sm">
-                  Insight into your portfolio&apos;s value dynamics
-                </p>
-                <div className="h-40 flex items-center">
-                  <LoadingSpinner />
-                </div>
-              </div>
-            )}
-          </div>
-          <div className="row-span-4 flex flex-col col-span-3 border rounded-xl p-4">
-            <div className="flex justify-between">
-              <div className="xl:flex xl:items-center xl:gap-1">
-                <h3 className="font-semibold">Asset Overview</h3>
-                <p className="text-muted-foreground text-xs xl:text-sm">
-                  Collection of your {param}
-                </p>
-              </div>
-              <div>
-                <p className="text-muted-foreground text-right text-xs xl:text-sm">
-                  Last update on ({yesterday.toLocaleDateString("en-GB")})
-                </p>
-              </div>
-            </div>
-            <div className="mt-6">
-              {assetsToView ? (
-                <AssetTable
-                  data={assetsToView}
-                  view={param}
-                  timelineInterval={timeInterval}
-                />
               ) : (
-                <div className="h-56 flex items-center">
-                  <LoadingSpinner />
+                <div>
+                  <h3 className="font-semibold">Portfolio Performance</h3>
+                  <p className="text-muted-foreground text-sm">
+                    Insight into your portfolio&apos;s value dynamics
+                  </p>
+                  <div className="h-40 flex items-center">
+                    <LoadingSpinner />
+                  </div>
                 </div>
               )}
+            </div>
+            <div className="row-span-4 flex flex-col col-span-3 border rounded-xl p-4">
+              <div className="flex justify-between">
+                <div className="xl:flex xl:items-center xl:gap-1">
+                  <h3 className="font-semibold">Asset Overview</h3>
+                  <p className="text-muted-foreground text-xs xl:text-sm">
+                    Collection of your {param}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-muted-foreground text-right text-xs xl:text-sm">
+                    Last update on ({yesterday.toLocaleDateString("en-GB")})
+                  </p>
+                </div>
+              </div>
+              <div className="mt-6">
+                {assetsToView ? (
+                  <AssetTable
+                    data={assetsToView}
+                    view={param}
+                    timelineInterval={timeInterval}
+                  />
+                ) : (
+                  <div className="h-56 flex items-center">
+                    <LoadingSpinner />
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         </div>
       </div>
+    ) : (
+      <div className="px-6 sm:px-8 pt-6 pb-24 lg:py-6 w-full h-screen flex flex-col items-center justify-center">
+        <div className="text-lg">You don&apos;t own any {pageParams}</div>
+      </div>
+    )
+  ) : (
+    <div className="px-6 sm:px-8 pt-6 pb-24 lg:py-6 w-full h-screen flex flex-col items-center justify-center">
+      <LoadingSpinner />
     </div>
   );
 }

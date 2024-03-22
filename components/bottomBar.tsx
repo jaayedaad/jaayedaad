@@ -38,15 +38,9 @@ function BottomBar() {
   const [open, setOpen] = useState(false);
 
   const uniqueCategorySet = new Set<string>();
-  user?.usersManualCategories.forEach((category) => {
-    if (category.assets) {
-      category.assets.forEach((asset) => {
-        if (+asset.quantity !== 0) {
-          uniqueCategorySet.add(asset.type);
-        }
-      });
-    }
-  });
+  user?.usersManualCategories.forEach((category) =>
+    uniqueCategorySet.add(category.name)
+  );
   const manualCategoryList = Array.from(uniqueCategorySet);
   return (
     <div className="w-full px-6 sm:px-12 py-4 fixed bottom-0 flex gap-2 bg-background border-t sm:gap-6 h-20 md:h-24 justify-between lg:hidden">

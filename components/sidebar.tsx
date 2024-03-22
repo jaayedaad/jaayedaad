@@ -33,15 +33,9 @@ function Sidebar() {
   const [open, setOpen] = useState(false);
 
   const uniqueCategorySet = new Set<string>();
-  user?.usersManualCategories.forEach((category) => {
-    if (category.assets) {
-      category.assets.forEach((asset) => {
-        if (+asset.quantity !== 0) {
-          uniqueCategorySet.add(asset.type);
-        }
-      });
-    }
-  });
+  user?.usersManualCategories.forEach((category) =>
+    uniqueCategorySet.add(category.name)
+  );
   const manualCategoryList = Array.from(uniqueCategorySet);
 
   return (
