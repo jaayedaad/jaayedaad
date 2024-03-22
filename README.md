@@ -23,7 +23,7 @@ To set up the project locally, follow these steps:
 
 1.  Clone the repo into a public GitHub repository:
 
-        git clone https://github.com/ShubhamPalriwala/investment-tracker.git
+        git clone https://github.com/jaayedaad/jaayedaad.git
 
 2.  Go to the project folder
 
