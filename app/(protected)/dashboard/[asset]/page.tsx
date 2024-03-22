@@ -127,7 +127,7 @@ function Page({ params }: { params: { asset: string } }) {
   };
 
   return filteredAssets ? (
-    filteredAssets.length && assetsToView ? (
+    filteredAssets.length ? (
       <div className="px-6 sm:px-8 pt-6 pb-24 md:pb-32 lg:py-6 w-full lg:h-screen xl:h-screen flex flex-col">
         <div className="inline-flex justify-between items-center lg:gap-6">
           {assetsToView && (
