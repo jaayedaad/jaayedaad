@@ -99,6 +99,7 @@ model Transaction {
 
 model UsersManualCategory {
   id     String  @id @default(cuid())
+  icon   String
   name   String
   assets Asset[]
   userId String

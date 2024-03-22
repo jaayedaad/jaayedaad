@@ -6,13 +6,9 @@ import {
   CandlestickChart,
   EyeIcon,
   EyeOffIcon,
-  Gem,
   Home,
-  LandPlot,
-  Landmark,
   Plus,
   Settings,
-  Shapes,
   SquareStack,
 } from "lucide-react";
 import { usePathname } from "next/navigation";
@@ -25,6 +21,9 @@ import AddTransaction from "./addTransaction";
 import { useData } from "@/contexts/data-context";
 import jaayedaad_logo from "@/public/jaayedaad_logo.svg";
 import Image from "next/image";
+import CreateCategoryButton from "./createCategoryButton";
+import dynamicIconImports from "lucide-react/dynamicIconImports";
+import DynamicIcon from "./dynamicIcon";
 
 function Sidebar() {
   const currentTab = decodeURIComponent(usePathname());
@@ -32,10 +31,16 @@ function Sidebar() {
   const { visible, setVisible } = useVisibility();
   const [open, setOpen] = useState(false);
 
-  const uniqueCategorySet = new Set<string>();
-  user?.usersManualCategories.forEach((category) =>
-    uniqueCategorySet.add(category.name)
-  );
+  const uniqueCategorySet = new Set<{
+    name: string;
+    icon: keyof typeof dynamicIconImports;
+  }>();
+  user?.usersManualCategories.forEach((category) => {
+    uniqueCategorySet.add({
+      name: category.name,
+      icon: category.icon,
+    });
+  });
   const manualCategoryList = Array.from(uniqueCategorySet);
 
   return (
@@ -106,31 +111,28 @@ function Sidebar() {
           {manualCategoryList.map((category) => {
             return (
               <Button
-                key={category}
+                key={category.name}
                 asChild
                 variant="ghost"
                 className={cn(
                   `w-full justify-start pr-8`,
-                  currentTab === `/dashboard/${category.toLowerCase()}` &&
+                  currentTab === `/dashboard/${category.name.toLowerCase()}` &&
                     "bg-secondary text-foreground hover:bg-primary/20"
                 )}
               >
-                <Link href={`/dashboard/${category.toLowerCase()}`}>
-                  {category === "Property" ? (
-                    <LandPlot className="mr-2" size={20} />
-                  ) : category === "Jewellery" ? (
-                    <Gem className="mr-2" size={20} />
-                  ) : category === "Deposits" ? (
-                    <Landmark className="mr-2" size={20} />
-                  ) : (
-                    <Shapes className="mr-2" size={20} />
-                  )}
-                  {category.charAt(0).toUpperCase() +
-                    category.slice(1).toLowerCase()}
+                <Link href={`/dashboard/${category.name.toLowerCase()}`}>
+                  <DynamicIcon
+                    name={category.icon}
+                    className="mr-2"
+                    size={20}
+                  />
+                  {category.name.charAt(0).toUpperCase() +
+                    category.name.slice(1).toLowerCase()}
                 </Link>
               </Button>
             );
           })}
+          <CreateCategoryButton />
         </div>
         <div className="flex flex-col gap-6">
           <div>

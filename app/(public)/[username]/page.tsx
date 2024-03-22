@@ -1,8 +1,18 @@
+"use client";
 import { getUserByUsername } from "@/actions/getUserByUsernameAction";
+import { useEffect, useState } from "react";
 
-async function PublicProfilePage({ params }: { params: { username: string } }) {
-  const user = await getUserByUsername(params.username);
-  const publicProfile = user?.preferences[0].publicProfile;
+function PublicProfilePage({ params }: { params: { username: string } }) {
+  const [publicProfile, setPublicProfile] = useState<boolean | undefined>(
+    undefined
+  );
+
+  useEffect(() => {
+    getUserByUsername(params.username).then((user) => {
+      const publicProfile = user?.preferences[0].publicProfile;
+      setPublicProfile(publicProfile);
+    });
+  }, [params.username]);
 
   return (
     <div className="mt-14 pt-6 px-12">

@@ -1,6 +1,7 @@
 "use server";
 import { authOptions } from "@/utils/authOptions";
 import { Asset } from "@prisma/client";
+import dynamicIconImports from "lucide-react/dynamicIconImports";
 import { getServerSession } from "next-auth";
 import { cookies } from "next/headers";
 
@@ -27,6 +28,7 @@ export async function getCurrentUser() {
     const userResponse: {
       usersManualCategories: {
         id: string;
+        icon: keyof typeof dynamicIconImports;
         name: string;
         userId: string;
         assets: Asset[];

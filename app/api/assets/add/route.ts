@@ -90,7 +90,7 @@ export async function POST(req: Request) {
             // create a new category
             const manualCategoryId = createId();
             await fetch(
-              `${process.env.SIA_API_URL}/worker/objects/${user.id}/usersManualCategories/data`,
+              `${process.env.SIA_API_URL}/worker/objects/${user.id}/usersManualCategories/${manualCategoryId}/data`,
               {
                 method: "PUT",
                 headers: {
@@ -100,6 +100,7 @@ export async function POST(req: Request) {
                   data: CryptoJS.AES.encrypt(
                     JSON.stringify({
                       id: manualCategoryId,
+                      icon: body.icon,
                       name: body.type,
                       userId: user.id,
                     }),
@@ -365,9 +366,12 @@ export async function POST(req: Request) {
               },
             });
           } else {
+            const manualCategoryId = createId();
             const usersManualCategory = await prisma.usersManualCategory.create(
               {
                 data: {
+                  id: manualCategoryId,
+                  icon: body.icon,
                   name: body.type,
                   userId: user.id,
                 },

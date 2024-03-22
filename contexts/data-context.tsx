@@ -4,6 +4,7 @@ import { Asset as detailedAsset, getAssets } from "@/actions/getAssetsAction";
 import { getCurrentUser } from "@/actions/getCurrentUser";
 import { getHistoricalData } from "@/actions/getHistoricalData";
 import { Asset } from "@prisma/client";
+import dynamicIconImports from "lucide-react/dynamicIconImports";
 import React, { createContext, useContext, useEffect, useState } from "react";
 
 export const DataContext = createContext<{
@@ -13,6 +14,7 @@ export const DataContext = createContext<{
     | {
         usersManualCategories: {
           id: string;
+          icon: keyof typeof dynamicIconImports;
           name: string;
           userId: string;
           assets: Asset[] | undefined;
@@ -40,6 +42,7 @@ export default function DataProvider({
   const [user, setUser] = useState<{
     usersManualCategories: {
       id: string;
+      icon: keyof typeof dynamicIconImports;
       name: string;
       userId: string;
       assets: Asset[] | undefined;

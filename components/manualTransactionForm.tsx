@@ -29,6 +29,8 @@ import {
 } from "@/components/ui/popover";
 import { Check, ChevronsUpDown } from "lucide-react";
 import { useCurrency } from "@/contexts/currency-context";
+import DynamicIcon from "./dynamicIcon";
+import dynamicIconImports from "lucide-react/dynamicIconImports";
 
 interface ManualTransactionFormPropsType {
   modalOpen: React.Dispatch<React.SetStateAction<boolean>>;
@@ -45,6 +47,7 @@ function ManualTransactionForm({ modalOpen }: ManualTransactionFormPropsType) {
       builtInCategories.splice(builtInCategories.length - 1, 0, {
         value: manualCategory.name,
         label: manualCategory.name,
+        icon: manualCategory.icon,
       });
     }
   });
@@ -63,6 +66,14 @@ function ManualTransactionForm({ modalOpen }: ManualTransactionFormPropsType) {
   const [value, setValue] = useState("property");
   const [commandSearch, setCommandSearch] = useState("");
   const [categories, setCategories] = useState(builtInCategories);
+  const [icon, setIcon] =
+    useState<keyof typeof dynamicIconImports>("land-plot");
+
+  type IconLabel = keyof typeof dynamicIconImports;
+  const iconsArray = Object.keys(dynamicIconImports).map((key) => ({
+    value: key as IconLabel,
+    label: key as IconLabel,
+  }));
 
   const handleDateSelect = (selectedDate: Date) => {
     setManualTransaction((prev) => ({
@@ -77,6 +88,7 @@ function ManualTransactionForm({ modalOpen }: ManualTransactionFormPropsType) {
     const { price, date, ...data } = manualTransaction;
     const asset = {
       ...data,
+      icon: icon,
       buyPrice: price,
       buyDate: date,
       isManualEntry: true,
@@ -189,6 +201,7 @@ function ManualTransactionForm({ modalOpen }: ManualTransactionFormPropsType) {
                         const newCategory = {
                           label: commandSearch,
                           value: commandSearch,
+                          icon: icon,
                         };
                         setCategories((prev) => {
                           const insertIndex = prev.length - 1;
@@ -219,6 +232,7 @@ function ManualTransactionForm({ modalOpen }: ManualTransactionFormPropsType) {
                         }`}
                         onSelect={(currentValue) => {
                           setValue(currentValue);
+                          setIcon(category.icon);
                           setManualTransaction((prev) => ({
                             ...prev,
                             type: currentValue,
@@ -241,6 +255,60 @@ function ManualTransactionForm({ modalOpen }: ManualTransactionFormPropsType) {
                 </Command>
               </PopoverContent>
             </Popover>
+          </div>
+          <div className="col-span-1 self-center">Category icon</div>
+          <div className="col-span-3 flex items-center gap-4">
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button
+                  variant="outline"
+                  role="combobox"
+                  aria-expanded={open}
+                  className="w-full justify-between"
+                >
+                  {icon
+                    ? iconsArray.find((iconName) => iconName.value === icon)
+                        ?.label
+                    : "Select icon..."}
+                  <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0">
+                <Command className="h-[48vh]">
+                  <CommandInput placeholder="Search icon..." />
+                  <CommandEmpty>No such icon found.</CommandEmpty>
+                  <CommandGroup>
+                    {iconsArray.map((iconName) => (
+                      <CommandItem
+                        key={iconName.value}
+                        value={iconName.value}
+                        onSelect={() => {
+                          setIcon(iconName.value);
+                          setOpen(false);
+                        }}
+                      >
+                        <Check
+                          className={cn(
+                            "mr-2 h-4 w-4",
+                            icon === iconName.value
+                              ? "opacity-100"
+                              : "opacity-0"
+                          )}
+                        />
+                        <DynamicIcon
+                          className="h-4 w-4 mr-2"
+                          name={iconName.label}
+                        />{" "}
+                        {iconName.label}
+                      </CommandItem>
+                    ))}
+                  </CommandGroup>
+                </Command>
+              </PopoverContent>
+            </Popover>
+            <Button className="w-12" variant="secondary" size="icon">
+              <DynamicIcon className="h-4 w-4" name={icon} />
+            </Button>
           </div>
           <div className="col-span-1 self-center">Name</div>
           <Input
