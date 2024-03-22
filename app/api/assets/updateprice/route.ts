@@ -34,9 +34,11 @@ export async function POST(req: Request) {
     const encryptionKey =
       user.id.slice(0, 4) + process.env.SIA_ENCRYPTION_KEY + user.id.slice(-4);
 
+    const assetPriceUpdateId = createId();
     if (process.env.DATABASE_URL) {
       const priceUpdate = await prisma.assetPriceUpdate.create({
         data: {
+          id: assetPriceUpdateId,
           price: body.price,
           date: body.date,
           assetId: body.assetId,
@@ -44,7 +46,6 @@ export async function POST(req: Request) {
       });
     }
     if (process.env.SIA_API_URL) {
-      const assetPriceUpdateId = createId();
       await fetch(
         `${process.env.SIA_API_URL}/worker/objects/${user.id}/assets/${body.assetId}/assetPriceUpdates/${assetPriceUpdateId}`,
         {

@@ -170,6 +170,7 @@ export async function PUT(req: Request) {
             // make transaction
             await prisma.transaction.create({
               data: {
+                id: transactionId,
                 date: sellRequest.date,
                 quantity: sellQuantity,
                 price: sellRequest.price,
