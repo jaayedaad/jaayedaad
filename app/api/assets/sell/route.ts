@@ -12,6 +12,11 @@ import { Asset } from "@/actions/getAssetsAction";
 import CryptoJS from "crypto-js";
 import { createId } from "@paralleldrive/cuid2";
 import { getAssetById } from "@/sia/getAssetById";
+import {
+  decryptObjectValues,
+  encryptDataValue,
+  encryptObjectValues,
+} from "@/utils/dataSecurity";
 
 interface AssetWithTransaction extends PrismaAsset {
   transactions: Transaction[];
@@ -54,7 +59,11 @@ export async function PUT(req: Request) {
         (asset) => asset.name === sellRequest.name
       );
     } else if (process.env.DATABASE_URL) {
-      ownedAsset = user.assets.filter(
+      const userAssets = decryptObjectValues(
+        user.assets,
+        encryptionKey
+      ) as typeof user.assets;
+      ownedAsset = userAssets.filter(
         (asset) => asset.name === sellRequest.name
       );
     }
@@ -99,7 +108,7 @@ export async function PUT(req: Request) {
                   id: asset.id,
                 },
                 data: {
-                  quantity: "0",
+                  quantity: encryptDataValue("0", encryptionKey),
                 },
               });
             }
@@ -134,7 +143,10 @@ export async function PUT(req: Request) {
                   id: asset.id,
                 },
                 data: {
-                  quantity: (+asset.quantity - +sellQuantity).toString(),
+                  quantity: encryptDataValue(
+                    (+asset.quantity - +sellQuantity).toString(),
+                    encryptionKey
+                  ),
                 },
               });
             }
@@ -167,9 +179,16 @@ export async function PUT(req: Request) {
             );
           }
           if (process.env.DATABASE_URL) {
-            // make transaction
-            await prisma.transaction.create({
-              data: {
+            // encrypt data
+            const encryptedData: {
+              id: string;
+              date: string;
+              quantity: string;
+              price: string;
+              type: string;
+              assetId: string;
+            } = encryptObjectValues(
+              {
                 id: transactionId,
                 date: sellRequest.date,
                 quantity: sellQuantity,
@@ -177,6 +196,11 @@ export async function PUT(req: Request) {
                 type: "sell",
                 assetId: asset.id,
               },
+              encryptionKey
+            );
+            // make transaction
+            await prisma.transaction.create({
+              data: encryptedData,
             });
           }
         }

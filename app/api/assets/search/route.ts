@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { authOptions } from "@/utils/authOptions";
+import { decryptObjectValues } from "@/utils/dataSecurity";
 import { Asset } from "@prisma/client";
 import { getServerSession } from "next-auth";
 
@@ -57,7 +58,12 @@ export async function POST(req: Request) {
   });
 
   if (user) {
-    const assets = user.assets;
+    const encryptionKey =
+      user.id.slice(0, 4) + process.env.SIA_ENCRYPTION_KEY + user.id.slice(-4);
+    const assets = decryptObjectValues(
+      user.assets,
+      encryptionKey
+    ) as typeof user.assets;
     const topMatchingAssets = findTopMatchingAssets(assets, body.searchQuery);
     const results = transformToResultFormat(topMatchingAssets);
 

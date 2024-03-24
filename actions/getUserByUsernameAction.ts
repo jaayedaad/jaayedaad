@@ -1,8 +1,9 @@
 "use server";
 
 import { prisma } from "@/lib/prisma";
+import { decryptObjectValues } from "@/utils/dataSecurity";
 export async function getUserByUsername(username: string) {
-  const user = await prisma.user.findUnique({
+  let user = await prisma.user.findUnique({
     where: {
       username: username,
     },
@@ -11,5 +12,20 @@ export async function getUserByUsername(username: string) {
       preferences: true,
     },
   });
-  return user;
+
+  if (user) {
+    const encryptionKey =
+      user?.id.slice(0, 4) +
+      process.env.SIA_ENCRYPTION_KEY +
+      user?.id.slice(-4);
+
+    user = {
+      ...user,
+      assets: decryptObjectValues(
+        user?.assets,
+        encryptionKey
+      ) as typeof user.assets,
+    };
+    return user;
+  }
 }

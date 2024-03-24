@@ -8,16 +8,21 @@ import { createId } from "@paralleldrive/cuid2";
 import findExistingAssetFromSia from "@/helper/sia/findExisitingAsset";
 import findExistingCategoryFromSia from "@/helper/sia/findExisitingCategory";
 import getAllTransactions from "@/sia/getAllTransactions";
+import {
+  decryptObjectValues,
+  encryptDataValue,
+  encryptObjectValues,
+} from "@/utils/dataSecurity";
 
 export async function POST(req: Request) {
   const assetId = createId();
   const transactionId = createId();
   const assetPriceUpdateId = createId();
 
-  const body = await req.json();
+  let body = await req.json();
   const session = await getServerSession(authOptions);
 
-  const user = await prisma.user.findUnique({
+  const rawUser = await prisma.user.findUnique({
     where: { email: session?.user?.email! },
     include: {
       assets: {
@@ -29,7 +34,25 @@ export async function POST(req: Request) {
     },
   });
 
-  if (user) {
+  if (rawUser) {
+    const encryptionKey =
+      rawUser.id.slice(0, 4) +
+      process.env.SIA_ENCRYPTION_KEY +
+      rawUser.id.slice(-4);
+
+    // decrypt the user data
+    const user = {
+      ...rawUser,
+      assets: decryptObjectValues(
+        rawUser.assets,
+        encryptionKey
+      ) as typeof rawUser.assets,
+      usersManualCategories: decryptObjectValues(
+        rawUser.usersManualCategories,
+        encryptionKey
+      ) as typeof rawUser.usersManualCategories,
+    };
+
     if (process.env.SIA_API_URL) {
       const existingAsset = await findExistingAssetFromSia(
         user.id,
@@ -41,11 +64,6 @@ export async function POST(req: Request) {
       const password = "1234";
       const basicAuth =
         "Basic " + Buffer.from(username + ":" + password).toString("base64");
-
-      const encryptionKey =
-        user.id.slice(0, 4) +
-        process.env.SIA_ENCRYPTION_KEY +
-        user.id.slice(-4);
 
       const res = await fetch(
         `${process.env.SIA_API_URL}/workers/object/${user.id}/assets`,
@@ -349,11 +367,15 @@ export async function POST(req: Request) {
           return asset.name === body.name;
         }
       });
+      const manualEntry = body.isManualEntry;
+      const assetType = body.type;
+      // encrypt the body data
+      body = encryptObjectValues(body, encryptionKey);
       if (!existingAsset) {
         let asset: Asset;
-        if (body.isManualEntry) {
+        if (manualEntry) {
           const existingCategory = user.usersManualCategories.find(
-            (manualCategory) => manualCategory.name === body.type
+            (manualCategory) => manualCategory.name === assetType
           );
 
           if (existingCategory) {
@@ -432,14 +454,17 @@ export async function POST(req: Request) {
         existingAsset.transactions.push(newTransaction);
         const avgBuyPrice = calculateAvgBuyPrice(existingAsset.transactions);
 
-        if (!body.isManualEntry) {
+        if (!manualEntry) {
           const asset = await prisma.asset.update({
             where: {
               id: existingAsset.id,
             },
             data: {
-              quantity: updatedQuantity.toString(),
-              buyPrice: avgBuyPrice.toString(),
+              quantity: encryptDataValue(
+                updatedQuantity.toString(),
+                encryptionKey
+              ),
+              buyPrice: encryptDataValue(avgBuyPrice.toString(), encryptionKey),
             },
           });
         } else {
@@ -448,8 +473,11 @@ export async function POST(req: Request) {
               id: existingAsset.id,
             },
             data: {
-              quantity: updatedQuantity.toString(),
-              buyPrice: avgBuyPrice.toString(),
+              quantity: encryptDataValue(
+                updatedQuantity.toString(),
+                encryptionKey
+              ),
+              buyPrice: encryptDataValue(avgBuyPrice.toString(), encryptionKey),
               currentPrice: body.currentPrice.toString(),
             },
           });

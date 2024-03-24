@@ -9,6 +9,7 @@ import {
 import { isValidTransactions } from "@/helper/canSellAssets";
 import CryptoJS from "crypto-js";
 import { getAssetById } from "@/sia/getAssetById";
+import { encryptDataValue, encryptObjectValues } from "@/utils/dataSecurity";
 
 interface requestBody {
   transactionToEdit: Transaction;
@@ -75,16 +76,25 @@ async function updateTransaction(
     );
   }
   if (process.env.DATABASE_URL) {
+    // encrypt data
+    const encryptedData: {
+      quantity: string;
+      price: string;
+      date: Date;
+    } = encryptObjectValues(
+      {
+        quantity: transactionToEdit.quantity,
+        price: transactionToEdit.price,
+        date: transactionToEdit.date,
+      },
+      encryptionKey
+    );
     // update transaction
     const editedTransaction = await prisma.transaction.update({
       where: {
         id: transactionToEdit.id,
       },
-      data: {
-        quantity: transactionToEdit.quantity,
-        price: transactionToEdit.price,
-        date: transactionToEdit.date,
-      },
+      data: encryptedData,
     });
 
     // update asset price and quantity
@@ -93,8 +103,11 @@ async function updateTransaction(
         id: transactionToEdit.assetId,
       },
       data: {
-        quantity: (futureQuantity + currentQuantity).toString(),
-        buyPrice: avgBuyPrice.toString(),
+        quantity: encryptDataValue(
+          (futureQuantity + currentQuantity).toString(),
+          encryptionKey
+        ),
+        buyPrice: encryptDataValue(avgBuyPrice.toString(), encryptionKey),
       },
     });
   }

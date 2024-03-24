@@ -71,7 +71,7 @@ function CreateCategoryButton() {
     }
   };
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button className="justify-start" variant="ghost">
           <Plus className="mr-2" size={20} /> Create category

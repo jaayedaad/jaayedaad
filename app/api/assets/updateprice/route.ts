@@ -3,6 +3,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/utils/authOptions";
 import { createId } from "@paralleldrive/cuid2";
 import CryptoJS from "crypto-js";
+import { encryptObjectValues } from "@/utils/dataSecurity";
 
 export async function POST(req: Request) {
   const body: {
@@ -36,13 +37,23 @@ export async function POST(req: Request) {
 
     const assetPriceUpdateId = createId();
     if (process.env.DATABASE_URL) {
-      const priceUpdate = await prisma.assetPriceUpdate.create({
-        data: {
+      // encrypt data
+      const encryptedData: {
+        id: string;
+        price: string;
+        date: string;
+        assetId: string;
+      } = encryptObjectValues(
+        {
           id: assetPriceUpdateId,
           price: body.price,
           date: body.date,
           assetId: body.assetId,
         },
+        encryptionKey
+      );
+      const priceUpdate = await prisma.assetPriceUpdate.create({
+        data: encryptedData,
       });
     }
     if (process.env.SIA_API_URL) {

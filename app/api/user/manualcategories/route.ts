@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma";
 import CryptoJS from "crypto-js";
 import { createId } from "@paralleldrive/cuid2";
 import dynamicIconImports from "lucide-react/dynamicIconImports";
+import { encryptObjectValues } from "@/utils/dataSecurity";
 
 export async function POST(req: Request) {
   const session = await getServerSession(authOptions);
@@ -62,16 +63,29 @@ export async function POST(req: Request) {
         );
       }
       if (process.env.DATABASE_URL) {
-        const usersManualCategory = await prisma.usersManualCategory.create({
-          data: {
+        // encrypt data
+        const encryptedData: {
+          id: string;
+          icon: keyof typeof dynamicIconImports;
+          name: string;
+          userId: string;
+        } = encryptObjectValues(
+          {
             id: manualCategoryId,
             icon: body.icon,
             name: body.name,
             userId: user.id,
           },
+          encryptionKey
+        );
+        const usersManualCategory = await prisma.usersManualCategory.create({
+          data: encryptedData,
         });
 
-        return new Response("Category created successfully", { status: 200 });
+        return new Response("Category created successfully", {
+          status: 200,
+          statusText: "OK",
+        });
       }
     }
   }
