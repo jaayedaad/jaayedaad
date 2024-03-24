@@ -15,6 +15,8 @@ export const CurrencyContext = createContext<
         | undefined;
       numberSystem: string;
       setNumberSystem: React.Dispatch<React.SetStateAction<string>>;
+      performanceBarOrder: string;
+      setPerformanceBarOrder: React.Dispatch<React.SetStateAction<string>>;
     }
   | undefined
 >(undefined);
@@ -29,11 +31,13 @@ export default function CurrencyProvider({
   const [conversionRates, setConversionRates] = useState<{
     [currency: string]: number;
   }>();
+  const [performanceBarOrder, setPerformanceBarOrder] = useState("Ascending");
   useEffect(() => {
     getConversionRate().then((rate) => setConversionRates(rate));
     getPreferences().then((preferences) => {
       setGlobalCurrency(preferences.defaultCurrency.toLowerCase());
       setNumberSystem(preferences.numberSystem);
+      setPerformanceBarOrder(preferences.performanceBarOrder);
     });
   }, [defaultCurrency]);
   return (
@@ -44,6 +48,8 @@ export default function CurrencyProvider({
         conversionRates,
         numberSystem,
         setNumberSystem,
+        performanceBarOrder,
+        setPerformanceBarOrder,
       }}
     >
       {children}

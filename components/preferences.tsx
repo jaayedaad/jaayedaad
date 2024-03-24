@@ -17,6 +17,7 @@ import { useCurrency } from "@/contexts/currency-context";
 import { toast } from "sonner";
 import LoadingSpinner from "./ui/loading-spinner";
 import { Preference } from "@prisma/client";
+import { performanceBarOrder } from "@/constants/performanceBarOrder";
 
 interface PreferenceProps {
   preferences: Preference;
@@ -29,6 +30,7 @@ interface PreferenceProps {
           numberSystem: string;
           showHoldings: boolean;
           showMetrics: boolean;
+          performanceBarOrder: string;
           userId: string;
         }
       | undefined
@@ -37,13 +39,17 @@ interface PreferenceProps {
 }
 
 function Preferences({ preferences, setPreferences }: PreferenceProps) {
-  const { setNumberSystem, setGlobalCurrency } = useCurrency();
+  const { setNumberSystem, setGlobalCurrency, setPerformanceBarOrder } =
+    useCurrency();
   const [publicProfile, setPublicProfile] = useState(preferences.publicProfile);
   const [defaultCurrency, setDefaultCurrency] = useState(
     preferences.defaultCurrency
   );
   const [defaultNumberSystem, setDefaultNumberSystem] = useState(
     preferences.numberSystem
+  );
+  const [defaultPerformanceBarOrder, setDefaultPerformanceBarOrder] = useState(
+    preferences.performanceBarOrder
   );
   const [loading, setLoading] = useState(false);
 
@@ -55,6 +61,7 @@ function Preferences({ preferences, setPreferences }: PreferenceProps) {
         publicProfile: publicProfile,
         defaultCurrency: defaultCurrency,
         numberSystem: defaultNumberSystem,
+        performanceBarOrder: defaultPerformanceBarOrder,
       };
       await fetch("/api/user/preferences", {
         method: "POST",
@@ -66,9 +73,11 @@ function Preferences({ preferences, setPreferences }: PreferenceProps) {
         publicProfile: publicProfile,
         defaultCurrency: defaultCurrency,
         numberSystem: defaultNumberSystem,
+        performanceBarOrder: defaultPerformanceBarOrder,
       });
       setNumberSystem(defaultNumberSystem);
       setGlobalCurrency(defaultCurrency);
+      setPerformanceBarOrder(defaultPerformanceBarOrder);
       setLoading(false);
       toast.success("Preferences updated successfully!");
     }
@@ -153,6 +162,35 @@ function Preferences({ preferences, setPreferences }: PreferenceProps) {
                     return (
                       <SelectItem key={system.label} value={system.label}>
                         {system.value}
+                      </SelectItem>
+                    );
+                  })}
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+          <div className="py-5 px-4 flex items-center justify-between border rounded-md w-full">
+            <div>
+              <h2>Asset performance bar</h2>
+              <p className="text-muted-foreground text-sm">
+                Set the order of asset performance bar
+              </p>
+            </div>
+            <div>
+              <Select
+                onValueChange={(value) => {
+                  setDefaultPerformanceBarOrder(value);
+                }}
+                value={defaultPerformanceBarOrder}
+              >
+                <SelectTrigger className="w-full">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {performanceBarOrder.map((order) => {
+                    return (
+                      <SelectItem key={order.label} value={order.label}>
+                        {order.value}
                       </SelectItem>
                     );
                   })}

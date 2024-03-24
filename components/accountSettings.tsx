@@ -29,6 +29,7 @@ interface AccountSettingsProps {
           numberSystem: string;
           showHoldings: boolean;
           showMetrics: boolean;
+          performanceBarOrder: string;
           userId: string;
         }
       | undefined

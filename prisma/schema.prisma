@@ -77,14 +77,15 @@ model Asset {
 }
 
 model Preference {
-  id              String  @id @default(cuid())
-  publicProfile   Boolean @default(false)
-  defaultCurrency String  @default("INR")
-  numberSystem    String  @default("Indian")
-  showHoldings    Boolean @default(false)
-  showMetrics     Boolean @default(false)
-  userId          String  @unique
-  user            User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id                  String  @id @default(cuid())
+  publicProfile       Boolean @default(false)
+  defaultCurrency     String  @default("INR")
+  numberSystem        String  @default("Indian")
+  showHoldings        Boolean @default(false)
+  showMetrics         Boolean @default(false)
+  performanceBarOrder String  @default("Ascending")
+  userId              String  @unique
+  user                User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model Transaction {
