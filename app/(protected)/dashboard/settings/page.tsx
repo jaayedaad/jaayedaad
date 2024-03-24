@@ -21,6 +21,7 @@ function SettingsPage() {
     numberSystem: string;
     showHoldings: boolean;
     showMetrics: boolean;
+    performanceBarOrder: string;
     userId: string;
   }>();
   const [username, setUsername] = useState<string | null>(null);
