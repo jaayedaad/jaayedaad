@@ -448,6 +448,7 @@ function AssetTable({
                   groupedAsset.map((asset, index) => {
                     return (
                       <TableRow
+                        className="cursor-pointer"
                         onClick={() =>
                           handleGroupRowClick(
                             assetTypeMappings[asset.type] || asset.type
