@@ -139,9 +139,16 @@ function AssetPieChart({ view }: PieChartProps) {
     }
 
     data?.forEach((item) => {
-      const type = item.name;
-      const value = item.symbol ? item.currentValue : +item.currentPrice;
-      sumByType[type] = (sumByType[type] || 0) + value;
+      if (conversionRates) {
+        const currencyConversion =
+          conversionRates[item.buyCurrency.toLowerCase()];
+        const multiplier = 1 / currencyConversion;
+        const type = item.name;
+        const value = item.symbol
+          ? item.currentValue * multiplier
+          : +item.currentPrice;
+        sumByType[type] = (sumByType[type] || 0) + value;
+      }
     });
   }
 
