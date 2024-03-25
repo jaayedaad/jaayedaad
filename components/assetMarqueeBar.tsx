@@ -4,6 +4,7 @@ import { Interval } from "./changeInterval";
 import { Asset } from "@/actions/getAssetsAction";
 import { cn } from "@/lib/utils";
 import { ArrowDownIcon, ArrowUpIcon } from "lucide-react";
+import { useCurrency } from "@/contexts/currency-context";
 
 interface AssetMarqueeBarProps {
   data: Asset[];
@@ -11,12 +12,26 @@ interface AssetMarqueeBarProps {
 }
 
 function AssetMarqueeBar({ data, timeInterval }: AssetMarqueeBarProps) {
+  const { performanceBarOrder } = useCurrency();
   useEffect(() => {}, [timeInterval]);
+
+  // Sort data based on performanceBarOrder
+  const sortedData = [...data].sort((a, b) => {
+    const aChange = ((a.currentValue - a.compareValue) * 100) / a.compareValue;
+    const bChange = ((b.currentValue - b.compareValue) * 100) / b.compareValue;
+
+    if (performanceBarOrder === "Ascending") {
+      return aChange - bChange;
+    } else {
+      return bChange - aChange;
+    }
+  });
+
   return (
     <div className="hidden lg:block w-full">
       <Marquee gradient gradientColor="#0a0a0b">
         <div className="flex gap-6">
-          {data.map((asset, index) => {
+          {sortedData.map((asset, index) => {
             return (
               <div key={index} className="flex gap-2">
                 <div>{asset.name}:</div>
