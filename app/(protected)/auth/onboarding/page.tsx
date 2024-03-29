@@ -3,16 +3,15 @@ import { getCurrentUser } from "@/actions/getCurrentUser";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 function Onboarding() {
-  const claimedUsername = localStorage.getItem("claimedUsername");
-  const [username, setUsername] = useState(
-    (claimedUsername && claimedUsername) || ""
-  );
+  const [username, setUsername] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
   const [buttonDisabled, setButtonDisabled] = useState(true);
+  const [submitting, setSubmitting] = useState(false);
 
   const router = useRouter();
 
@@ -42,17 +41,14 @@ function Onboarding() {
   };
 
   // handles submitting of username
-  const handleSubmit = async () => {
+  const handleSubmit = async (username: string) => {
+    setSubmitting(true);
     await fetch(`/api/onboarding?username=${username}`, {
       method: "GET",
     });
 
     router.push("/dashboard");
   };
-
-  if (claimedUsername) {
-    handleSubmit();
-  }
 
   // handles username field and disables button while typing
   const handleUsernameChange = (value: string) => {
@@ -62,12 +58,19 @@ function Onboarding() {
 
   // Fetches current user & redirects to dashboard if username is set
   useEffect(() => {
+    const claimedUsername = localStorage.getItem("claimedUsername");
+    if (claimedUsername) {
+      setUsername(claimedUsername);
+      // Remove claimedUsername from local storage
+      localStorage.removeItem("claimedUsername");
+      handleSubmit(claimedUsername);
+    }
     getCurrentUser().then((userResponse) => {
       if (userResponse?.userData.username) {
         router.push("/dashboard");
       }
     });
-  });
+  }, []);
 
   // Accomodates live username change
   useEffect(() => {
@@ -101,7 +104,11 @@ function Onboarding() {
         {errorMessage}
       </p>
       <div className="pt-4 flex flex-col">
-        <Button onClick={handleSubmit} disabled={buttonDisabled}>
+        <Button
+          onClick={() => handleSubmit(username)}
+          disabled={buttonDisabled}
+        >
+          {submitting && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
           Submit
         </Button>
       </div>
