@@ -64,7 +64,7 @@ function Navbar() {
         <SignedOut>
           <Button
             variant="secondary"
-            className="rounded-full text-xl"
+            className="rounded-full text-xl p-6"
             onClick={() =>
               signIn("google", {
                 callbackUrl: "/dashboard",

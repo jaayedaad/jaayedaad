@@ -7,7 +7,10 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 function Onboarding() {
-  const [username, setUsername] = useState("");
+  const claimedUsername = localStorage.getItem("claimedUsername");
+  const [username, setUsername] = useState(
+    (claimedUsername && claimedUsername) || ""
+  );
   const [errorMessage, setErrorMessage] = useState("");
   const [buttonDisabled, setButtonDisabled] = useState(true);
 
@@ -46,6 +49,10 @@ function Onboarding() {
 
     router.push("/dashboard");
   };
+
+  if (claimedUsername) {
+    handleSubmit();
+  }
 
   // handles username field and disables button while typing
   const handleUsernameChange = (value: string) => {
