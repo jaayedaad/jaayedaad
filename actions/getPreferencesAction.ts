@@ -19,6 +19,13 @@ export async function getPreferences() {
     }
   );
 
-  const preferences = await res.json();
-  return preferences;
+  try {
+    const preferences = await res.json();
+    return preferences;
+  } catch (error) {
+    return {
+      defaultCurrency: "USD",
+      numberSystem: "Standard",
+    };
+  }
 }

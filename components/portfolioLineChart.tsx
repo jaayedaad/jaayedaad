@@ -71,7 +71,6 @@ function PortfolioLineChart({
     timeInterval &&
       prepareLineChartData(timeInterval, accumulatedData, setDataToShow);
   }, [timeInterval]);
-
   return (
     <>
       <div className="flex gap-64">

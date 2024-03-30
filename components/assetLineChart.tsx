@@ -32,10 +32,10 @@ function AssetLineChart({
     }
   );
   return (
-    <ResponsiveContainer height={160}>
+    <ResponsiveContainer height={200}>
       <AreaChart
         width={380}
-        height={160}
+        height={200}
         data={dataToShow}
         margin={{
           top: 20,

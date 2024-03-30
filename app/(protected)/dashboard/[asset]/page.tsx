@@ -143,7 +143,7 @@ function Page({ params }: { params: { asset: string } }) {
         <div className="min-h-[85vh] h-full mt-4">
           <div className="flex flex-col gap-4 sm:gap-6 md:gap-6 lg:gap-4 lg:grid lg:grid-rows-7 lg:grid-cols-3 lg:h-full text-foreground">
             <div className="row-span-3 col-span-1 border rounded-xl p-4">
-              <AssetPieChart view={param} />
+              <AssetPieChart view={param} assets={assets} />
             </div>
             <div className="row-span-3 col-span-2 border rounded-xl p-4">
               {historicalData ? (
@@ -191,6 +191,7 @@ function Page({ params }: { params: { asset: string } }) {
                 {assetsToView ? (
                   <AssetTable
                     data={assetsToView}
+                    historicalData={historicalData}
                     view={param}
                     timelineInterval={timeInterval}
                   />

@@ -120,7 +120,7 @@ function Dashboard() {
         <div className="flex flex-col gap-4 sm:gap-6 md:gap-6 lg:gap-4 lg:grid lg:grid-rows-7 lg:grid-cols-3 lg:h-full text-foreground">
           {/* Asset distribution pie chart */}
           <div className="col-span-1 row-span-3 bg-card border rounded-xl p-4">
-            <AssetPieChart view="dashboard" />
+            <AssetPieChart view="dashboard" assets={assets} />
           </div>
           {/* Portfolio line chart */}
           <div className="col-span-2 row-span-3 bg-card border rounded-xl p-4">
@@ -173,6 +173,7 @@ function Dashboard() {
               {assets ? (
                 <AssetTable
                   data={assets}
+                  historicalData={historicalData}
                   timelineInterval={timeInterval}
                   intervalChangeData={unrealisedProfitLossArray}
                 />

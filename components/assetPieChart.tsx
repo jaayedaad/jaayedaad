@@ -84,18 +84,19 @@ const renderActiveShape = (props: any) => {
 };
 
 interface PieChartProps {
+  assets: Asset[] | undefined;
   view: string; // "stocks" | "crypto" | "funds" | "dashboard"
 }
 
-function AssetPieChart({ view }: PieChartProps) {
+function AssetPieChart({ view, assets }: PieChartProps) {
   const { visible } = useVisibility();
-  let { assets: data } = useData();
+  let data = assets;
   const { numberSystem, defaultCurrency, conversionRates } = useCurrency();
   const formatter = new Intl.NumberFormat(
     numberSystem === "Indian" ? "en-IN" : "en-US",
     {
       style: "currency",
-      currency: defaultCurrency,
+      currency: defaultCurrency || "USD",
       minimumFractionDigits: 2,
       maximumFractionDigits: 2,
     }
@@ -166,7 +167,7 @@ function AssetPieChart({ view }: PieChartProps) {
       </p>
       <div className="flex justify-center mt-2">
         {data ? (
-          <PieChart width={400} height={160}>
+          <PieChart width={400} height={200}>
             <Pie
               data={chartData}
               cx="50%"

@@ -13,7 +13,6 @@ import { ScrollArea } from "./ui/scroll-area";
 import { cn } from "@/lib/utils";
 import { useVisibility } from "@/contexts/visibility-context";
 import { useEffect, useState } from "react";
-import { useData } from "@/contexts/data-context";
 import ViewAsset from "./viewAsset";
 import { Button } from "./ui/button";
 import { Interval } from "./changeInterval";
@@ -25,6 +24,8 @@ import { useCurrency } from "@/contexts/currency-context";
 interface AssetTableProps {
   data: Asset[];
   view?: string; // "stocks" | "crypto" | "funds" | "property"
+  historicalData?: any[];
+  isPublic?: boolean;
   timelineInterval?: Interval;
   intervalChangeData?: {
     type: string;
@@ -40,11 +41,12 @@ interface AssetTableProps {
 function AssetTable({
   data,
   view,
+  historicalData,
+  isPublic,
   timelineInterval,
   intervalChangeData,
 }: AssetTableProps) {
   const { visible } = useVisibility();
-  const { historicalData } = useData();
   const { defaultCurrency } = useCurrency();
   const router = useRouter();
   const [open, setOpen] = useState(false);
@@ -227,7 +229,7 @@ function AssetTable({
     filteredAsset.length > 0 && (
       <>
         <Table>
-          <AssetTableCaption />
+         {!isPublic && <AssetTableCaption />}
           <ScrollArea className="w-full xl:h-[33vh] lg:h-[30vh]">
             <TableHeader className="bg-secondary sticky top-0">
               {view ? (
@@ -450,6 +452,7 @@ function AssetTable({
                       <TableRow
                         className="cursor-pointer"
                         onClick={() =>
+                          !isPublic &&
                           handleGroupRowClick(
                             assetTypeMappings[asset.type] || asset.type
                           )

@@ -23,7 +23,6 @@ function ClaimUsername() {
       return;
     }
     const data = await getUserByUsername(username);
-    console.log(data);
     if (!data) {
       setErrorMessage("Username available");
       setDisabled(false);

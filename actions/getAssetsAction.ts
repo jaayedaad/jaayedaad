@@ -1,8 +1,7 @@
 "use server";
-import getAllAssets from "@/sia/getAllAssets";
 import { cookies } from "next/headers";
 
-const calculateCurrentValue = (asset: Asset) => {
+export const calculateCurrentValue = (asset: Asset) => {
   const calculateBaseValue = () => {
     const investedValue = +asset.buyPrice * +asset.quantity;
     return investedValue;
@@ -31,11 +30,24 @@ const calculateCurrentValue = (asset: Asset) => {
     asset.currentPrice = asset.currentValue.toString();
     asset.prevClose = asset.currentPrice;
     asset.compareValue = +asset.buyPrice;
+
+    return {
+      currentValue: asset.currentValue,
+      currentPrice: asset.currentPrice,
+      prevClose: asset.prevClose,
+      compareValue: asset.compareValue,
+    };
   } else {
     asset.compareValue = calculateBaseValue();
     asset.currentValue = asset.isManualEntry
       ? +asset.currentPrice * +asset.quantity
       : +asset.prevClose * +asset.quantity;
+    return {
+      currentValue: asset.currentValue,
+      currentPrice: asset.currentPrice,
+      prevClose: asset.prevClose,
+      compareValue: asset.compareValue,
+    };
   }
 };
 
