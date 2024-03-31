@@ -1,10 +1,9 @@
-import { Asset } from "@/actions/getAssetsAction";
+import { TAsset, TInterval } from "@/lib/types";
 import { useCurrency } from "@/contexts/currency-context";
 import { useVisibility } from "@/contexts/visibility-context";
 import { cn } from "@/lib/utils";
 import { ArrowDown, ArrowUp } from "lucide-react";
 import React, { useEffect, useState } from "react";
-import { Interval } from "./changeInterval";
 import { calculateUnrealisedProfitLoss } from "@/helper/unrealisedValueCalculator";
 
 function PerformanceMetrics({
@@ -13,7 +12,7 @@ function PerformanceMetrics({
   unrealisedProfitLossArray,
   timeInterval,
 }: {
-  assets: Asset[];
+  assets: TAsset[];
   realisedProfitLoss: string | undefined;
   unrealisedProfitLossArray: {
     type: string;
@@ -24,7 +23,7 @@ function PerformanceMetrics({
     interval: string;
     unrealisedProfitLoss: string;
   }[];
-  timeInterval: Interval;
+  timeInterval: TInterval;
 }) {
   const { visible } = useVisibility();
   const { conversionRates, numberSystem, defaultCurrency } = useCurrency();

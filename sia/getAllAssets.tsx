@@ -1,11 +1,10 @@
-import { siaObject } from "@/helper/sia/findExisitingAsset";
 import { prisma } from "@/lib/prisma";
 import { authOptions } from "@/utils/authOptions";
 import { getServerSession } from "next-auth";
 import getAllTransactions from "./getAllTransactions";
 import CryptoJS from "crypto-js";
 import getAllPriceUpdates from "@/helper/sia/findAllPriceUpdates";
-import { Asset } from "@/actions/getAssetsAction";
+import { TAsset, TSiaObject } from "@/lib/types";
 
 export default async function getAllAssets() {
   const session = await getServerSession(authOptions);
@@ -36,8 +35,8 @@ export default async function getAllAssets() {
       );
 
       if (res.ok) {
-        const response: siaObject[] = await res.json();
-        const assetAddressArray = response.map((res: siaObject) => res.name);
+        const response: TSiaObject[] = await res.json();
+        const assetAddressArray = response.map((res: TSiaObject) => res.name);
 
         const requests = assetAddressArray.map((address) =>
           fetch(`${process.env.SIA_API_URL}/worker/objects${address}data`, {
@@ -84,7 +83,7 @@ export default async function getAllAssets() {
         );
 
         // Filter out potential null values from errors
-        const validAssets: Asset[] = assetsWithTransactions.filter(
+        const validAssets: TAsset[] = assetsWithTransactions.filter(
           (asset) => asset !== null
         );
 

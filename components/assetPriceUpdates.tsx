@@ -19,7 +19,7 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import { Separator } from "./ui/separator";
-import { Asset } from "@/actions/getAssetsAction";
+import { TAsset } from "@/lib/types";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { DatePicker } from "./ui/date-picker";
@@ -28,7 +28,7 @@ import { toast } from "sonner";
 import { useData } from "@/contexts/data-context";
 
 interface AssetPriceUpdatesProps {
-  assetToView: Asset;
+  assetToView: TAsset;
 }
 
 function AssetPriceUpdates({ assetToView }: AssetPriceUpdatesProps) {

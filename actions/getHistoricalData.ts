@@ -1,6 +1,6 @@
 "use server";
 
-import { Asset } from "@/actions/getAssetsAction";
+import { TAsset } from "@/lib/types";
 import { getConversionRate } from "./getConversionRateAction";
 
 function areDatesEqual(date1: Date, date2: Date): boolean {
@@ -15,7 +15,7 @@ function areDatesEqual(date1: Date, date2: Date): boolean {
   return d1.getTime() === d2.getTime();
 }
 
-export async function getHistoricalData(assets: Asset[]) {
+export async function getHistoricalData(assets: TAsset[]) {
   const conversionRate = await getConversionRate();
   let historicalData = [];
   for (const asset of assets) {

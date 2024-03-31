@@ -3,22 +3,19 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs";
 import { Dialog, DialogContent } from "./ui/dialog";
 import { cn } from "@/lib/utils";
 import { accumulateLineChartData } from "@/helper/lineChartDataAccumulator";
-import ChangeInterval, { Interval } from "./changeInterval";
+import ChangeInterval from "./changeInterval";
 import AssetLineChart from "./assetLineChart";
 import { prepareLineChartData } from "@/helper/prepareLineChartData";
 import TransactionHistory from "./transactionHistory";
 import { prepareHistoricalDataForManualCategory } from "@/helper/manualAssetsHistoryMaker";
-import { Asset } from "@/actions/getAssetsAction";
+import { TAsset, TInterval, TProfitLoss } from "@/lib/types";
 import AssetPriceUpdates from "./assetPriceUpdates";
 import { getConversionRate } from "@/actions/getConversionRateAction";
 import {
   calculateUnrealisedProfitLoss,
   getUnrealisedProfitLossArray,
 } from "@/helper/unrealisedValueCalculator";
-import {
-  ProfitLoss,
-  calculateRealisedProfitLoss,
-} from "@/helper/realisedValueCalculator";
+import { calculateRealisedProfitLoss } from "@/helper/realisedValueCalculator";
 import LoadingSpinner from "./ui/loading-spinner";
 import { useCurrency } from "@/contexts/currency-context";
 import { ScrollArea } from "./ui/scroll-area";
@@ -26,8 +23,8 @@ import { ScrollArea } from "./ui/scroll-area";
 interface ViewAssetProps {
   open: boolean;
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
-  assetToView?: Asset;
-  manualAsset?: Asset;
+  assetToView?: TAsset;
+  manualAsset?: TAsset;
   historicalData: any[];
   conversionRates: {
     [currency: string]: number;
@@ -58,7 +55,7 @@ function ViewAsset({
     realisedProfitLoss: string;
   }>();
   const [realisedProfitLossArray, setRealisedProfitLossArray] =
-    useState<ProfitLoss[]>();
+    useState<TProfitLoss[]>();
   const [unrealisedProfitLossArray, setUnrealisedProfitLossArray] = useState<
     {
       type: string;
@@ -115,7 +112,7 @@ function ViewAsset({
   }, [assetToView, historicalData]);
 
   // // Handle change in interval
-  function onChange(value: Interval) {
+  function onChange(value: TInterval) {
     if (manualAsset) {
       lineChartData.sort(
         (a, b) => new Date(b.name).getTime() - new Date(a.name).getTime()

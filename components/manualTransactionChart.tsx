@@ -1,5 +1,5 @@
 "use client";
-import { Asset } from "@/actions/getAssetsAction";
+import { TAsset, TInterval } from "@/lib/types";
 import { useVisibility } from "@/contexts/visibility-context";
 import {
   formatIndianNumber,
@@ -8,14 +8,14 @@ import {
 import { prepareHistoricalDataForManualCategory } from "@/helper/manualAssetsHistoryMaker";
 import React, { useEffect, useState } from "react";
 import { Area, AreaChart, Tooltip, XAxis, YAxis } from "recharts";
-import ChangeInterval, { Interval } from "./changeInterval";
+import ChangeInterval from "./changeInterval";
 import { prepareLineChartData } from "@/helper/prepareLineChartData";
 import { accumulateLineChartData } from "@/helper/lineChartDataAccumulator";
 import { useCurrency } from "@/contexts/currency-context";
 
 interface ManualTransactionChartProps {
-  manualCategoryAssets: Asset[];
-  timeInterval?: Interval | undefined;
+  manualCategoryAssets: TAsset[];
+  timeInterval?: TInterval | undefined;
 }
 
 function ManualTransactionChart({

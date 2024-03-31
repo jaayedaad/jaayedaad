@@ -1,28 +1,25 @@
 "use client";
 import AssetPieChart from "@/components/assetPieChart";
 import AssetTable from "@/components/assetTable";
-import ChangeInterval, { Interval } from "@/components/changeInterval";
+import ChangeInterval from "@/components/changeInterval";
 import PerformanceMetrics from "@/components/performanceMetrics";
 import PortfolioLineChart from "@/components/portfolioLineChart";
 import LoadingSpinner from "@/components/ui/loading-spinner";
 import { useCurrency } from "@/contexts/currency-context";
 import { useData } from "@/contexts/data-context";
-import {
-  ProfitLoss,
-  calculateRealisedProfitLoss,
-} from "@/helper/realisedValueCalculator";
+import { calculateRealisedProfitLoss } from "@/helper/realisedValueCalculator";
 import { getUnrealisedProfitLossArray } from "@/helper/unrealisedValueCalculator";
 import { useEffect, useState } from "react";
 import jaayedaad_logo from "@/public/jaayedaad_logo.svg";
 import Image from "next/image";
 import AssetMarqueeBar from "@/components/assetMarqueeBar";
-import { Asset } from "@/actions/getAssetsAction";
+import { TAsset, TInterval, TProfitLoss } from "@/lib/types";
 
 function Dashboard() {
   const { assets, historicalData } = useData();
   const { conversionRates } = useCurrency();
   const [realisedProfitLoss, setRealisedProfitLoss] = useState<string>();
-  const [timeInterval, setTimeInterval] = useState<Interval>("All");
+  const [timeInterval, setTimeInterval] = useState<TInterval>("All");
   const [unrealisedProfitLossArray, setUnrealisedProfitLossArray] = useState<
     {
       type: string;
@@ -35,10 +32,10 @@ function Dashboard() {
     }[]
   >();
   const [realisedProfitLossArray, setRealisedProfitLossArray] =
-    useState<ProfitLoss[]>();
-  const [marqueeBarAssets, setMarqueeBarAssets] = useState<Asset[] | undefined>(
-    assets
-  );
+    useState<TProfitLoss[]>();
+  const [marqueeBarAssets, setMarqueeBarAssets] = useState<
+    TAsset[] | undefined
+  >(assets);
 
   useEffect(() => {
     if (assets && conversionRates) {
@@ -72,7 +69,7 @@ function Dashboard() {
   const yesterday = new Date(today);
   yesterday.setDate(today.getDate() - 1);
 
-  const onChange = (value: Interval) => {
+  const onChange = (value: TInterval) => {
     setTimeInterval(value);
     const profitLoss = realisedProfitLossArray?.filter(
       (profitLoss) => profitLoss.interval === value

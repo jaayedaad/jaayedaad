@@ -1,14 +1,14 @@
 "use client";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
+import { TInterval } from "@/lib/types";
 
-export type Interval = "1d" | "1w" | "1m" | "1y" | "All";
 interface ChildProps {
-  onChange: (value: Interval) => void;
+  onChange: (value: TInterval) => void;
 }
 
 function ChangeInterval({ onChange }: ChildProps) {
-  const [activeInterval, setActiveInterval] = useState<Interval>("All");
+  const [activeInterval, setActiveInterval] = useState<TInterval>("All");
   useEffect(() => {
     onChange(activeInterval);
   }, []);

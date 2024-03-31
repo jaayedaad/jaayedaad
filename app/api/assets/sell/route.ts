@@ -8,7 +8,7 @@ import {
   AssetPriceUpdate,
   Transaction,
 } from "@prisma/client";
-import { Asset } from "@/actions/getAssetsAction";
+import { TAsset } from "@/lib/types";
 import CryptoJS from "crypto-js";
 import { createId } from "@paralleldrive/cuid2";
 import { getAssetById } from "@/sia/getAssetById";
@@ -52,7 +52,7 @@ export async function PUT(req: Request) {
 
     const encryptionKey =
       user.id.slice(0, 4) + process.env.SIA_ENCRYPTION_KEY + user.id.slice(-4);
-    let ownedAsset: AssetWithTransaction[] | Asset[] | undefined;
+    let ownedAsset: AssetWithTransaction[] | TAsset[] | undefined;
     if (process.env.SIA_API_URL) {
       const userAssets = await getAllAssets();
       ownedAsset = userAssets?.filter(

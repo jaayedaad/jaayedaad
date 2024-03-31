@@ -1,14 +1,6 @@
+import { TSiaObject } from "@/lib/types";
 import { Asset } from "@prisma/client";
 import CryptoJS from "crypto-js";
-
-export interface siaObject {
-  eTag: string;
-  health: number;
-  modTime: string;
-  name: string;
-  size: number;
-  mimeType: string;
-}
 
 export default async function findExistingAssetFromSia(
   userId: string,
@@ -38,8 +30,8 @@ export default async function findExistingAssetFromSia(
   if (!res.ok) {
     return existingAsset;
   } else {
-    const response: siaObject[] = await res.json();
-    const assetAddressArray = response.map((res: siaObject) => res.name);
+    const response: TSiaObject[] = await res.json();
+    const assetAddressArray = response.map((res: TSiaObject) => res.name);
 
     const requests = assetAddressArray.map((address) =>
       fetch(`${process.env.SIA_API_URL}/worker/objects${address}data`, {

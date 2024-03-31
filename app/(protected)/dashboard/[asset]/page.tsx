@@ -1,9 +1,9 @@
 "use client";
-import { Asset } from "@/actions/getAssetsAction";
+import { TAsset, TInterval } from "@/lib/types";
 import { getConversionRate } from "@/actions/getConversionRateAction";
 import AssetPieChart from "@/components/assetPieChart";
 import AssetTable from "@/components/assetTable";
-import ChangeInterval, { Interval } from "@/components/changeInterval";
+import ChangeInterval from "@/components/changeInterval";
 import ManualTransactionChart from "@/components/manualTransactionChart";
 import PortfolioLineChart from "@/components/portfolioLineChart";
 import LoadingSpinner from "@/components/ui/loading-spinner";
@@ -32,7 +32,7 @@ function Page({ params }: { params: { asset: string } }) {
     (asset) => asset.type.toLowerCase() === param.toLowerCase()
   );
 
-  const [assetsToView, setAssetsToView] = useState<Asset[] | undefined>(
+  const [assetsToView, setAssetsToView] = useState<TAsset[] | undefined>(
     filteredAssets
   );
 
@@ -40,7 +40,7 @@ function Page({ params }: { params: { asset: string } }) {
     (asset) => asset.type.toLowerCase() === param.toLowerCase()
   );
 
-  let manualCategoryAsset: Asset[] | undefined;
+  let manualCategoryAsset: TAsset[] | undefined;
   if (categoryExist) {
     manualCategoryAsset = filteredAssets?.filter(
       (asset) => asset.type.toLowerCase() === param.toLowerCase()
@@ -48,9 +48,9 @@ function Page({ params }: { params: { asset: string } }) {
   }
 
   const [manualCategoryAssets, setManualCategoryAssets] = useState<
-    Asset[] | undefined
+    TAsset[] | undefined
   >(manualCategoryAsset);
-  const [timeInterval, setTimeInterval] = useState<Interval>("1d");
+  const [timeInterval, setTimeInterval] = useState<TInterval>("1d");
   const [unrealisedProfitLossArray, setUnrealisedProfitLossArray] = useState<
     {
       type: string;
@@ -103,7 +103,7 @@ function Page({ params }: { params: { asset: string } }) {
   const yesterday = new Date(today);
   yesterday.setDate(today.getDate() - 1);
 
-  const onChange = (value: Interval) => {
+  const onChange = (value: TInterval) => {
     setTimeInterval(value);
     if (value !== "All" && filteredAssets) {
       const updatedAssetsToView = filteredAssets.map((asset) => {

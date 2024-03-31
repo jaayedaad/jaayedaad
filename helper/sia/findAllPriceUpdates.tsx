@@ -1,8 +1,8 @@
-import { siaObject } from "@/helper/sia/findExisitingAsset";
 import { prisma } from "@/lib/prisma";
 import { authOptions } from "@/utils/authOptions";
 import { getServerSession } from "next-auth";
 import CryptoJS from "crypto-js";
+import { TSiaObject } from "@/lib/types";
 
 export default async function getAllPriceUpdates(assetId: string) {
   const session = await getServerSession(authOptions);
@@ -33,10 +33,10 @@ export default async function getAllPriceUpdates(assetId: string) {
         }
       );
 
-      const response: siaObject[] = await res.json();
+      const response: TSiaObject[] = await res.json();
 
       const priceUpdatesAddressArray = response.map(
-        (res: siaObject) => res.name
+        (res: TSiaObject) => res.name
       );
 
       const requests = priceUpdatesAddressArray.map((address) =>

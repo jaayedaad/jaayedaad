@@ -1,14 +1,13 @@
 import React, { useEffect } from "react";
 import Marquee from "react-fast-marquee";
-import { Interval } from "./changeInterval";
-import { Asset } from "@/actions/getAssetsAction";
+import { TAsset, TInterval } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import { ArrowDownIcon, ArrowUpIcon } from "lucide-react";
 import { useCurrency } from "@/contexts/currency-context";
 
 interface AssetMarqueeBarProps {
-  data: Asset[];
-  timeInterval: Interval;
+  data: TAsset[];
+  timeInterval: TInterval;
 }
 
 function AssetMarqueeBar({ data, timeInterval }: AssetMarqueeBarProps) {

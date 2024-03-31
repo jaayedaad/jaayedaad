@@ -1,5 +1,5 @@
+import { TSiaObject } from "@/lib/types";
 import CryptoJS from "crypto-js";
-import { siaObject } from "./findExisitingAsset";
 
 export default async function findExistingCategoryFromSia(
   userId: string,
@@ -24,8 +24,8 @@ export default async function findExistingCategoryFromSia(
   );
 
   if (res.ok) {
-    const response: siaObject[] = await res.json();
-    const categoryAddressArray = response.map((res: siaObject) => res.name);
+    const response: TSiaObject[] = await res.json();
+    const categoryAddressArray = response.map((res: TSiaObject) => res.name);
 
     const requests = categoryAddressArray.map((address) =>
       fetch(`${process.env.SIA_API_URL}/worker/objects${address}`).then(

@@ -1,7 +1,7 @@
-import { Interval } from "@/components/changeInterval";
+import { TInterval } from "@/lib/types";
 
 export function prepareLineChartData(
-  timeRange: Interval,
+  timeRange: TInterval,
   data: {
     name: string;
     amt: number;

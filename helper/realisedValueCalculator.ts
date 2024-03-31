@@ -1,23 +1,18 @@
-import { Asset } from "@/actions/getAssetsAction";
+import { TAsset, TProfitLoss } from "@/lib/types";
 import {
   calculateTotalQuantity,
   calculateTotalValue,
 } from "./transactionValueCalculator";
 import { Transaction } from "@prisma/client";
 
-export interface ProfitLoss {
-  interval: string;
-  realisedProfitLoss: string;
-}
-
 // Function to make realized profit/loss array based on interval
 export function calculateRealisedProfitLoss(
-  assets: Asset[] | undefined,
+  assets: TAsset[] | undefined,
   conversionRate: {
     [currency: string]: number;
   }
-): ProfitLoss[] {
-  const realisedProfitsLosses: ProfitLoss[] = [];
+): TProfitLoss[] {
+  const realisedProfitsLosses: TProfitLoss[] = [];
 
   if (!assets) {
     return realisedProfitsLosses;
@@ -83,7 +78,7 @@ export function calculateRealisedProfitLoss(
 
 // Function to calculate realized profit/loss for each asset
 function calculateRealisedProfitLossAll(
-  assets: Asset[] | undefined,
+  assets: TAsset[] | undefined,
   conversionRate: {
     [currency: string]: number;
   }
@@ -147,7 +142,7 @@ function calculateRealisedProfitLossAll(
 }
 
 function calculateAverageBuyPrice(
-  asset: Asset,
+  asset: TAsset,
   pastTransactions: Transaction[]
 ): number {
   if (asset.symbol) {

@@ -1,4 +1,4 @@
-import { siaObject } from "./findExisitingAsset";
+import { TSiaObject } from "@/lib/types";
 
 export default async function getTransactionsForAsset(
   userId: string,
@@ -25,8 +25,8 @@ export default async function getTransactionsForAsset(
   if (!res.ok) {
     return false;
   } else {
-    const response: siaObject[] = await res.json();
-    const transactionAddressArray = response.map((res: siaObject) => res.name);
+    const response: TSiaObject[] = await res.json();
+    const transactionAddressArray = response.map((res: TSiaObject) => res.name);
 
     const requests = transactionAddressArray.map((address) =>
       fetch(`${process.env.SIA_API_URL}/worker/objects${address}`, {

@@ -1,7 +1,7 @@
-import { Asset } from "@/actions/getAssetsAction";
+import { TAsset } from "@/lib/types";
 
 export function prepareHistoricalDataForManualCategory(
-  manualCategoryAssets: Asset[]
+  manualCategoryAssets: TAsset[]
 ) {
   const historicalData: { values: { date: number; value: number }[] }[] = [];
   manualCategoryAssets.forEach((asset) => {

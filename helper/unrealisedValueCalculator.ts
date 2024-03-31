@@ -1,4 +1,4 @@
-import { Asset } from "@/actions/getAssetsAction";
+import { TAsset } from "@/lib/types";
 import { calculateTotalQuantity } from "./transactionValueCalculator";
 
 type AssetHistory = {
@@ -29,7 +29,7 @@ type AssetHistory = {
 
 // Function to calculate unrealized profit/loss for each asset
 export function calculateUnrealisedProfitLoss(
-  assets: Asset[],
+  assets: TAsset[],
   conversionRates: {
     [currency: string]: number;
   }
@@ -53,7 +53,7 @@ export function calculateUnrealisedProfitLoss(
 
 export function getUnrealisedProfitLossArray(
   historicalData: AssetHistory[],
-  assets: Asset[],
+  assets: TAsset[],
   conversionRate: {
     [currency: string]: number;
   }

@@ -15,14 +15,12 @@ import { cn } from "@/lib/utils";
 import { buttonVariants } from "@/components/ui/button";
 import { DateAfter, DayPicker, DropdownProps } from "react-day-picker";
 
-export type CalendarProps = React.ComponentProps<typeof DayPicker>;
-
 function Calendar({
   className,
   classNames,
   showOutsideDays = true,
   ...props
-}: CalendarProps) {
+}: React.ComponentProps<typeof DayPicker>) {
   const afterMatcher: DateAfter = { after: new Date() };
   return (
     <DayPicker

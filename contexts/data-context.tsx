@@ -1,14 +1,15 @@
 "use client";
 
-import { Asset as detailedAsset, getAssets } from "@/actions/getAssetsAction";
+import { getAssets } from "@/actions/getAssetsAction";
 import { getCurrentUser } from "@/actions/getCurrentUser";
 import { getHistoricalData } from "@/actions/getHistoricalData";
+import { TAsset } from "@/lib/types";
 import { Asset } from "@prisma/client";
 import dynamicIconImports from "lucide-react/dynamicIconImports";
 import React, { createContext, useContext, useEffect, useState } from "react";
 
 export const DataContext = createContext<{
-  assets: detailedAsset[] | undefined;
+  assets: TAsset[] | undefined;
   historicalData: any[] | undefined;
   user:
     | {
@@ -38,7 +39,7 @@ export default function DataProvider({
   children: React.ReactNode;
 }) {
   const [historicalData, setHistoricalData] = useState<any[]>();
-  const [assets, setAssets] = useState<detailedAsset[]>();
+  const [assets, setAssets] = useState<TAsset[]>();
   const [user, setUser] = useState<{
     usersManualCategories: {
       id: string;

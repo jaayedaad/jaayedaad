@@ -1,5 +1,5 @@
 "use client";
-import { Asset } from "@/actions/getAssetsAction";
+import { TAsset } from "@/lib/types";
 import { useData } from "@/contexts/data-context";
 import { useState } from "react";
 import { PieChart, Pie, Sector, Cell, Tooltip } from "recharts";
@@ -84,7 +84,7 @@ const renderActiveShape = (props: any) => {
 };
 
 interface PieChartProps {
-  assets: Asset[] | undefined;
+  assets: TAsset[] | undefined;
   view: string; // "stocks" | "crypto" | "funds" | "dashboard"
 }
 
@@ -122,7 +122,7 @@ function AssetPieChart({ view, assets }: PieChartProps) {
       }
     });
   } else {
-    const filters: Record<string, (asset: Asset) => boolean> = {
+    const filters: Record<string, (asset: TAsset) => boolean> = {
       "common stock": (asset) => asset.type === "Common Stock",
       "digital currency": (asset) => asset.type === "Digital Currency",
       "mutual fund": (asset) => asset.type === "Mutual Fund",

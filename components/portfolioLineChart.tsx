@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { Area, AreaChart, Tooltip, XAxis, YAxis } from "recharts";
-import { Interval } from "./changeInterval";
 import { accumulateLineChartData } from "@/helper/lineChartDataAccumulator";
 import { useVisibility } from "@/contexts/visibility-context";
 import {
@@ -9,6 +8,7 @@ import {
 } from "@/helper/indianNumberingFormatter";
 import { prepareLineChartData } from "@/helper/prepareLineChartData";
 import { useCurrency } from "@/contexts/currency-context";
+import { TInterval } from "@/lib/types";
 
 interface FilterMap {
   [key: string]: () => { name: string; amt: number }[];
@@ -21,7 +21,7 @@ function PortfolioLineChart({
 }: {
   data: any[];
   view: string;
-  timeInterval?: Interval;
+  timeInterval?: TInterval;
 }) {
   const { visible } = useVisibility();
   const { numberSystem, defaultCurrency } = useCurrency();

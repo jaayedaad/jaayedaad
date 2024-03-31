@@ -1,7 +1,8 @@
 "use server";
+import { TAsset } from "@/lib/types";
 import { cookies } from "next/headers";
 
-export const calculateCurrentValue = (asset: Asset) => {
+export const calculateCurrentValue = (asset: TAsset) => {
   const calculateBaseValue = () => {
     const investedValue = +asset.buyPrice * +asset.quantity;
     return investedValue;
@@ -51,38 +52,6 @@ export const calculateCurrentValue = (asset: Asset) => {
   }
 };
 
-export type Asset = {
-  id: string;
-  name: string;
-  symbol: string;
-  quantity: string;
-  buyPrice: string;
-  buyCurrency: string;
-  prevClose: string;
-  type: string;
-  exchange: string;
-  buyDate: Date;
-  userId: string;
-  currentPrice: string;
-  isManualEntry: boolean;
-  currentValue: number;
-  compareValue: number;
-  transactions: {
-    id: string;
-    date: Date;
-    quantity: string;
-    price: string;
-    type: string;
-    assetId: string;
-  }[];
-  assetPriceUpdates: {
-    id: string;
-    price: string;
-    date: Date;
-    assetId: string;
-  }[];
-};
-
 export async function getAssets() {
   const cookieStores = cookies();
   const cookiesArray = cookieStores.getAll();
@@ -90,7 +59,7 @@ export async function getAssets() {
     .map((cookie) => `${cookie.name}=${cookie.value}`)
     .join(";");
 
-  let assets: Asset[] | undefined;
+  let assets: TAsset[] | undefined;
 
   const data = await fetch(`${process.env.NEXT_PUBLIC_APP_URL}/api/assets`, {
     method: "GET",

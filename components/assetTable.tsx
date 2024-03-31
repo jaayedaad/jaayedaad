@@ -8,25 +8,24 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { ArrowDownIcon, ArrowUpDown, ArrowUpIcon } from "lucide-react";
-import { Asset } from "@/actions/getAssetsAction";
+import { TAsset, TInterval } from "@/lib/types";
 import { ScrollArea } from "./ui/scroll-area";
 import { cn } from "@/lib/utils";
 import { useVisibility } from "@/contexts/visibility-context";
 import { useEffect, useState } from "react";
 import ViewAsset from "./viewAsset";
 import { Button } from "./ui/button";
-import { Interval } from "./changeInterval";
 import AssetTableCaption from "./assetTableCaption";
 import { useRouter } from "next/navigation";
 import { getConversionRate } from "@/actions/getConversionRateAction";
 import { useCurrency } from "@/contexts/currency-context";
 
 interface AssetTableProps {
-  data: Asset[];
+  data: TAsset[];
   view?: string; // "stocks" | "crypto" | "funds" | "property"
   historicalData?: any[];
   isPublic?: boolean;
-  timelineInterval?: Interval;
+  timelineInterval?: TInterval;
   intervalChangeData?: {
     type: string;
     symbol: string;
@@ -50,7 +49,7 @@ function AssetTable({
   const { defaultCurrency } = useCurrency();
   const router = useRouter();
   const [open, setOpen] = useState(false);
-  const [assetToView, setAssetToView] = useState<Asset>();
+  const [assetToView, setAssetToView] = useState<TAsset>();
   const [groupedAsset, setGroupedAsset] = useState<
     {
       type: string;
@@ -58,8 +57,8 @@ function AssetTable({
       compareValue: number;
     }[]
   >();
-  const [manualAsset, setManualAsset] = useState<Asset>();
-  const [filteredAsset, setFilteredAsset] = useState<Asset[]>();
+  const [manualAsset, setManualAsset] = useState<TAsset>();
+  const [filteredAsset, setFilteredAsset] = useState<TAsset[]>();
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
   const [conversionRates, setConversionRates] = useState<{
     [currency: string]: number;
@@ -71,7 +70,7 @@ function AssetTable({
     // Add other mappings here
   };
 
-  const filters: Record<string, (asset: Asset) => boolean> = {
+  const filters: Record<string, (asset: TAsset) => boolean> = {
     "common stock": (asset) => asset.type === "Common Stock",
     "digital currency": (asset) => asset.type === "Digital Currency",
     "mutual fund": (asset) => asset.type === "Mutual Fund",
@@ -229,7 +228,7 @@ function AssetTable({
     filteredAsset.length > 0 && (
       <>
         <Table>
-         {!isPublic && <AssetTableCaption />}
+          {!isPublic && <AssetTableCaption />}
           <ScrollArea className="w-full xl:h-[33vh] lg:h-[30vh]">
             <TableHeader className="bg-secondary sticky top-0">
               {view ? (

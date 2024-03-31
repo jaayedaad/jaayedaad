@@ -1,8 +1,8 @@
 "use client";
 import { Preference } from "@prisma/client";
-import React, { use, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import AssetPieChart from "../assetPieChart";
-import { Asset, calculateCurrentValue } from "@/actions/getAssetsAction";
+import { calculateCurrentValue } from "@/actions/getAssetsAction";
 import AssetTable from "../assetTable";
 import LoadingSpinner from "../ui/loading-spinner";
 import { getHistoricalData } from "@/actions/getHistoricalData";
@@ -11,6 +11,7 @@ import PerformanceMetrics from "../performanceMetrics";
 import { getUnrealisedProfitLossArray } from "@/helper/unrealisedValueCalculator";
 import { useCurrency } from "@/contexts/currency-context";
 import { calculateRealisedProfitLoss } from "@/helper/realisedValueCalculator";
+import { TAsset } from "@/lib/types";
 
 interface ProfileProps {
   preferences: Preference;
@@ -18,7 +19,7 @@ interface ProfileProps {
 
 function Profile({ preferences }: ProfileProps) {
   const { conversionRates } = useCurrency();
-  const [assets, setAssets] = useState<Asset[]>();
+  const [assets, setAssets] = useState<TAsset[]>();
   const [historicalData, setHistoricalData] = useState<any[]>();
   const [realisedProfitLoss, setRealisedProfitLoss] = useState<string>();
   const [unrealisedProfitLossArray, setUnrealisedProfitLossArray] = useState<
@@ -39,7 +40,7 @@ function Profile({ preferences }: ProfileProps) {
     })
       .then((response) => response.json())
       .then(async (data) => {
-        const assets: Asset[] = data;
+        const assets: TAsset[] = data;
         if (assets && assets.length) {
           const assetQuotesPromises = assets.map(async (asset) => {
             if (asset.symbol !== null) {
