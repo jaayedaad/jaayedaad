@@ -153,6 +153,11 @@ function ManualTransactionChart({
             <Area
               type="monotone"
               dataKey="amt"
+              strokeWidth={2}
+              dot={{
+                r: 4,
+                style: { fill: "#ffffff" },
+              }}
               stroke={`${
                 dataToShow[0].amt > dataToShow[dataToShow.length - 1].amt
                   ? "#ef4444"
