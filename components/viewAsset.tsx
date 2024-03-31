@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs";
 import { Dialog, DialogContent } from "./ui/dialog";
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/helper";
 import { accumulateLineChartData } from "@/helper/lineChartDataAccumulator";
 import ChangeInterval from "./changeInterval";
 import AssetLineChart from "./assetLineChart";

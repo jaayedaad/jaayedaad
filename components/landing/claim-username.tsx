@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 import { getUserByUsername } from "@/actions/getUserByUsernameAction";
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/helper";
 import { signIn } from "next-auth/react";
 
 function ClaimUsername() {

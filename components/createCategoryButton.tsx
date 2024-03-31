@@ -24,7 +24,7 @@ import { Check, ChevronsUpDown, Loader2, Plus } from "lucide-react";
 import { Input } from "./ui/input";
 import DynamicIcon from "./dynamicIcon";
 import dynamicIconImports from "lucide-react/dynamicIconImports";
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/helper";
 import { toast } from "sonner";
 
 type IconLabel = keyof typeof dynamicIconImports;

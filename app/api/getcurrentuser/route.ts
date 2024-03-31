@@ -1,7 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { getServerSession } from "next-auth";
-import { authOptions } from "@/utils/authOptions";
-import { decryptObjectValues } from "@/utils/dataSecurity";
+import { authOptions } from "@/lib/authOptions";
+import { decryptObjectValues } from "@/lib/dataSecurity";
 
 export async function GET() {
   const session = await getServerSession(authOptions);

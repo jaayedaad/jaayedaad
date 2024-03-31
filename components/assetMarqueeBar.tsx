@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import Marquee from "react-fast-marquee";
 import { TAsset, TInterval } from "@/lib/types";
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/helper";
 import { ArrowDownIcon, ArrowUpIcon } from "lucide-react";
 import { useCurrency } from "@/contexts/currency-context";
 

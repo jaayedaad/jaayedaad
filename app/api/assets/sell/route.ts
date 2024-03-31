@@ -1,6 +1,6 @@
 import { getServerSession } from "next-auth";
 import { prisma } from "@/lib/prisma";
-import { authOptions } from "@/utils/authOptions";
+import { authOptions } from "@/lib/authOptions";
 import { canSellAssets } from "@/helper/canSellAssets";
 import getAllAssets from "@/sia/getAllAssets";
 import {
@@ -16,7 +16,7 @@ import {
   decryptObjectValues,
   encryptDataValue,
   encryptObjectValues,
-} from "@/utils/dataSecurity";
+} from "@/lib/dataSecurity";
 
 interface AssetWithTransaction extends PrismaAsset {
   transactions: Transaction[];

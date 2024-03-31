@@ -1,9 +1,9 @@
 import { prisma } from "@/lib/prisma";
 import { getServerSession } from "next-auth";
-import { authOptions } from "@/utils/authOptions";
+import { authOptions } from "@/lib/authOptions";
 import { createId } from "@paralleldrive/cuid2";
 import CryptoJS from "crypto-js";
-import { encryptObjectValues } from "@/utils/dataSecurity";
+import { encryptObjectValues } from "@/lib/dataSecurity";
 
 export async function POST(req: Request) {
   const body: {

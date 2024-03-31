@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/prisma";
-import { decryptObjectValues } from "@/utils/dataSecurity";
+import { decryptObjectValues } from "@/lib/dataSecurity";
 
 export async function GET(
   request: Request,

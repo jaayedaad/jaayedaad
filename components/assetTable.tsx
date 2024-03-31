@@ -10,7 +10,7 @@ import {
 import { ArrowDownIcon, ArrowUpDown, ArrowUpIcon } from "lucide-react";
 import { TAsset, TInterval } from "@/lib/types";
 import { ScrollArea } from "./ui/scroll-area";
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/helper";
 import { useVisibility } from "@/contexts/visibility-context";
 import { useEffect, useState } from "react";
 import ViewAsset from "./viewAsset";

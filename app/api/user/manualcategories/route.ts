@@ -1,10 +1,10 @@
 import { getServerSession } from "next-auth";
-import { authOptions } from "@/utils/authOptions";
+import { authOptions } from "@/lib/authOptions";
 import { prisma } from "@/lib/prisma";
 import CryptoJS from "crypto-js";
 import { createId } from "@paralleldrive/cuid2";
 import dynamicIconImports from "lucide-react/dynamicIconImports";
-import { encryptObjectValues } from "@/utils/dataSecurity";
+import { encryptObjectValues } from "@/lib/dataSecurity";
 
 export async function POST(req: Request) {
   const session = await getServerSession(authOptions);

@@ -22,7 +22,7 @@ import { getPreferences } from "@/actions/getPreferencesAction";
 import { Preference } from "@prisma/client";
 import { Loader2 } from "lucide-react";
 import { useCurrency } from "@/contexts/currency-context";
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/helper";
 
 function AssetTableCaption() {
   const { setGlobalCurrency } = useCurrency();

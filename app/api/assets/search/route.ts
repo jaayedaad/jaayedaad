@@ -1,6 +1,6 @@
 import { prisma } from "@/lib/prisma";
-import { authOptions } from "@/utils/authOptions";
-import { decryptObjectValues } from "@/utils/dataSecurity";
+import { authOptions } from "@/lib/authOptions";
+import { decryptObjectValues } from "@/lib/dataSecurity";
 import { Asset } from "@prisma/client";
 import { getServerSession } from "next-auth";
 

@@ -1,6 +1,6 @@
 import { getServerSession } from "next-auth";
 import { prisma } from "@/lib/prisma";
-import { authOptions } from "@/utils/authOptions";
+import { authOptions } from "@/lib/authOptions";
 import { Transaction } from "@prisma/client";
 import {
   calculateAvgBuyPrice,
@@ -9,7 +9,7 @@ import {
 import { isValidTransactions } from "@/helper/canSellAssets";
 import CryptoJS from "crypto-js";
 import { getAssetById } from "@/sia/getAssetById";
-import { encryptDataValue, encryptObjectValues } from "@/utils/dataSecurity";
+import { encryptDataValue, encryptObjectValues } from "@/lib/dataSecurity";
 
 interface requestBody {
   transactionToEdit: Transaction;

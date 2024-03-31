@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/prisma";
-import { authOptions } from "@/utils/authOptions";
+import { authOptions } from "@/lib/authOptions";
 import { getServerSession } from "next-auth";
 import getAllTransactions from "./getAllTransactions";
 import CryptoJS from "crypto-js";

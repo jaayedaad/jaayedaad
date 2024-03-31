@@ -1,7 +1,7 @@
 import { TAsset, TInterval } from "@/lib/types";
 import { useCurrency } from "@/contexts/currency-context";
 import { useVisibility } from "@/contexts/visibility-context";
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/helper";
 import { ArrowDown, ArrowUp } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import { calculateUnrealisedProfitLoss } from "@/helper/unrealisedValueCalculator";

@@ -2,7 +2,7 @@
 import { Bell, UserRound } from "lucide-react";
 import Preferences from "@/components/preferences";
 import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/helper";
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 import AccountSettings from "@/components/accountSettings";

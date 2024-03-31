@@ -13,7 +13,7 @@ import {
 import { useState } from "react";
 import { ScrollArea } from "./ui/scroll-area";
 import TransactionForm from "./transactionForm";
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/helper";
 
 type searchResultProps = {
   results: Array<any>;

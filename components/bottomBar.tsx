@@ -4,7 +4,7 @@ import { useVisibility } from "@/contexts/visibility-context";
 import { usePathname } from "next/navigation";
 import React, { useState } from "react";
 import { Button } from "./ui/button";
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/helper";
 import Link from "next/link";
 import {
   Bitcoin,

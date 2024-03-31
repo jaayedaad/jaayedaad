@@ -1,7 +1,7 @@
 "use server";
 
 import { prisma } from "@/lib/prisma";
-import { decryptObjectValues } from "@/utils/dataSecurity";
+import { decryptObjectValues } from "@/lib/dataSecurity";
 export async function getUserByUsername(username: string) {
   let user = await prisma.user.findUnique({
     where: {

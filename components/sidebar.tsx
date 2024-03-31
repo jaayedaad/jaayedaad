@@ -12,7 +12,7 @@ import {
   SquareStack,
 } from "lucide-react";
 import { usePathname } from "next/navigation";
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/helper";
 import Link from "next/link";
 import { Toggle } from "./ui/toggle";
 import { useVisibility } from "@/contexts/visibility-context";

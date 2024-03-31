@@ -1,6 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { getServerSession } from "next-auth";
-import { authOptions } from "@/utils/authOptions";
+import { authOptions } from "@/lib/authOptions";
 import { calculateAvgBuyPrice } from "@/helper/transactionValueCalculator";
 import { Asset } from "@prisma/client";
 import CryptoJS from "crypto-js";
@@ -12,7 +12,7 @@ import {
   decryptObjectValues,
   encryptDataValue,
   encryptObjectValues,
-} from "@/utils/dataSecurity";
+} from "@/lib/dataSecurity";
 
 export async function POST(req: Request) {
   const assetId = createId();

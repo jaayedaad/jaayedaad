@@ -1,7 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import getAllAssets from "@/sia/getAllAssets";
-import { authOptions } from "@/utils/authOptions";
-import { decryptObjectValues } from "@/utils/dataSecurity";
+import { authOptions } from "@/lib/authOptions";
+import { decryptObjectValues } from "@/lib/dataSecurity";
 import { getServerSession } from "next-auth";
 
 export async function GET() {

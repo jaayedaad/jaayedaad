@@ -1,5 +1,5 @@
 "use server";
-import { authOptions } from "@/utils/authOptions";
+import { authOptions } from "@/lib/authOptions";
 import { Asset } from "@prisma/client";
 import dynamicIconImports from "lucide-react/dynamicIconImports";
 import { getServerSession } from "next-auth";
