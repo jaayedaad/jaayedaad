@@ -1,8 +1,8 @@
 import { prisma } from "@/lib/prisma";
-import getAllAssets from "@/sia/getAllAssets";
 import { authOptions } from "@/lib/authOptions";
 import { decryptObjectValues } from "@/lib/dataSecurity";
 import { getServerSession } from "next-auth";
+import { getAllAssets } from "@/services/thirdParty/sia";
 
 export async function GET() {
   const session = await getServerSession(authOptions);

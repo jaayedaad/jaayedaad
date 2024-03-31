@@ -1,19 +1,19 @@
 export type TAsset = {
   id: string;
   name: string;
-  symbol: string;
+  symbol: string; // shubham: fix this bec its not in prisma schema so shouldnt be here as well
   quantity: string;
   buyPrice: string;
   buyCurrency: string;
-  prevClose: string;
+  prevClose: string; // shubham: fix this bec its not in prisma schema so shouldnt be here as well
   type: string;
   exchange: string;
   buyDate: Date;
   userId: string;
-  currentPrice: string;
+  currentPrice: string; // shubham: fix this bec its not in prisma schema so shouldnt be here as well
   isManualEntry: boolean;
-  currentValue: number;
-  compareValue: number;
+  currentValue: number; // shubham: fix this bec its not in prisma schema so shouldnt be here as well
+  compareValue: number; // shubham: fix this bec its not in prisma schema so shouldnt be here as well
   transactions: {
     id: string;
     date: Date;

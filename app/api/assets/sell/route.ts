@@ -2,7 +2,7 @@ import { getServerSession } from "next-auth";
 import { prisma } from "@/lib/prisma";
 import { authOptions } from "@/lib/authOptions";
 import { canSellAssets } from "@/helper/canSellAssets";
-import getAllAssets from "@/sia/getAllAssets";
+import { getAllAssets } from "@/services/thirdParty/sia";
 import {
   Asset as PrismaAsset,
   AssetPriceUpdate,

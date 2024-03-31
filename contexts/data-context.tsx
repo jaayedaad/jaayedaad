@@ -60,10 +60,13 @@ export default function DataProvider({
 
   const fetchData = async () => {
     const userResponse = await getCurrentUser();
+    if (!userResponse) {
+      return;
+    }
     if (userResponse) {
       setUser(userResponse);
     }
-    const assets = await getAssets();
+    const assets = await getAssets(userResponse?.userData.email);
     setAssets(assets);
     if (assets) {
       const data = await getHistoricalData(assets);

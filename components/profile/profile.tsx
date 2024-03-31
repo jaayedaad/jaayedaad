@@ -2,7 +2,7 @@
 import { Preference } from "@prisma/client";
 import React, { useEffect, useState } from "react";
 import AssetPieChart from "../assetPieChart";
-import { calculateCurrentValue } from "@/actions/getAssetsAction";
+import { calculateCurrentValue } from "@/lib/assetCalculation";
 import AssetTable from "../assetTable";
 import LoadingSpinner from "../ui/loading-spinner";
 import { getHistoricalData } from "@/actions/getHistoricalData";

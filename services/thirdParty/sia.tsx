@@ -1,12 +1,12 @@
 import { prisma } from "@/lib/prisma";
 import { authOptions } from "@/lib/authOptions";
 import { getServerSession } from "next-auth";
-import getAllTransactions from "./getAllTransactions";
+import getAllTransactions from "../../sia/getAllTransactions";
 import CryptoJS from "crypto-js";
 import getAllPriceUpdates from "@/helper/sia/findAllPriceUpdates";
 import { TAsset, TSiaObject } from "@/lib/types";
 
-export default async function getAllAssets() {
+export async function getAllAssets() {
   const session = await getServerSession(authOptions);
   const username = "username";
   const password = "1234";
