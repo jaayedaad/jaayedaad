@@ -4,7 +4,7 @@ import FlashyButton from "../ui/flashy-button";
 import { AppWindow, LayoutGrid, Wand2 } from "lucide-react";
 
 function StickyNavbarTabs() {
-  const [activeTab, setActiveTab] = useState("#home");
+  const [activeTab, setActiveTab] = useState("home");
 
   useEffect(() => {
     const stickyNav = document.getElementById("sticky-Nav");
@@ -40,7 +40,7 @@ function StickyNavbarTabs() {
     });
   }, []);
   return (
-    <div className="z-10 w-fit flex gap-2 border border-zinc-600 p-0.5 rounded-full bg-gradient-to-r from-[#1a1a1a] to-[#292929] ">
+    <div className="z-10 w-fit flex gap-2 border border-zinc-600 p-0.5 rounded-full bg-gradient-to-r from-[#1a1a1a] to-[#292929] opacity-90">
       <FlashyButton notActive={activeTab !== "home"}>
         <a href="#home" className="sticky-links flex items-center">
           <LayoutGrid className="h-4 w-4 mr-2" />

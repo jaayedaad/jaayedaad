@@ -22,14 +22,18 @@ function FlashyButton({
       duration={3000}
       containerClassName={cn("h-[42px] w-auto", containerClassName)}
       className={cn(
-        "h-10 px-4 py-2 border-0 bg-gradient-to-r from-[#1a1a1a] to-[#292929] opacity-90 text-zinc-300",
+        "h-10 font-medium px-4 py-2 border-0 bg-gradient-to-r from-[#1a1a1a] to-[#292929] opacity-90",
         className
       )}
     >
       {children}
     </AnimatedButton>
   ) : (
-    <Button variant="ghost" className="rounded-full" {...props}>
+    <Button
+      variant="ghost"
+      className="rounded-full text-zinc-400 hover:bg-violet-950/40"
+      {...props}
+    >
       {children}
     </Button>
   );
