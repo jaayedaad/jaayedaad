@@ -1,12 +1,12 @@
 import React from "react";
 import { Button } from "../ui/button";
-import { Github } from "lucide-react";
+import { X } from "lucide-react";
 import Link from "next/link";
 import JaayedaadLogo from "@/public/branding/jaayedaadLogo";
 
 function Footer() {
   return (
-    <div className="text-center mt-36 mb-16">
+    <div className="text-center mt-16 md:mt-36 mb-16">
       <div className="w-full flex justify-center">
         <JaayedaadLogo />
       </div>
@@ -19,8 +19,8 @@ function Footer() {
           className="h-12 text-base px-6 rounded-full"
           asChild
         >
-          <Link href="https://github.com/jaayedaad/jaayedaad">
-            <Github className="h-4 w-4 mr-2" /> GitHub
+          <Link href="https://x.com/jaayedaad">
+            <X className="h-4 w-4 mr-2" /> Twitter
           </Link>
         </Button>
       </div>

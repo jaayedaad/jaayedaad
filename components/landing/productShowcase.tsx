@@ -1,7 +1,7 @@
 import React from "react";
 import { ContainerScroll } from "../ui/container-scroll-animation";
 import Image from "next/image";
-import linear from "@/public/linear.jpg";
+import linear from "@/public/linear.jpeg";
 
 function ProductShowcase() {
   return (

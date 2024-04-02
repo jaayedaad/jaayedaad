@@ -4,7 +4,7 @@ import FlashyButton from "../ui/flashy-button";
 
 function Navbar() {
   return (
-    <div className="z-10 flex w-full items-center justify-between xl:px-44 mb-32">
+    <div className="z-10 flex w-full items-center justify-between xl:px-44 mb-20 md:mb-32">
       {/* Brand Logo */}
       <div>
         <svg

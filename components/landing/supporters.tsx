@@ -103,16 +103,16 @@ function Supporters() {
     },
   ];
   return (
-    <div className="flex flex-col text-center mt-24">
+    <div className="flex flex-col text-center lg:mt-44 mt-32">
       <div>
         <p className="text-lg text-muted-foreground">
-          Powering the world&apos;s best product teams.
+          Our users surprise us everyday at Jaayedaad
         </p>
         <p className="text-lg">
-          From next-gen startups to established enterprises.
+          See the categories that are already being tracked on our platform
         </p>
       </div>
-      <div className="grid grid-cols-5 md:grid-cols-7 lg:grid-cols-9 xl:flex justify-center mt-12 gap-6 lg:gap-10">
+      <div className="flex flex-wrap justify-center mt-12 px-4 xl:px-44 gap-4 lg:gap-10">
         <AnimatedTooltip items={categories} />
       </div>
     </div>
