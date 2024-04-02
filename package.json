@@ -3,8 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
-    "build": "npx prisma generate && next build",
+    "dev": "prisma generate && next dev",
+    "build": "prisma generate && next build",
     "start": "next start",
     "vercel-build": "prisma generate && prisma migrate deploy && next build",
     "prisma:generate": "prisma generate",
@@ -31,7 +31,9 @@
     "cmdk": "^0.2.1",
     "crypto-js": "^4.2.0",
     "date-fns": "^3.3.1",
+    "framer-motion": "^11.0.24",
     "lucide-react": "^0.312.0",
+    "mini-svg-data-uri": "^1.4.4",
     "next": "14.0.4",
     "next-auth": "^4.24.5",
     "next-themes": "^0.2.1",
@@ -41,7 +43,7 @@
     "react-fast-marquee": "^1.6.4",
     "recharts": "^2.11.0",
     "sonner": "^1.4.0",
-    "tailwind-merge": "^2.2.0",
+    "tailwind-merge": "^2.2.2",
     "tailwindcss-animate": "^1.0.7"
   },
   "devDependencies": {

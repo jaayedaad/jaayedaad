@@ -57,48 +57,59 @@ function ClaimUsername() {
   };
 
   return (
-    <div className="text-primary-foreground lg:px-4">
-      <h2 className="text-lg lg:text-2xl">Claim your username</h2>
-      <div className="flex mt-2">
-        <Button variant="secondary" className="text-lg rounded-l-full">
-          jaayedaad.com/
-        </Button>
-        <Input
-          value={username}
-          placeholder="ShubhamPalriwala"
-          className="rounded-l-none text-lg rounded-r-full w-1/3 md:w-1/4 bg-primary focus:outline-none focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0"
-          onChange={(e) => handleUsernameChange(e.target.value)}
-        />
-        <Button
-          variant="secondary"
-          className="text-primary rounded-full ml-2 disabled:pointer-events-auto disabled:hover:cursor-not-allowed hover:bg-secondary"
-          size="icon"
-          disabled={disabled}
-          onClick={() => {
-            handleClaimUsername();
-            signIn("google");
-          }}
-        >
-          <MoveUpRight />
-        </Button>
-      </div>
-      <div className="flex">
-        <Button
-          variant="secondary"
-          className="invisible text-lg rounded-l-full"
-        >
-          jaayedaad.com/
-        </Button>
-        <p
-          className={cn(
-            "text-sm px-2",
-            errorMessage.includes("available")
-              ? "text-green-400"
-              : "text-red-400"
-          )}
-        >
-          {errorMessage}
-        </p>
+    <div className="flex justify-center text-center pt-4">
+      <div className="text-primary-foreground lg:px-4">
+        <div className="flex mt-4 justify-center">
+          <div className="pl-4 pr-1 py-2 text-base md:text-[16px] rounded-l-full font-mona-sans border border-r-0 border-zinc-600 flex items-center">
+            jaayedaad.com/
+          </div>
+          <Input
+            value={username}
+            placeholder="Shubham"
+            className="pl-1 py-6 font-mona-sans border-x-0 rounded-none text-base md:text-[16px] border-zinc-600 focus:outline-none focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0"
+            onChange={(e) => handleUsernameChange(e.target.value)}
+          />
+          <div className="pr-1 rounded-r-full border border-l-0 border-zinc-600 flex items-center">
+            <Button
+              className="hidden md:inline-flex px-4 py-4 bg-gradient-to-r from-violet-950 to-primary border rounded-full border-zinc-600 disabled:pointer-events-auto disabled:hover:cursor-not-allowed hover:bg-primary/90 disabled:bg-violet-950 disabled:opacity-100"
+              disabled={disabled}
+              onClick={() => {
+                handleClaimUsername();
+                signIn("google");
+              }}
+            >
+              Claim username!
+            </Button>
+            <Button
+              className="md:hidden px-4 py-4 bg-gradient-to-r from-violet-950 to-primary border rounded-full border-zinc-600 disabled:pointer-events-auto disabled:hover:cursor-not-allowed hover:bg-primary/90 disabled:bg-violet-950 disabled:opacity-100"
+              disabled={disabled}
+              onClick={() => {
+                handleClaimUsername();
+                signIn("google");
+              }}
+            >
+              Claim
+            </Button>
+          </div>
+        </div>
+        <div className="flex">
+          <Button
+            variant="secondary"
+            className="invisible text-lg rounded-l-full"
+          >
+            jaayedaad.com/
+          </Button>
+          <p
+            className={cn(
+              "text-sm px-2",
+              errorMessage.includes("available")
+                ? "text-green-400"
+                : "text-red-400"
+            )}
+          >
+            {errorMessage}
+          </p>
+        </div>
       </div>
     </div>
   );
