@@ -5,7 +5,7 @@ import linear from "@/public/linear.jpeg";
 
 function ProductShowcase() {
   return (
-    <div id="preview" className="section flex flex-col overflow-hidden">
+    <div className="flex flex-col overflow-hidden">
       <ContainerScroll titleComponent>
         <Image
           src={linear}

@@ -2,7 +2,7 @@ import {
   CryptoIcon,
   DataEncryptionIcon,
   FixedDepositsIcon,
-  FreeOfCostIcon,
+  InviteOnlyIcon,
   MetalsIcon,
   MutualFundIcon,
   OtherIcon,
@@ -39,7 +39,7 @@ function Features() {
             <br />
             we&apos;ve got it covered!
           </h3>
-          <div className="h-[35vh] min-[376px]:h-[26.5vh] md:h-1/2 md:max-lg:h-3/5 lg:h-2/3 border-x border-t rounded-t-xl p-1 lg:p-4 w-full bg-primary/5">
+          <div className="h-[35vh] min-[376px]:h-[26.5vh] md:h-1/2 md:max-lg:h-[55%] lg:h-3/5 border-x border-t rounded-t-xl p-1 lg:p-4 w-full bg-primary/5">
             <div className="relative">
               <div className="absolute -translate-y-6 md:-translate-y-4 md:max-lg:-translate-y-8 lg:-translate-y-10  grid grid-cols-2 gap-1 lg:gap-4">
                 <div className="flex gap-2 lg:gap-4 items-center py-2 pl-2 pr-4 border rounded-lg bg-[#171326] shadow-2xl">
@@ -117,11 +117,16 @@ function Features() {
                 />
               </div>
             </div>
-            <h3 className="text-base md:text-xl mt-1 lg:mt-4">Your data, your rules.</h3>
+            <h3 className="text-base md:text-xl mt-1 lg:mt-4">
+              Your data, your rules.
+            </h3>
             <h3 className="text-base md:text-xl mb-1">Delete at will!</h3>
           </div>
           <div className="text-left col-span-1 border rounded-xl p-6 md:p-4 lg:p-6 flex flex-col bg-primary/5 drop-shadow-2xl">
-            <p className="mb-6 lg:mb-12">Invite Only!</p>
+            <p>Invite Only!</p>
+            <div className="w-full flex justify-center my-3">
+              <InviteOnlyIcon height={48} width={48} />
+            </div>
             <h3 className="text-base lg:text-xl">
               Claim your usernames & keep an eye on your email!
             </h3>

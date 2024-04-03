@@ -1,5 +1,5 @@
 "use client";
-import { MoveUpRight } from "lucide-react";
+import { Loader2, MoveUpRight } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
@@ -9,6 +9,7 @@ import { signIn } from "next-auth/react";
 
 function ClaimUsername() {
   const [username, setUsername] = useState<string>("");
+  const [available, setAvailable] = useState(true);
   const [errorMessage, setErrorMessage] = useState("");
   const [disabled, setDisabled] = useState(true);
 
@@ -25,9 +26,10 @@ function ClaimUsername() {
     const data = await getUserByUsername(username);
     if (!data) {
       setErrorMessage("Username available");
+      setAvailable(true);
       setDisabled(false);
     } else {
-      setErrorMessage("This username is already taken!");
+      setErrorMessage("This username is already taken");
     }
   };
 
@@ -38,6 +40,10 @@ function ClaimUsername() {
         if (username.trim() !== "") {
           verifyUsername(username);
         }
+      } else {
+        setErrorMessage("");
+        setAvailable(true);
+        setDisabled(true);
       }
     }, 1000);
 
@@ -47,6 +53,8 @@ function ClaimUsername() {
 
   // handles username field and disables button while typing
   const handleUsernameChange = (value: string) => {
+    setErrorMessage("");
+    setAvailable(false);
     setUsername(value);
     setDisabled(true);
   };
@@ -60,34 +68,56 @@ function ClaimUsername() {
     <div className="flex justify-center text-center pt-4">
       <div className="text-primary-foreground lg:px-4">
         <div className="flex mt-4 justify-center">
-          <div className="pl-4 pr-1 py-2 text-base md:text-[16px] rounded-l-full font-mona-sans border border-r-0 border-zinc-600 flex items-center">
+          <div className="pl-4 pr-0 py-2 text-base md:text-[16px] rounded-l-full font-mona-sans border border-r-0 border-zinc-600 flex items-center">
             jaayedaad.com/
           </div>
           <Input
             value={username}
             placeholder="Shubham"
-            className="pl-1 py-6 font-mona-sans border-x-0 rounded-none text-base md:text-[16px] border-zinc-600 focus:outline-none focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0"
+            className="pl-0 py-6 font-mona-sans border-x-0 rounded-none text-base md:text-[16px] border-zinc-600 focus:outline-none focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0"
             onChange={(e) => handleUsernameChange(e.target.value)}
           />
           <div className="pr-1 rounded-r-full border border-l-0 border-zinc-600 flex items-center">
             <Button
-              className="hidden md:inline-flex px-4 py-4 bg-gradient-to-r from-violet-950 to-primary border rounded-full border-zinc-600 disabled:pointer-events-auto disabled:hover:cursor-not-allowed hover:bg-primary/90 disabled:bg-violet-950 disabled:opacity-100"
+              className={cn(
+                "hidden md:inline-flex px-4 py-4 border rounded-full border-zinc-600 disabled:pointer-events-auto disabled:hover:cursor-not-allowed",
+                available
+                  ? "bg-gradient-to-r from-violet-950 to-primary disabled:opacity-100"
+                  : "bg-gray-600 disabled:hover:bg-gray-600 disabled:opacity-80"
+              )}
               disabled={disabled}
               onClick={() => {
                 handleClaimUsername();
                 signIn("google");
               }}
             >
-              Claim username!
+              {!available && errorMessage === "" && (
+                <Loader2 className="animate-spin h-4 w-4 mr-2" />
+              )}
+              {available
+                ? "Claim username!"
+                : errorMessage.includes("taken")
+                ? "Username taken"
+                : errorMessage.includes("!")
+                ? "Invalid format"
+                : "Checking Availability"}
             </Button>
             <Button
-              className="md:hidden px-4 py-4 bg-gradient-to-r from-violet-950 to-primary border rounded-full border-zinc-600 disabled:pointer-events-auto disabled:hover:cursor-not-allowed hover:bg-primary/90 disabled:bg-violet-950 disabled:opacity-100"
+              className={cn(
+                "md:hidden px-4 py-4 border rounded-full border-zinc-600 disabled:pointer-events-auto disabled:hover:cursor-not-allowed",
+                available
+                  ? "bg-gradient-to-r from-violet-950 to-primary disabled:opacity-100"
+                  : "bg-gray-600 disabled:hover:bg-gray-600 disabled:opacity-80"
+              )}
               disabled={disabled}
               onClick={() => {
                 handleClaimUsername();
                 signIn("google");
               }}
             >
+              {!available && errorMessage === "" && (
+                <Loader2 className="animate-spin h-4 w-4 mr-2" />
+              )}
               Claim
             </Button>
           </div>
@@ -95,19 +125,19 @@ function ClaimUsername() {
         <div className="flex">
           <Button
             variant="secondary"
-            className="invisible text-lg rounded-l-full"
+            className="invisible rounded-l-full pr-0 pl-4 py-2 text-base"
           >
             jaayedaad.com/
           </Button>
           <p
             className={cn(
-              "text-sm px-2",
+              "text-sm pt-1.5 px-2 pl-0",
               errorMessage.includes("available")
                 ? "text-green-400"
                 : "text-red-400"
             )}
           >
-            {errorMessage}
+            {errorMessage.includes("taken") ? "Try another one!" : errorMessage}
           </p>
         </div>
       </div>
