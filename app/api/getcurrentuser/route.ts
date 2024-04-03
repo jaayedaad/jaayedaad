@@ -35,6 +35,7 @@ export async function GET() {
           username: foundUser?.username,
           email: foundUser?.email,
           emailVerified: foundUser?.emailVerified,
+          whitelisted: foundUser.whitelisted,
           image: foundUser?.image,
         },
       };

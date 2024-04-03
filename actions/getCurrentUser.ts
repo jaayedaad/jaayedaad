@@ -39,6 +39,7 @@ export async function getCurrentUser() {
         username: string | null;
         email: string;
         emailVerified: Date | null;
+        whitelisted: boolean;
         image: string | null;
       };
     } = await res.json();

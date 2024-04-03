@@ -16,7 +16,6 @@ function StickyNavbarTabs() {
     window.addEventListener("scroll", () => {
       sections.forEach((section) => {
         const htmlSection = section as HTMLElement;
-        console.log(window.scrollY, htmlSection.offsetTop, htmlSection.id);
         if (window.scrollY >= htmlSection.offsetTop) {
           currentSection = htmlSection.id !== "" ? htmlSection.id : "preview";
         }

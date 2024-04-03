@@ -36,6 +36,7 @@ export const getUser = async (session: Session) => {
     email: foundUser.email,
     emailVerified: foundUser.emailVerified,
     image: foundUser.image,
+    whitelisted: foundUser.whitelisted,
     usersManualCategories: decryptObjectValues(
       foundUser.usersManualCategories,
       encryptionKey

@@ -167,52 +167,58 @@ function AssetPieChart({ view, assets }: PieChartProps) {
       </p>
       <div className="flex justify-center mt-2">
         {data ? (
-          <PieChart width={400} height={200}>
-            <Pie
-              data={chartData}
-              cx="50%"
-              cy="50%"
-              activeIndex={activeIndex}
-              activeShape={renderActiveShape}
-              label={label}
-              labelLine={false}
-              startAngle={90}
-              endAngle={-360}
-              innerRadius={40}
-              outerRadius={60}
-              paddingAngle={chartData.length > 1 ? 5 : 0}
-              stroke="none"
-              dataKey="value"
-              onMouseEnter={(_, index) => setActiveIndex(index)}
-            >
-              {data?.map((entry, index) => (
-                <Cell
-                  key={`cell-${index}`}
-                  fill={COLORS[index % COLORS.length]}
-                />
-              ))}
-            </Pie>
-            <Tooltip
-              content={({ active, payload }) => {
-                if (active && payload && payload.length) {
-                  const value = payload[0].value?.toString();
-                  return (
-                    <div className="rounded-lg border bg-background p-2 shadow-sm">
-                      <div className="flex flex-col">
-                        <span className="font-bold flex items-center">
-                          {visible
-                            ? formatter.format(parseFloat(value!))
-                            : "* ".repeat(5)}
-                        </span>
+          data.length ? (
+            <PieChart width={400} height={200}>
+              <Pie
+                data={chartData}
+                cx="50%"
+                cy="50%"
+                activeIndex={activeIndex}
+                activeShape={renderActiveShape}
+                label={label}
+                labelLine={false}
+                startAngle={90}
+                endAngle={-360}
+                innerRadius={40}
+                outerRadius={60}
+                paddingAngle={chartData.length > 1 ? 5 : 0}
+                stroke="none"
+                dataKey="value"
+                onMouseEnter={(_, index) => setActiveIndex(index)}
+              >
+                {data?.map((entry, index) => (
+                  <Cell
+                    key={`cell-${index}`}
+                    fill={COLORS[index % COLORS.length]}
+                  />
+                ))}
+              </Pie>
+              <Tooltip
+                content={({ active, payload }) => {
+                  if (active && payload && payload.length) {
+                    const value = payload[0].value?.toString();
+                    return (
+                      <div className="rounded-lg border bg-background p-2 shadow-sm">
+                        <div className="flex flex-col">
+                          <span className="font-bold flex items-center">
+                            {visible
+                              ? formatter.format(parseFloat(value!))
+                              : "* ".repeat(5)}
+                          </span>
+                        </div>
                       </div>
-                    </div>
-                  );
-                }
+                    );
+                  }
 
-                return null;
-              }}
-            />
-          </PieChart>
+                  return null;
+                }}
+              />
+            </PieChart>
+          ) : (
+            <div className="h-40 w-full flex justify-center items-center">
+              You don&apos;t own any assets yet
+            </div>
+          )
         ) : (
           <div className="h-40 w-full flex items-center">
             <LoadingSpinner />

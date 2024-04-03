@@ -1,5 +1,5 @@
 "use client";
-import { Loader2, MoveUpRight } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";

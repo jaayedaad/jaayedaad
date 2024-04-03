@@ -46,6 +46,24 @@ model User {
   assets                Asset[]
   preferences           Preference[]
   usersManualCategories UsersManualCategory[]
+  whitelisted           Boolean               @default(false)
+  inviteCode            InviteCode?
+}
+
+model InviteCode {
+  id           String        @id @default(cuid())
+  code         String        @unique
+  usesLeft     Int           @default(3)
+  senderEmail  String        @unique
+  user         User          @relation(fields: [senderEmail], references: [email], onDelete: Cascade)
+  usersInvited InvitedUser[]
+}
+
+model InvitedUser {
+  id           String     @id @default(cuid())
+  inviteCodeId String
+  email        String     @unique
+  inviteCode   InviteCode @relation(fields: [inviteCodeId], references: [id])
 }
 
 model VerificationToken {

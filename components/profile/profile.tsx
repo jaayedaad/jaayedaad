@@ -110,7 +110,6 @@ function Profile({ preferences }: ProfileProps) {
   // Subtract one day
   const yesterday = new Date(today);
   yesterday.setDate(today.getDate() - 1);
-  console.log(unrealisedProfitLossArray);
 
   return (
     <div className="grid grid-cols-5 grid-rows-7 h-full gap-6 p-6">

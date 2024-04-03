@@ -16,6 +16,7 @@ import {
   DialogTrigger,
 } from "./ui/dialog";
 import { Input } from "./ui/input";
+import { signOut } from "next-auth/react";
 
 interface AccountSettingsProps {
   username: string;
@@ -85,7 +86,15 @@ function AccountSettings({
     }
   };
 
-  const handleDeleteAccount = async () => {};
+  const handleDeleteAccount = async () => {
+    try {
+      await fetch(`/api/user/${userPreferences?.userId}`, {
+        method: "POST",
+      });
+    } finally {
+      toast.success("Account deleted successfully!");
+    }
+  };
 
   // Check for availability of username
   const verifyUsername = async (newUsername: string) => {
@@ -232,7 +241,10 @@ function AccountSettings({
                 </div>
                 <div className="flex justify-end">
                   <Button
-                    onClick={() => handleDeleteAccount()}
+                    onClick={() => {
+                      handleDeleteAccount();
+                      signOut();
+                    }}
                     variant="destructive"
                     className="w-fit"
                   >
