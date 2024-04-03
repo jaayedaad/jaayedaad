@@ -50,22 +50,6 @@ model User {
   inviteCode            InviteCode?
 }
 
-model InviteCode {
-  id           String        @id @default(cuid())
-  code         String        @unique
-  usesLeft     Int           @default(3)
-  senderEmail  String        @unique
-  user         User          @relation(fields: [senderEmail], references: [email], onDelete: Cascade)
-  usersInvited InvitedUser[]
-}
-
-model InvitedUser {
-  id           String     @id @default(cuid())
-  inviteCodeId String
-  email        String     @unique
-  inviteCode   InviteCode @relation(fields: [inviteCodeId], references: [id])
-}
-
 model VerificationToken {
   identifier String
   token      String   @unique
@@ -131,4 +115,20 @@ model AssetPriceUpdate {
   date    DateTime
   assetId String
   asset   Asset    @relation(fields: [assetId], references: [id], onDelete: Cascade)
+}
+
+model InviteCode {
+  id           String        @id @default(cuid())
+  code         String        @unique
+  usesLeft     Int           @default(3)
+  senderEmail  String        @unique
+  user         User          @relation(fields: [senderEmail], references: [email], onDelete: Cascade)
+  usersInvited InvitedUser[]
+}
+
+model InvitedUser {
+  id           String     @id @default(cuid())
+  inviteCodeId String
+  email        String     @unique
+  inviteCode   InviteCode @relation(fields: [inviteCodeId], references: [id])
 }
