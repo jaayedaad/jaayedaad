@@ -21,27 +21,15 @@ import { performanceBarOrder } from "@/constants/performanceBarOrder";
 
 interface PreferenceProps {
   preferences: Preference;
-  setPreferences: React.Dispatch<
-    React.SetStateAction<
-      | {
-          id: string;
-          publicProfile: boolean;
-          defaultCurrency: string;
-          numberSystem: string;
-          showHoldings: boolean;
-          showMetrics: boolean;
-          performanceBarOrder: string;
-          userId: string;
-        }
-      | undefined
-    >
-  >;
+  setPreferences: React.Dispatch<React.SetStateAction<Preference | undefined>>;
 }
 
 function Preferences({ preferences, setPreferences }: PreferenceProps) {
   const { setNumberSystem, setGlobalCurrency, setPerformanceBarOrder } =
     useCurrency();
-  const [publicProfile, setPublicProfile] = useState(preferences.publicProfile);
+  const [publicVisibility, setPublicVisibility] = useState(
+    preferences.publicVisibility
+  );
   const [defaultCurrency, setDefaultCurrency] = useState(
     preferences.defaultCurrency
   );
@@ -58,7 +46,7 @@ function Preferences({ preferences, setPreferences }: PreferenceProps) {
       setLoading(true);
       const updatedPreferences = {
         ...preferences,
-        publicProfile: publicProfile,
+        publicVisibility: publicVisibility,
         defaultCurrency: defaultCurrency,
         numberSystem: defaultNumberSystem,
         performanceBarOrder: defaultPerformanceBarOrder,
@@ -70,7 +58,7 @@ function Preferences({ preferences, setPreferences }: PreferenceProps) {
     } finally {
       setPreferences({
         ...preferences,
-        publicProfile: publicProfile,
+        publicVisibility: publicVisibility,
         defaultCurrency: defaultCurrency,
         numberSystem: defaultNumberSystem,
         performanceBarOrder: defaultPerformanceBarOrder,
@@ -107,8 +95,8 @@ function Preferences({ preferences, setPreferences }: PreferenceProps) {
               </p>
             </div>
             <Switch
-              checked={publicProfile}
-              onCheckedChange={(value) => setPublicProfile(value)}
+              checked={publicVisibility}
+              onCheckedChange={(value) => setPublicVisibility(value)}
             />
           </div>
           <div className="py-5 px-4 flex items-center justify-between border rounded-md w-full">

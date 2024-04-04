@@ -1,18 +1,10 @@
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/authOptions";
 import { prisma } from "@/lib/prisma";
+import { Preference } from "@prisma/client";
 
 export async function POST(req: Request) {
-  const preferences: {
-    id: string;
-    publicProfile: boolean;
-    defaultCurrency: string;
-    numberSystem: string;
-    showHoldings: boolean;
-    showMetrics: boolean;
-    performanceBarOrder: string;
-    userId: string;
-  } = await req.json();
+  const preferences: Preference = await req.json();
 
   const session = await getServerSession(authOptions);
 
@@ -47,7 +39,7 @@ export async function GET() {
         preferences: true,
       },
     });
-    if (user?.preferences.length === 0) {
+    if (user && user.preferences === null) {
       const preferences = await prisma.preference.create({
         data: {
           userId: user.id,
@@ -55,7 +47,7 @@ export async function GET() {
       });
       return new Response(JSON.stringify(preferences));
     } else {
-      return new Response(JSON.stringify(user?.preferences[0]));
+      return new Response(JSON.stringify(user?.preferences));
     }
   }
 }

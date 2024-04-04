@@ -1,3 +1,5 @@
+import { AssetPriceUpdate, Transaction } from "@prisma/client";
+
 export type TAsset = {
   id: string;
   name: string;
@@ -14,20 +16,8 @@ export type TAsset = {
   isManualEntry: boolean;
   currentValue: number; // shubham: fix this bec its not in prisma schema so shouldnt be here as well
   compareValue: number; // shubham: fix this bec its not in prisma schema so shouldnt be here as well
-  transactions: {
-    id: string;
-    date: Date;
-    quantity: string;
-    price: string;
-    type: string;
-    assetId: string;
-  }[];
-  assetPriceUpdates: {
-    id: string;
-    price: string;
-    date: Date;
-    assetId: string;
-  }[];
+  transactions: Transaction[];
+  assetPriceUpdates: AssetPriceUpdate[];
 };
 
 export type TInterval = "1d" | "1w" | "1m" | "1y" | "All";

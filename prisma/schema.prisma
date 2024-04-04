@@ -1,10 +1,10 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
-}
-
-generator client {
-  provider = "prisma-client-js"
 }
 
 model Account {
@@ -13,15 +13,14 @@ model Account {
   type              String
   provider          String
   providerAccountId String
-  refresh_token     String? @db.Text
-  access_token      String? @db.Text
+  refresh_token     String?
+  access_token      String?
   expires_at        Int?
   token_type        String?
   scope             String?
-  id_token          String? @db.Text
+  id_token          String?
   session_state     String?
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([provider, providerAccountId])
 }
@@ -36,18 +35,18 @@ model Session {
 
 model User {
   id                    String                @id @default(cuid())
-  name                  String?
-  username              String?               @unique
   email                 String                @unique
-  emailVerified         DateTime?
+  name                  String?
   image                 String?
-  accounts              Account[]
-  sessions              Session[]
-  assets                Asset[]
-  preferences           Preference[]
-  usersManualCategories UsersManualCategory[]
+  username              String?               @unique
   whitelisted           Boolean               @default(false)
+  emailVerified         DateTime?
+  accounts              Account[]
+  assets                Asset[]
   inviteCode            InviteCode?
+  preferences           Preference?
+  sessions              Session[]
+  usersManualCategories UsersManualCategory[]
 }
 
 model VerificationToken {
@@ -64,29 +63,29 @@ model Asset {
   symbol            String?
   quantity          String
   buyPrice          String
-  currentPrice      String?
-  isManualEntry     Boolean              @default(false)
-  buyCurrency       String               @default("INR")
   buyDate           DateTime
+  userId            String
+  buyCurrency       String               @default("INR")
   type              String
   exchange          String?
-  userId            String
-  user              User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
-  transactions      Transaction[]
-  manualCategory    UsersManualCategory? @relation(fields: [manualCategoryId], references: [id], onDelete: Cascade)
+  currentPrice      String?
+  isManualEntry     Boolean              @default(false)
   manualCategoryId  String?
+  manualCategory    UsersManualCategory? @relation(fields: [manualCategoryId], references: [id], onDelete: Cascade)
+  user              User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
   assetPriceUpdates AssetPriceUpdate[]
+  transactions      Transaction[]
 }
 
 model Preference {
   id                  String  @id @default(cuid())
   publicProfile       Boolean @default(false)
+  userId              String  @unique
   defaultCurrency     String  @default("INR")
   numberSystem        String  @default("Indian")
   showHoldings        Boolean @default(false)
   showMetrics         Boolean @default(false)
   performanceBarOrder String  @default("Ascending")
-  userId              String  @unique
   user                User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
@@ -102,10 +101,10 @@ model Transaction {
 
 model UsersManualCategory {
   id     String  @id @default(cuid())
-  icon   String
   name   String
-  assets Asset[]
   userId String
+  icon   String
+  assets Asset[]
   user   User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 

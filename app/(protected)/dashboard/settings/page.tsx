@@ -14,16 +14,7 @@ import { getCurrentUser } from "@/actions/getCurrentUser";
 function SettingsPage() {
   const { data: session } = useSession();
   const [selectedOption, setSelectedOption] = useState("Preferences");
-  const [preferences, setPreferences] = useState<{
-    id: string;
-    publicProfile: boolean;
-    defaultCurrency: string;
-    numberSystem: string;
-    showHoldings: boolean;
-    showMetrics: boolean;
-    performanceBarOrder: string;
-    userId: string;
-  }>();
+  const [preferences, setPreferences] = useState<Preference>();
   const [username, setUsername] = useState<string | null>(null);
 
   useEffect(() => {

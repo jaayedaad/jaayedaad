@@ -8,16 +8,16 @@ import { useEffect, useState } from "react";
 
 function PublicProfilePage({ params }: { params: { username: string } }) {
   const [userId, setUserId] = useState<string | null>();
-  const [publicProfile, setPublicProfile] = useState<boolean>();
+  const [publicVisibility, setPublicVisibility] = useState<boolean>();
   const [preferences, setPreferences] = useState<Preference>();
 
   useEffect(() => {
     getUserByUsername(params.username).then((user) => {
-      if (user) {
+      if (user && user.preferences) {
         setUserId(user.id);
-        const publicProfile = user.preferences[0].publicProfile;
-        setPublicProfile(publicProfile);
-        setPreferences(user.preferences[0]);
+        const publicVisibility = user.preferences.publicVisibility;
+        setPublicVisibility(publicVisibility);
+        setPreferences(user.preferences);
       }
     });
   }, [params.username]);
@@ -27,7 +27,7 @@ function PublicProfilePage({ params }: { params: { username: string } }) {
       {userId === undefined ? (
         <LoadingSpinner />
       ) : userId ? (
-        publicProfile ? (
+        publicVisibility ? (
           <div className="h-full">
             {preferences && <Profile preferences={preferences} />}
           </div>

@@ -21,21 +21,7 @@ import { signOut } from "next-auth/react";
 interface AccountSettingsProps {
   username: string;
   preferences: Preference;
-  setPreferences: React.Dispatch<
-    React.SetStateAction<
-      | {
-          id: string;
-          publicProfile: boolean;
-          defaultCurrency: string;
-          numberSystem: string;
-          showHoldings: boolean;
-          showMetrics: boolean;
-          performanceBarOrder: string;
-          userId: string;
-        }
-      | undefined
-    >
-  >;
+  setPreferences: React.Dispatch<React.SetStateAction<Preference | undefined>>;
 }
 
 function AccountSettings({
@@ -43,8 +29,12 @@ function AccountSettings({
   preferences,
   setPreferences,
 }: AccountSettingsProps) {
-  const [showHoldings, setShowHoldings] = useState(preferences.showHoldings);
-  const [showMetrics, setShowMetrics] = useState(preferences.showMetrics);
+  const [showHoldingsInPublic, setShowHoldingsInPublic] = useState(
+    preferences.showHoldingsInPublic
+  );
+  const [showMetricsInPublic, setShowMetricsInPublic] = useState(
+    preferences.showMetricsInPublic
+  );
   const [loading, setLoading] = useState(false);
   const [userPreferences, setUserPreferences] = useState<Preference>();
   const [newUsername, setNewUsername] = useState<string | null>(username);
@@ -53,8 +43,8 @@ function AccountSettings({
 
   useEffect(() => {
     getPreferences().then((preferences: Preference) => {
-      setShowHoldings(preferences.showHoldings);
-      setShowMetrics(preferences.showMetrics);
+      setShowHoldingsInPublic(preferences.showHoldingsInPublic);
+      setShowMetricsInPublic(preferences.showMetricsInPublic);
       setUserPreferences(preferences);
     });
   }, []);
@@ -66,8 +56,8 @@ function AccountSettings({
       if (userPreferences) {
         const preferences = {
           ...userPreferences,
-          showHoldings,
-          showMetrics,
+          showHoldingsInPublic,
+          showMetricsInPublic,
         };
         await fetch("/api/user/preferences", {
           method: "POST",
@@ -77,8 +67,8 @@ function AccountSettings({
     } finally {
       setPreferences({
         ...preferences,
-        showHoldings,
-        showMetrics,
+        showHoldingsInPublic,
+        showMetricsInPublic,
       });
       setDisabled(false);
       setLoading(false);
@@ -198,8 +188,8 @@ function AccountSettings({
               </p>
             </div>
             <Switch
-              checked={showHoldings}
-              onCheckedChange={(value) => setShowHoldings(value)}
+              checked={showHoldingsInPublic}
+              onCheckedChange={(value) => setShowHoldingsInPublic(value)}
             />
           </div>
           <div className="py-5 px-4 flex gap-2 items-center justify-between border rounded-md w-full">
@@ -211,8 +201,8 @@ function AccountSettings({
               </p>
             </div>
             <Switch
-              checked={showMetrics}
-              onCheckedChange={(value) => setShowMetrics(value)}
+              checked={showMetricsInPublic}
+              onCheckedChange={(value) => setShowMetricsInPublic(value)}
             />
           </div>
           <div className="py-5 px-4 flex gap-2 items-center justify-between border rounded-md w-full">

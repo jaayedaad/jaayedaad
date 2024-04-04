@@ -2,7 +2,7 @@ import { prisma } from "@/lib/prisma";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/authOptions";
 import { calculateAvgBuyPrice } from "@/helper/transactionValueCalculator";
-import { Asset } from "@prisma/client";
+import { Asset, Transaction } from "@prisma/client";
 import CryptoJS from "crypto-js";
 import { createId } from "@paralleldrive/cuid2";
 import findExistingAssetFromSia from "@/helper/sia/findExisitingAsset";
@@ -227,7 +227,7 @@ export async function POST(req: Request) {
         });
       } else {
         const updatedQuantity = +existingAsset.quantity + +body.quantity;
-        const transaction = {
+        const transaction: Transaction = {
           id: transactionId,
           date: body.buyDate,
           quantity: body.quantity,

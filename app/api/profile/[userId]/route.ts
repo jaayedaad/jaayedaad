@@ -16,7 +16,7 @@ export async function GET(
   });
 
   if (user) {
-    if (!user.preferences[0].publicProfile) {
+    if (!user.preferences?.publicVisibility) {
       return new Response("User has a private profile", { status: 403 });
     } else {
       const encryptionKey =

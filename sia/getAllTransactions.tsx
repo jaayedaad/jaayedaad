@@ -3,6 +3,7 @@ import { authOptions } from "@/lib/authOptions";
 import { getServerSession } from "next-auth";
 import CryptoJS from "crypto-js";
 import { TSiaObject } from "@/lib/types";
+import { Transaction } from "@prisma/client";
 
 export default async function getAllTransactions(assetId: string) {
   const session = await getServerSession(authOptions);
@@ -49,15 +50,7 @@ export default async function getAllTransactions(assetId: string) {
       );
 
       const responses = await Promise.all(requests);
-
-      const transactions: {
-        id: string;
-        date: Date;
-        quantity: string;
-        price: string;
-        type: string;
-        assetId: string;
-      }[] = responses.map((response) => {
+      const transactions: Transaction[] = responses.map((response) => {
         const encryptedData = response.data;
 
         // Decrypting the encrypted data

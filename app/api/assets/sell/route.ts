@@ -180,14 +180,7 @@ export async function PUT(req: Request) {
           }
           if (process.env.DATABASE_URL) {
             // encrypt data
-            const encryptedData: {
-              id: string;
-              date: string;
-              quantity: string;
-              price: string;
-              type: string;
-              assetId: string;
-            } = encryptObjectValues(
+            const encryptedData: Transaction = encryptObjectValues(
               {
                 id: transactionId,
                 date: sellRequest.date,
