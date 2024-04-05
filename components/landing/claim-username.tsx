@@ -67,14 +67,14 @@ function ClaimUsername() {
   return (
     <div className="flex justify-center text-center pt-4">
       <div className="text-primary-foreground lg:px-4">
-        <div className="flex mt-4 justify-center">
-          <div className="pl-4 pr-0 py-2 text-base md:text-[16px] rounded-l-full font-mona-sans border border-r-0 border-zinc-600 flex items-center">
+        <div className="flex mt-4 justify-center px-4">
+          <div className="pl-4 pr-0 py-2 text-sm md:text-[16px] rounded-l-full font-mona-sans border border-r-0 border-zinc-600 flex items-center">
             jaayedaad.com/
           </div>
           <Input
             value={username}
             placeholder="Shubham"
-            className="pl-0 py-6 font-mona-sans border-x-0 rounded-none text-base md:text-[16px] border-zinc-600 focus:outline-none focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0"
+            className="pl-0 py-6 font-mona-sans border-x-0 rounded-none text-sm md:text-[16px] border-zinc-600 focus:outline-none focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0"
             onChange={(e) => handleUsernameChange(e.target.value)}
           />
           <div className="pr-1 rounded-r-full border border-l-0 border-zinc-600 flex items-center">
@@ -122,22 +122,22 @@ function ClaimUsername() {
             </Button>
           </div>
         </div>
-        <div className="flex">
-          <Button
-            variant="secondary"
-            className="invisible rounded-l-full pr-0 pl-4 py-2 text-base"
-          >
-            jaayedaad.com/
-          </Button>
+        <div className="flex justify-center">
           <p
             className={cn(
               "text-sm pt-1.5 px-2 pl-0",
-              errorMessage.includes("available")
-                ? "text-green-400"
-                : "text-red-400"
+              errorMessage !== ""
+                ? errorMessage.includes("available")
+                  ? "text-green-400"
+                  : "text-red-400"
+                : "text-transparent"
             )}
           >
-            {errorMessage.includes("taken") ? "Try another one!" : errorMessage}
+            {errorMessage !== ""
+              ? errorMessage.includes("taken")
+                ? "Try another one!"
+                : errorMessage
+              : "claim username"}
           </p>
         </div>
       </div>

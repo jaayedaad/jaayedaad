@@ -12,10 +12,10 @@ function Hero() {
             Track All Your Investments
           </div>
         </div>
-        <p className="pt-8 font-mona-sans lg:text-xl">
+        <p className="pt-8 text-[10px] font-mona-sans lg:text-xl">
           From market stocks to vintage clocks, crypto coins to fine wines,
         </p>
-        <p className="font-mona-sans lg:text-xl">
+        <p className="text-[10px] font-mona-sans lg:text-xl">
           track <b>every</b> asset while keeping your data confined!
         </p>
       </div>

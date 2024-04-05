@@ -4,11 +4,11 @@ import FlashyButton from "../ui/flashy-button";
 
 function Navbar() {
   return (
-    <div className="z-10 flex w-full items-center justify-between xl:px-44 mb-20 md:mb-32">
+    <div className="z-10 flex w-full items-center justify-between px-6 pt-6 md:pt-8 xl:px-44">
       {/* Brand Logo */}
       <div>
         <svg
-          className="h-12"
+          className="h-10 md-h-12"
           viewBox="0 0 216 64"
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
@@ -60,8 +60,6 @@ function Navbar() {
       </div>
       <div className="xl:w-[162px] flex justify-center">
         <FlashyButton
-          className="h-12 py-3 px-6"
-          containerClassName="h-[50px]"
           onClick={() =>
             signIn("google", {
               callbackUrl: "/dashboard",
