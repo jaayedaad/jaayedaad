@@ -1,10 +1,10 @@
-generator client {
-  provider = "prisma-client-js"
-}
-
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
 }
 
 model Account {
@@ -78,25 +78,30 @@ model Asset {
 }
 
 model Preference {
-  id                  String  @id @default(cuid())
-  publicProfile       Boolean @default(false)
-  userId              String  @unique
-  defaultCurrency     String  @default("INR")
-  numberSystem        String  @default("Indian")
-  showHoldings        Boolean @default(false)
-  showMetrics         Boolean @default(false)
-  performanceBarOrder String  @default("Ascending")
-  user                User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id                   String  @id @default(cuid())
+  publicVisibility     Boolean @default(false)
+  userId               String  @unique
+  defaultCurrency      String  @default("INR")
+  numberSystem         String  @default("Indian")
+  showHoldingsInPublic Boolean @default(false)
+  showMetricsInPublic  Boolean @default(false)
+  performanceBarOrder  String  @default("Ascending")
+  user                 User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+enum TransactionType {
+  buy
+  sell
 }
 
 model Transaction {
-  id       String   @id @default(cuid())
+  id       String          @id @default(cuid())
   date     DateTime
   quantity String
   price    String
-  type     String
+  type     TransactionType
   assetId  String
-  asset    Asset    @relation(fields: [assetId], references: [id], onDelete: Cascade)
+  asset    Asset           @relation(fields: [assetId], references: [id], onDelete: Cascade)
 }
 
 model UsersManualCategory {
