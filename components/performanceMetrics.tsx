@@ -14,7 +14,7 @@ function PerformanceMetrics({
 }: {
   assets: TAsset[];
   realisedProfitLoss: string | undefined;
-  unrealisedProfitLossArray: {
+  unrealisedProfitLossArray?: {
     type: string;
     symbol: string;
     compareValue: string;
@@ -52,7 +52,7 @@ function PerformanceMetrics({
     numberSystem === "Indian" ? "en-IN" : "en-US",
     {
       style: "currency",
-      currency: defaultCurrency,
+      currency: defaultCurrency || "inr",
       minimumFractionDigits: 2,
       maximumFractionDigits: 2,
     }
@@ -65,29 +65,31 @@ function PerformanceMetrics({
           <p className="text-muted-foreground text-xs">Current Value</p>
           <div className="flex items-center gap-1">
             <span className="text-2xl font-bold">
-              {visible
-                ? conversionRates &&
-                  formatter.format(
-                    parseFloat(
-                      assets
-                        ?.reduce((acc, asset) => {
-                          const assetCurrency = asset.buyCurrency.toLowerCase();
-                          const currencyConversion =
-                            conversionRates[assetCurrency];
-                          const multiplier = 1 / currencyConversion;
-                          return (
-                            acc +
-                            (asset.quantity > "0"
-                              ? asset.symbol
-                                ? asset.currentValue * multiplier
-                                : +asset.currentPrice * multiplier || 0
-                              : 0)
-                          );
-                        }, 0)
-                        .toFixed(2)
+              {conversionRates && assets.length
+                ? visible
+                  ? formatter.format(
+                      parseFloat(
+                        assets
+                          ?.reduce((acc, asset) => {
+                            const assetCurrency =
+                              asset.buyCurrency.toLowerCase();
+                            const currencyConversion =
+                              conversionRates[assetCurrency];
+                            const multiplier = 1 / currencyConversion;
+                            return (
+                              acc +
+                              (asset.quantity > "0"
+                                ? asset.symbol
+                                  ? asset.currentValue * multiplier
+                                  : +asset.currentPrice * multiplier || 0
+                                : 0)
+                            );
+                          }, 0)
+                          .toFixed(2)
+                      )
                     )
-                  )
-                : "* ".repeat(5)}
+                  : "* ".repeat(5)
+                : "- - -"}
             </span>
           </div>
         </div>
@@ -113,7 +115,7 @@ function PerformanceMetrics({
             )}
           >
             <div className="text-2xl font-bold">
-              {unrealisedProfitLoss && (
+              {unrealisedProfitLoss ? (
                 <div className="flex items-center">
                   {conversionRates &&
                     (
@@ -128,12 +130,15 @@ function PerformanceMetrics({
                     ).toFixed(2) + "%"}
                   {unrealisedProfitLoss > 0 ? <ArrowUp /> : <ArrowDown />}
                 </div>
+              ) : (
+                "- - -"
               )}
               <div className="text-sm flex items-center">
-                {unrealisedProfitLoss &&
-                  (visible
+                {unrealisedProfitLoss
+                  ? visible
                     ? formatter.format(unrealisedProfitLoss)
-                    : "* ".repeat(5))}
+                    : "* ".repeat(5)
+                  : "- - -"}
               </div>
             </div>
           </div>
@@ -158,9 +163,11 @@ function PerformanceMetrics({
             )}
           >
             <span className="text-2xl font-bold">
-              {visible
-                ? realisedProfitLoss && formatter.format(+realisedProfitLoss)
-                : "* ".repeat(5)}
+              {assets.length && realisedProfitLoss
+                ? visible
+                  ? formatter.format(+realisedProfitLoss)
+                  : "* ".repeat(5)
+                : "- - -"}
             </span>
           </div>
         </div>

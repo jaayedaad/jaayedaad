@@ -18,6 +18,8 @@ function PublicProfilePage({ params }: { params: { username: string } }) {
         const publicVisibility = user.preferences.publicVisibility;
         setPublicVisibility(publicVisibility);
         setPreferences(user.preferences);
+      } else {
+        setUserId(null);
       }
     });
   }, [params.username]);
@@ -26,16 +28,10 @@ function PublicProfilePage({ params }: { params: { username: string } }) {
     <div className="h-screen">
       {userId === undefined ? (
         <LoadingSpinner />
-      ) : userId ? (
-        publicVisibility ? (
-          <div className="h-full">
-            {preferences && <Profile preferences={preferences} />}
-          </div>
-        ) : (
-          <div className="text-4xl font-mona-sans flex items-center justify-center h-full">
-            This user hasn&apos;t made their profile public
-          </div>
-        )
+      ) : userId && publicVisibility ? (
+        <div className="h-full">
+          {preferences && <Profile preferences={preferences} />}
+        </div>
       ) : (
         <div className="flex items-center justify-center h-full">
           <div className="flex gap-6 h-20 items-center">

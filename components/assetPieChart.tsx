@@ -1,12 +1,12 @@
 "use client";
 import { TAsset } from "@/lib/types";
-import { useData } from "@/contexts/data-context";
 import { useState } from "react";
 import { PieChart, Pie, Sector, Cell, Tooltip } from "recharts";
 import LoadingSpinner from "./ui/loading-spinner";
 import { useVisibility } from "@/contexts/visibility-context";
 import colors from "@/constants/colors";
 import { useCurrency } from "@/contexts/currency-context";
+import MockPieChart from "./mock/mockPieChart";
 
 const COLORS = colors;
 
@@ -216,7 +216,7 @@ function AssetPieChart({ view, assets }: PieChartProps) {
             </PieChart>
           ) : (
             <div className="h-40 w-full flex justify-center items-center">
-              You don&apos;t own any assets yet
+              <MockPieChart />
             </div>
           )
         ) : (

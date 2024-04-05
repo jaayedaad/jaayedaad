@@ -16,6 +16,8 @@ import AssetMarqueeBar from "@/components/assetMarqueeBar";
 import { TAsset, TInterval, TProfitLoss } from "@/lib/types";
 import WhitelistingModal from "@/components/whitelistingModal";
 import { getCurrentUser } from "@/actions/getCurrentUser";
+import MockLineChart from "@/components/mock/mockLineChart";
+import MockAssetTable from "@/components/mock/mockAssetTable";
 
 export function Dashboard({ assets }: { assets: TAsset[] }) {
   const { historicalData } = useData();
@@ -151,7 +153,7 @@ export function Dashboard({ assets }: { assets: TAsset[] }) {
                       Insight into your portfolio&apos;s value dynamics
                     </p>
                     <div className="h-40 flex items-center justify-center">
-                      You don&apos;t own any assets yet
+                      <MockLineChart />
                     </div>
                   </div>
                 )
@@ -191,9 +193,7 @@ export function Dashboard({ assets }: { assets: TAsset[] }) {
                     intervalChangeData={unrealisedProfitLossArray}
                   />
                 ) : (
-                  <div className="h-64 flex justify-center items-center">
-                    You don&apos;t own any assets yet
-                  </div>
+                  <MockAssetTable />
                 )}
               </div>
             </div>
@@ -203,18 +203,12 @@ export function Dashboard({ assets }: { assets: TAsset[] }) {
               <p className="text-muted-foreground text-xs xl:text-sm">
                 Analyze investment performance
               </p>
-              {assets.length && unrealisedProfitLossArray ? (
-                <PerformanceMetrics
-                  assets={assets}
-                  realisedProfitLoss={realisedProfitLoss}
-                  unrealisedProfitLossArray={unrealisedProfitLossArray}
-                  timeInterval={timeInterval}
-                />
-              ) : (
-                <div className="h-72 w-full flex justify-center items-center">
-                  You don&apos;t own any assets yet
-                </div>
-              )}
+              <PerformanceMetrics
+                assets={assets}
+                realisedProfitLoss={realisedProfitLoss}
+                unrealisedProfitLossArray={unrealisedProfitLossArray}
+                timeInterval={timeInterval}
+              />
             </div>
           </div>
         </div>

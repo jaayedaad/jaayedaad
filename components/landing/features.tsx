@@ -44,43 +44,43 @@ function Features() {
               <div className="absolute -translate-y-6 md:-translate-y-4 md:max-lg:-translate-y-8 lg:-translate-y-10  grid grid-cols-2 gap-1 lg:gap-4">
                 <div className="flex gap-2 lg:gap-4 items-center py-2 pl-2 pr-4 border rounded-lg bg-[#171326] shadow-2xl">
                   <div className="p-2 lg:p-4 border bg-primary/10 rounded-md shadow-2xl">
-                    <StockIcon height={24} width={24} />
+                    <StockIcon height={24} width={24} fill="#46B0FF" />
                   </div>
                   Stocks
                 </div>
                 <div className="flex gap-2 lg:gap-4 items-center py-2 pl-2 pr-4 border rounded-lg bg-[#171326] shadow-2xl">
                   <div className="p-2 border bg-primary/10 rounded-md shadow-2xl">
-                    <CryptoIcon height={24} width={24} />
+                    <CryptoIcon height={24} width={24} fill="#F2AE00" />
                   </div>
                   Crypto
                 </div>
                 <div className="flex gap-2 lg:gap-4 items-center py-2 pl-2 pr-4 border rounded-lg bg-[#171326] shadow-2xl">
                   <div className="p-2 lg:p-4 border bg-primary/10 rounded-md shadow-2xl">
-                    <MutualFundIcon height={24} width={24} />
+                    <MutualFundIcon height={24} width={24} fill="#F91F87" />
                   </div>
                   Mutual Funds
                 </div>
                 <div className="flex gap-2 lg:gap-4 items-center py-2 pl-2 pr-4 border rounded-lg bg-[#171326] shadow-2xl">
                   <div className="p-2 lg:p-4 border bg-primary/10 rounded-md shadow-2xl">
-                    <FixedDepositsIcon height={24} width={24} />
+                    <FixedDepositsIcon height={24} width={24} fill="#11FD53" />
                   </div>
                   Fixed Deposits
                 </div>
                 <div className="flex gap-2 lg:gap-4 items-center py-2 pl-2 pr-4 border rounded-lg bg-[#171326] shadow-2xl">
                   <div className="p-2 lg:p-4 border bg-primary/10 rounded-md shadow-2xl">
-                    <MetalsIcon height={24} width={24} />
+                    <MetalsIcon height={24} width={24} fill="#EBFF00" />
                   </div>
                   Angel Investments
                 </div>
                 <div className="flex gap-2 lg:gap-4 items-center py-2 pl-2 pr-4 border rounded-lg bg-[#171326] shadow-2xl">
                   <div className="p-2 lg:p-4 border bg-primary/10 rounded-md shadow-2xl">
-                    <PropertyIcon height={24} width={24} />
+                    <PropertyIcon height={24} width={24} fill="#5920FB" />
                   </div>
                   Property
                 </div>
                 <div className="col-span-2 flex items-center py-2 pl-2 pr-4 border rounded-lg bg-[#171326] shadow-2xl">
                   <div className="p-2 lg:p-4 mr-2 lg:mr-4 border bg-primary/10 rounded-md shadow-2xl">
-                    <OtherIcon height={24} width={24} />
+                    <OtherIcon height={24} width={24} fill="#C90CF9" />
                   </div>
                   Define your own categories, be it comic strips or Martian
                   rocks, because what&apos;s valuable to you, matters to us.
