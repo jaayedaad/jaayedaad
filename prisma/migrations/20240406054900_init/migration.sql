@@ -1,3 +1,6 @@
+-- CreateEnum
+CREATE TYPE "TransactionType" AS ENUM ('buy', 'sell');
+
 -- CreateTable
 CREATE TABLE "Account" (
     "id" TEXT NOT NULL,
@@ -68,12 +71,12 @@ CREATE TABLE "Asset" (
 -- CreateTable
 CREATE TABLE "Preference" (
     "id" TEXT NOT NULL,
-    "publicProfile" BOOLEAN NOT NULL DEFAULT false,
+    "publicVisibility" BOOLEAN NOT NULL DEFAULT false,
     "userId" TEXT NOT NULL,
     "defaultCurrency" TEXT NOT NULL DEFAULT 'INR',
     "numberSystem" TEXT NOT NULL DEFAULT 'Indian',
-    "showHoldings" BOOLEAN NOT NULL DEFAULT false,
-    "showMetrics" BOOLEAN NOT NULL DEFAULT false,
+    "showHoldingsInPublic" BOOLEAN NOT NULL DEFAULT false,
+    "showMetricsInPublic" BOOLEAN NOT NULL DEFAULT false,
     "performanceBarOrder" TEXT NOT NULL DEFAULT 'Ascending',
 
     CONSTRAINT "Preference_pkey" PRIMARY KEY ("id")
@@ -85,7 +88,7 @@ CREATE TABLE "Transaction" (
     "date" TIMESTAMP(3) NOT NULL,
     "quantity" TEXT NOT NULL,
     "price" TEXT NOT NULL,
-    "type" TEXT NOT NULL,
+    "type" "TransactionType" NOT NULL,
     "assetId" TEXT NOT NULL,
 
     CONSTRAINT "Transaction_pkey" PRIMARY KEY ("id")

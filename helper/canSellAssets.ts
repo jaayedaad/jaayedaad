@@ -1,4 +1,4 @@
-import { Transaction } from "@prisma/client";
+import { Transaction, TransactionType } from "@prisma/client";
 
 interface sellRequest {
   name: string;
@@ -40,7 +40,7 @@ export function canSellAssets(
     date: new Date(sellRequest.date),
     quantity: sellRequest.quantity,
     price: sellRequest.price,
-    type: "sell",
+    type: TransactionType.sell,
     assetId: transactions[0].assetId,
   };
 

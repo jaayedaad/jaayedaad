@@ -14,7 +14,7 @@ function Footer() {
           className="h-12 text-base px-6 rounded-full"
           asChild
         >
-          <Link href="https://x.com/jaayedaad">
+          <Link href="https://github.com/jaayedaad/jaayedaad" target="_blank">
             <Github className="mr-2 h-4 w-4 stroke-[#6039B5]" /> GitHub
           </Link>
         </Button>
@@ -26,7 +26,7 @@ function Footer() {
           className="h-12 text-base px-6 rounded-full"
           asChild
         >
-          <Link href="https://x.com/jaayedaad">
+          <Link href="https://x.com/jaayedaad" target="_blank">
             <XLogo className="mr-2 h-4 w-4" /> Twitter
           </Link>
         </Button>

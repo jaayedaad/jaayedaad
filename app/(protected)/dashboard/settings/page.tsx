@@ -31,7 +31,7 @@ function SettingsPage() {
 
   return (
     session && (
-      <div className="py-6 px-6 w-full h-screen overflow-auto ">
+      <div className="pb-6 pt-12 px-6 w-full h-screen overflow-auto ">
         <div>
           <div className="text-muted-foreground flex gap-1 mb-4">
             {preferences && username ? (

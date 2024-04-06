@@ -3,33 +3,32 @@ import { Loader2 } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
-import { getUserByUsername } from "@/actions/getUserByUsernameAction";
 import { cn } from "@/lib/helper";
 import { signIn } from "next-auth/react";
+import { checkUsernameAvailabilityAction } from "@/app/actions";
 
 function ClaimUsername() {
   const [username, setUsername] = useState<string>("");
   const [available, setAvailable] = useState(true);
-  const [errorMessage, setErrorMessage] = useState("");
+  const [displayMessage, setDisplayMessage] = useState("");
   const [disabled, setDisabled] = useState(true);
 
-  // Check for availability of username
   const verifyUsername = async (username: string) => {
     const regex = /^[a-zA-Z0-9_]+$/; // regular expression for alphanumeric characters & underscores
     if (!regex.test(username)) {
-      setErrorMessage("Letters, numbers, or underscores only!");
+      setDisplayMessage("Letters, numbers, or underscores only!");
       return;
     } else if (username.length < 3) {
-      setErrorMessage("Username must be at least 3 characters!");
+      setDisplayMessage("Username must be at least 3 characters!");
       return;
     }
-    const data = await getUserByUsername(username);
-    if (!data) {
-      setErrorMessage("Username available");
+    const exists = await checkUsernameAvailabilityAction(username);
+    if (!exists) {
+      setDisplayMessage("Username available");
       setAvailable(true);
       setDisabled(false);
     } else {
-      setErrorMessage("This username is already taken");
+      setDisplayMessage("This username is already taken");
     }
   };
 
@@ -41,7 +40,7 @@ function ClaimUsername() {
           verifyUsername(username);
         }
       } else {
-        setErrorMessage("");
+        setDisplayMessage("");
         setAvailable(true);
         setDisabled(true);
       }
@@ -53,7 +52,7 @@ function ClaimUsername() {
 
   // handles username field and disables button while typing
   const handleUsernameChange = (value: string) => {
-    setErrorMessage("");
+    setDisplayMessage("");
     setAvailable(false);
     setUsername(value);
     setDisabled(true);
@@ -91,14 +90,14 @@ function ClaimUsername() {
                 signIn("google");
               }}
             >
-              {!available && errorMessage === "" && (
+              {!available && displayMessage === "" && (
                 <Loader2 className="animate-spin h-4 w-4 mr-2" />
               )}
               {available
                 ? "Claim username!"
-                : errorMessage.includes("taken")
+                : displayMessage.includes("taken")
                 ? "Username taken"
-                : errorMessage.includes("!")
+                : displayMessage.includes("!")
                 ? "Invalid format"
                 : "Checking Availability"}
             </Button>
@@ -115,7 +114,7 @@ function ClaimUsername() {
                 signIn("google");
               }}
             >
-              {!available && errorMessage === "" && (
+              {!available && displayMessage === "" && (
                 <Loader2 className="animate-spin h-4 w-4 mr-2" />
               )}
               Claim
@@ -126,18 +125,18 @@ function ClaimUsername() {
           <p
             className={cn(
               "text-sm pt-1.5 px-2 pl-0",
-              errorMessage !== ""
-                ? errorMessage.includes("available")
+              displayMessage !== ""
+                ? displayMessage.includes("available")
                   ? "text-green-400"
                   : "text-red-400"
                 : "text-transparent"
             )}
           >
-            {errorMessage !== ""
-              ? errorMessage.includes("taken")
+            {displayMessage !== ""
+              ? displayMessage.includes("taken")
                 ? "Try another one!"
-                : errorMessage
-              : "claim username"}
+                : displayMessage
+              : ""}
           </p>
         </div>
       </div>

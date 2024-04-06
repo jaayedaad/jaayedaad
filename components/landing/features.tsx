@@ -93,20 +93,21 @@ function Features() {
             </div>
           </div>
         </div>
-        {/* encryption */}
         <div className="col-span-2 row-span-1 bg-primary/5 border rounded-xl p-6 md:p-4 lg:p-6 flex items-start justify-between">
           <div>
-            <p className="text-sm md:text-base mb-6">We 🫶 Encryption</p>
-            <h3 className="text-base md:text-2xl lg:text-3xl">
-              Your data, safely locked with per-user AES encryption
+            <p className="text-sm md:text-base mb-6">
+              Encryption is a need, not a want!
+            </p>
+            <h3 className="text-base md:text-2xl">
+              Your data, safely locked with <br />
+              per-user AES encryption
             </h3>
           </div>
-          <div className="my-auto">
+          <div className="my-auto lg:mx-auto">
             <DataEncryptionIcon height={72} width={72} fill="gray" />
           </div>
         </div>
         <div className="grid grid-cols-2 gap-4 col-span-2 row-span-1">
-          {/* blockchain */}
           <div className="col-span-1 flex flex-col justify-between border rounded-xl p-6 md:p-4 lg:p-6 bg-primary/5 drop-shadow-2xl">
             <div className="w-full inline-flex justify-between items-center">
               <p className="text-sm md:text-base mb-1 md:mb-0">
@@ -129,7 +130,9 @@ function Features() {
           <div className="text-left col-span-1 flex flex-col justify-between border rounded-xl p-6 md:p-4 lg:p-6 bg-primary/5 drop-shadow-2xl">
             <div className="flex justify-between items-center">
               <p>Invite Only!</p>
-              <InviteOnlyIcon height={48} width={48} />
+              <div className="lg:mr-6">
+                <InviteOnlyIcon height={48} width={48} />
+              </div>
             </div>
             <h3 className="text-base lg:text-xl">
               Claim your usernames & keep an eye on your email!

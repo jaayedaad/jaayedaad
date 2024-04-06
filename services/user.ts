@@ -43,3 +43,12 @@ export const getUser = async (session: Session) => {
     ) as typeof foundUser.usersManualCategories,
   };
 };
+
+export const isUsernameTaken = async (username: string): Promise<boolean> => {
+  const user = await prisma.user.findUnique({
+    where: {
+      username,
+    },
+  });
+  return user ? true : false;
+};
