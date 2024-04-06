@@ -3,7 +3,7 @@ import { Switch } from "@/components/ui/switch";
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
-import { Loader2 } from "lucide-react";
+import { EyeIcon, EyeOffIcon, Loader2 } from "lucide-react";
 import { currencies } from "@/constants/currency";
 import {
   Select,
@@ -18,6 +18,8 @@ import { toast } from "sonner";
 import LoadingSpinner from "./ui/loading-spinner";
 import { Preference } from "@prisma/client";
 import { performanceBarOrder } from "@/constants/performanceBarOrder";
+import { Toggle } from "./ui/toggle";
+import { useVisibility } from "@/contexts/visibility-context";
 
 interface PreferenceProps {
   preferences: Preference;
@@ -25,11 +27,9 @@ interface PreferenceProps {
 }
 
 function Preferences({ preferences, setPreferences }: PreferenceProps) {
+  const { visible, setVisible } = useVisibility();
   const { setNumberSystem, setGlobalCurrency, setPerformanceBarOrder } =
     useCurrency();
-  const [publicVisibility, setPublicVisibility] = useState(
-    preferences.publicVisibility
-  );
   const [defaultCurrency, setDefaultCurrency] = useState(
     preferences.defaultCurrency
   );
@@ -46,7 +46,6 @@ function Preferences({ preferences, setPreferences }: PreferenceProps) {
       setLoading(true);
       const updatedPreferences = {
         ...preferences,
-        publicVisibility: publicVisibility,
         defaultCurrency: defaultCurrency,
         numberSystem: defaultNumberSystem,
         performanceBarOrder: defaultPerformanceBarOrder,
@@ -58,7 +57,6 @@ function Preferences({ preferences, setPreferences }: PreferenceProps) {
     } finally {
       setPreferences({
         ...preferences,
-        publicVisibility: publicVisibility,
         defaultCurrency: defaultCurrency,
         numberSystem: defaultNumberSystem,
         performanceBarOrder: defaultPerformanceBarOrder,
@@ -73,35 +71,23 @@ function Preferences({ preferences, setPreferences }: PreferenceProps) {
   return (
     <>
       <div className="flex justify-between">
-        <div className="mb-4">
-          <h2 className="text-3xl font-bold">Preferences</h2>
+        <div>
+          <h2 className="text-3xl text-foreground font-bold">Preferences</h2>
           <p className="text-sm text-muted-foreground">
             Configure your preferences
           </p>
         </div>
-        <Button onClick={handleSave} disabled={loading}>
+        {/* <Button onClick={handleSave} disabled={loading}>
           {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
           Save
-        </Button>
+        </Button> */}
       </div>
-      <Separator className="mb-4" />
+      <Separator />
       {preferences ? (
         <div className="flex flex-col gap-4">
           <div className="py-5 px-4 flex items-center justify-between border rounded-md w-full">
             <div>
-              <h2>Public profile</h2>
-              <p className="text-muted-foreground text-sm">
-                Toggle your public profile visibility
-              </p>
-            </div>
-            <Switch
-              checked={publicVisibility}
-              onCheckedChange={(value) => setPublicVisibility(value)}
-            />
-          </div>
-          <div className="py-5 px-4 flex items-center justify-between border rounded-md w-full">
-            <div>
-              <h2>Default currency</h2>
+              <h2 className="text-foreground">Default currency</h2>
               <p className="text-muted-foreground text-sm">
                 Set your default currency
               </p>
@@ -130,7 +116,7 @@ function Preferences({ preferences, setPreferences }: PreferenceProps) {
           </div>
           <div className="py-5 px-4 flex items-center justify-between border rounded-md w-full">
             <div>
-              <h2>Default numbering system</h2>
+              <h2 className="text-foreground">Default numbering system</h2>
               <p className="text-muted-foreground text-sm">
                 Set your default numbering system
               </p>
@@ -159,7 +145,7 @@ function Preferences({ preferences, setPreferences }: PreferenceProps) {
           </div>
           <div className="py-5 px-4 flex items-center justify-between border rounded-md w-full">
             <div>
-              <h2>Asset performance bar</h2>
+              <h2 className="text-foreground">Asset performance bar</h2>
               <p className="text-muted-foreground text-sm">
                 Set the order of asset performance bar
               </p>
@@ -184,6 +170,23 @@ function Preferences({ preferences, setPreferences }: PreferenceProps) {
                   })}
                 </SelectContent>
               </Select>
+            </div>
+          </div>
+          <div className="py-5 px-4 flex items-center justify-between border rounded-md w-full">
+            <div>
+              <h2 className="text-foreground">Mode toggle</h2>
+              <p className="text-muted-foreground text-sm">
+                Toggle visibility of your asset&apos;s values
+              </p>
+            </div>
+            <div>
+              <Toggle onPressedChange={() => setVisible(!visible)}>
+                {visible ? (
+                  <EyeIcon className="h-4 w-4" />
+                ) : (
+                  <EyeOffIcon className="h-4 w-4" />
+                )}
+              </Toggle>
             </div>
           </div>
         </div>

@@ -50,15 +50,15 @@ const label = (props: any) => {
         y={ey < cy ? ey + 18 : ey - 18}
         textAnchor={textAnchor}
         fill="#fff"
-        fontSize={11}
+        fontSize={13}
       >{`${payloadNameMappings[payload.name] || payload.name}`}</text>
       <text
         x={ex + (cos >= 0 ? 1 : -1) * 6}
         y={ey < cy ? ey + 18 : ey - 18}
-        dy={10}
+        dy={13}
         textAnchor={textAnchor}
         fill="#999"
-        fontSize={10}
+        fontSize={12}
       >{`(${(percent * 100).toFixed(2)}%)`}</text>
     </g>
   ) : null;
@@ -179,8 +179,8 @@ function AssetPieChart({ view, assets }: PieChartProps) {
                 labelLine={false}
                 startAngle={90}
                 endAngle={-360}
-                innerRadius={40}
-                outerRadius={60}
+                innerRadius={60}
+                outerRadius={80}
                 paddingAngle={chartData.length > 1 ? 5 : 0}
                 stroke="none"
                 dataKey="value"

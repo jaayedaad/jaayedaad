@@ -15,6 +15,7 @@ import React, { useEffect, useState } from "react";
 import jaayedaad_logo from "@/public/jaayedaad_logo.svg";
 import Image from "next/image";
 import AssetMarqueeBar from "@/components/assetMarqueeBar";
+import { getCurrentUser } from "@/actions/getCurrentUser";
 
 function Page({ params }: { params: { asset: string } }) {
   const pageParams = decodeURIComponent(params.asset);
@@ -62,6 +63,29 @@ function Page({ params }: { params: { asset: string } }) {
       unrealisedProfitLoss: string;
     }[]
   >();
+  const [timeOfDay, setTimeOfDay] = useState("");
+  const [username, setUsername] = useState("");
+
+  useEffect(() => {
+    const currentTime = new Date().getHours();
+
+    if (currentTime < 12) {
+      setTimeOfDay("morning");
+    } else if (currentTime >= 12 && currentTime < 18) {
+      setTimeOfDay("afternoon");
+    } else {
+      setTimeOfDay("evening");
+    }
+
+    const fetchUser = async () => {
+      const user = await getCurrentUser();
+      if (user) {
+        user.userData.username && setUsername(user.userData.username);
+      }
+    };
+
+    fetchUser();
+  }, []);
 
   useEffect(() => {
     async function getPageData() {
@@ -129,16 +153,31 @@ function Page({ params }: { params: { asset: string } }) {
   return filteredAssets ? (
     filteredAssets.length ? (
       <div className="px-6 sm:px-8 pt-6 pb-24 md:pb-32 lg:py-6 w-full lg:h-screen xl:h-screen flex flex-col">
-        <div className="inline-flex justify-between items-center lg:gap-6">
-          {assetsToView && (
-            <AssetMarqueeBar data={assetsToView} timeInterval={timeInterval} />
-          )}
-          <Image
-            src={jaayedaad_logo}
-            alt="Jaayedaad logo"
-            className="h-10 lg:hidden"
-          />
-          <ChangeInterval onChange={onChange} />
+        <div className="inline-flex lg:grid lg:grid-cols-3 justify-between items-center lg:gap-6">
+          <div className="col-span-1">
+            <h3 className="text-lg">
+              Good {timeOfDay}, {username}
+            </h3>
+            <p>Your {pageParams}</p>
+          </div>
+          <div className="flex items-center col-span-2">
+            <div className="w-full">
+              {assetsToView && (
+                <AssetMarqueeBar
+                  data={assetsToView}
+                  timeInterval={timeInterval}
+                />
+              )}
+            </div>
+            <Image
+              src={jaayedaad_logo}
+              alt="Jaayedaad logo"
+              className="h-10 lg:hidden"
+            />
+            <div className="w-fit">
+              <ChangeInterval onChange={onChange} />
+            </div>
+          </div>
         </div>
         <div className="min-h-[85vh] h-full mt-4">
           <div className="flex flex-col gap-4 sm:gap-6 md:gap-6 lg:gap-4 lg:grid lg:grid-rows-7 lg:grid-cols-3 lg:h-full text-foreground">

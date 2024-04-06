@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { TInterval } from "@/lib/types";
+import { cn } from "@/lib/helper";
 
 interface ChildProps {
   onChange: (value: TInterval) => void;
@@ -26,7 +27,10 @@ function ChangeInterval({ onChange }: ChildProps) {
         1d
       </Button> */}
       <Button
-        variant={activeInterval === "1w" ? "secondary" : "ghost"}
+        className={cn(
+          "hover:bg-primary/10 bg-background",
+          activeInterval === "1w" && "bg-primary/20 hover:bg-primary/50"
+        )}
         size="icon"
         onClick={() => {
           setActiveInterval("1w");
@@ -36,7 +40,10 @@ function ChangeInterval({ onChange }: ChildProps) {
         1w
       </Button>
       <Button
-        variant={activeInterval === "1m" ? "secondary" : "ghost"}
+        className={cn(
+          "hover:bg-primary/10 bg-background",
+          activeInterval === "1m" && "bg-primary/20 hover:bg-primary/50"
+        )}
         size="icon"
         onClick={() => {
           setActiveInterval("1m");
@@ -46,7 +53,10 @@ function ChangeInterval({ onChange }: ChildProps) {
         1m
       </Button>
       <Button
-        variant={activeInterval === "1y" ? "secondary" : "ghost"}
+        className={cn(
+          "hover:bg-primary/10 bg-background",
+          activeInterval === "1y" && "bg-primary/20 hover:bg-primary/50"
+        )}
         size="icon"
         onClick={() => {
           setActiveInterval("1y");
@@ -56,8 +66,11 @@ function ChangeInterval({ onChange }: ChildProps) {
         1y
       </Button>
       <Button
-        variant={activeInterval === "All" ? "secondary" : "ghost"}
         size="icon"
+        className={cn(
+          "hover:bg-primary/10 bg-background",
+          activeInterval === "All" && "bg-primary/20 hover:bg-primary/50"
+        )}
         onClick={() => {
           setActiveInterval("All");
           onChange("All");

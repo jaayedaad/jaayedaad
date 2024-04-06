@@ -98,13 +98,13 @@ function PerformanceMetrics({
         <div className="p-3 rounded-md border w-full">
           <p className="text-sm flex items-center justify-between mb-2">
             Unrealised Profit / Loss
-            <div className="text-base">
+            <span className="text-base">
               {
                 formatter
                   .formatToParts(0)
                   .find((part) => part.type === "currency")?.value
               }
-            </div>
+            </span>
           </p>
           <div
             className={cn(
@@ -146,13 +146,13 @@ function PerformanceMetrics({
         <div className="p-3 rounded-md border w-full">
           <p className="text-sm flex items-center justify-between mb-2">
             Realised Profit / Loss
-            <div className="text-base">
+            <span className="text-base">
               {
                 formatter
                   .formatToParts(0)
                   .find((part) => part.type === "currency")?.value
               }
-            </div>
+            </span>
           </p>
           <div
             className={cn(

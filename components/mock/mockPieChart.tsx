@@ -55,8 +55,8 @@ function MockPieChart() {
           labelLine={false}
           startAngle={90}
           endAngle={-360}
-          innerRadius={40}
-          outerRadius={60}
+          innerRadius={60}
+          outerRadius={80}
           paddingAngle={chartData.length > 1 ? 5 : 0}
           stroke="none"
           dataKey="value"

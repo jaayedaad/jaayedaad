@@ -31,7 +31,6 @@ export async function GET(request: NextRequest) {
         },
         data: {
           username: username,
-          emailVerified: new Date().toISOString(),
         },
       });
     }

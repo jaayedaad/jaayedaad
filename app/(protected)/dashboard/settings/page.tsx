@@ -10,6 +10,7 @@ import { Preference } from "@prisma/client";
 import { getPreferences } from "@/actions/getPreferencesAction";
 import LoadingSpinner from "@/components/ui/loading-spinner";
 import { getCurrentUser } from "@/actions/getCurrentUser";
+import ProfileSettings from "@/components/profileSettings";
 
 function SettingsPage() {
   const { data: session } = useSession();
@@ -30,51 +31,29 @@ function SettingsPage() {
 
   return (
     session && (
-      <div className="py-6 px-6 w-full">
+      <div className="py-6 px-6 w-full h-screen overflow-auto ">
         <div>
           <div className="text-muted-foreground flex gap-1 mb-4">
-            <Button
-              variant="ghost"
-              className={cn(
-                `w-full justify-start`,
-                selectedOption === "Preferences" &&
-                  "bg-secondary hover:bg-primary/20 text-primary"
-              )}
-              onClick={() => setSelectedOption("Preferences")}
-            >
-              <Bell className="mr-2" /> Preferences
-            </Button>
-            <Button
-              variant="ghost"
-              className={cn(
-                `w-full justify-start`,
-                selectedOption === "Account" &&
-                  "bg-secondary hover:bg-primary/20 text-primary"
-              )}
-              onClick={() => setSelectedOption("Account")}
-            >
-              <UserRound className="mr-2" /> Account
-            </Button>
-          </div>
-          {preferences ? (
-            <div className="w-full mr-28">
-              {selectedOption === "Preferences" && (
+            {preferences && username ? (
+              <div className="flex flex-col w-full gap-6">
+                <ProfileSettings
+                  preferences={preferences}
+                  setPreferences={setPreferences}
+                />
                 <Preferences
                   preferences={preferences}
                   setPreferences={setPreferences}
                 />
-              )}
-              {selectedOption === "Account" && username !== null && (
                 <AccountSettings
                   username={username}
                   preferences={preferences}
                   setPreferences={setPreferences}
                 />
-              )}
-            </div>
-          ) : (
-            <LoadingSpinner />
-          )}
+              </div>
+            ) : (
+              <LoadingSpinner />
+            )}
+          </div>
         </div>
       </div>
     )

@@ -1,9 +1,7 @@
 import React, { useEffect, useState } from "react";
-import { Switch } from "./ui/switch";
 import { Button } from "./ui/button";
 import { Loader2, Trash2 } from "lucide-react";
 import { Separator } from "./ui/separator";
-import { getPreferences } from "@/actions/getPreferencesAction";
 import { Preference } from "@prisma/client";
 import { toast } from "sonner";
 import LoadingSpinner from "./ui/loading-spinner";
@@ -17,6 +15,7 @@ import {
 } from "./ui/dialog";
 import { Input } from "./ui/input";
 import { signOut } from "next-auth/react";
+import { cn } from "@/lib/helper";
 
 interface AccountSettingsProps {
   username: string;
@@ -24,52 +23,23 @@ interface AccountSettingsProps {
   setPreferences: React.Dispatch<React.SetStateAction<Preference | undefined>>;
 }
 
-function AccountSettings({
-  username,
-  preferences,
-  setPreferences,
-}: AccountSettingsProps) {
-  const [showHoldingsInPublic, setShowHoldingsInPublic] = useState(
-    preferences.showHoldingsInPublic
-  );
-  const [showMetricsInPublic, setShowMetricsInPublic] = useState(
-    preferences.showMetricsInPublic
-  );
+function AccountSettings({ username, preferences }: AccountSettingsProps) {
   const [loading, setLoading] = useState(false);
-  const [userPreferences, setUserPreferences] = useState<Preference>();
   const [newUsername, setNewUsername] = useState<string | null>(username);
   const [errorMessage, setErrorMessage] = useState("");
-  const [disabled, setDisabled] = useState(false);
-
-  useEffect(() => {
-    getPreferences().then((preferences: Preference) => {
-      setShowHoldingsInPublic(preferences.showHoldingsInPublic);
-      setShowMetricsInPublic(preferences.showMetricsInPublic);
-      setUserPreferences(preferences);
-    });
-  }, []);
+  const [disabled, setDisabled] = useState(true);
 
   const handleSave = async () => {
     try {
       setDisabled(true);
       setLoading(true);
-      if (userPreferences) {
-        const preferences = {
-          ...userPreferences,
-          showHoldingsInPublic,
-          showMetricsInPublic,
-        };
-        await fetch("/api/user/preferences", {
-          method: "POST",
-          body: JSON.stringify(preferences),
+      if (newUsername) {
+        await fetch(`/api/onboarding?username=${newUsername}`, {
+          method: "GET",
         });
+        window.location.reload();
       }
     } finally {
-      setPreferences({
-        ...preferences,
-        showHoldingsInPublic,
-        showMetricsInPublic,
-      });
       setDisabled(false);
       setLoading(false);
       toast.success("Preferences updated successfully!");
@@ -78,7 +48,7 @@ function AccountSettings({
 
   const handleDeleteAccount = async () => {
     try {
-      await fetch(`/api/user/${userPreferences?.userId}`, {
+      await fetch(`/api/user/${preferences.userId}`, {
         method: "POST",
       });
     } finally {
@@ -139,71 +109,50 @@ function AccountSettings({
   return (
     <>
       <div className="flex justify-between">
-        <div className="mb-4">
-          <h2 className="text-3xl font-bold">Account</h2>
+        <div>
+          <h2 className="text-3xl text-foreground font-bold">Account</h2>
           <p className="text-sm text-muted-foreground">
             Control what others can see about you
           </p>
         </div>
-        <Button onClick={handleSave} disabled={disabled}>
-          {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-          Save
-        </Button>
       </div>
-      <Separator className="mb-4" />
+      <Separator />
       {preferences ? (
         <div className="flex flex-col gap-4">
           <div className="py-5 px-4 flex gap-2 items-center justify-between border rounded-md w-full">
             <div>
-              <h2>Username</h2>
+              <h2 className="text-foreground">Username</h2>
               <p className="text-muted-foreground text-sm">
                 Your username which will be used across Jaayedaad.com
               </p>
             </div>
             <div>
-              <Input
-                value={newUsername !== null ? newUsername : ""}
-                defaultValue={username}
-                className="w-[30vw]"
-                placeholder="username"
-                onChange={(e) => handleUsernameChange(e.target.value)}
-              />
+              <div className="flex gap-4">
+                <Input
+                  value={newUsername !== null ? newUsername : ""}
+                  defaultValue={username}
+                  className="w-[30vw]"
+                  placeholder="username"
+                  onChange={(e) => handleUsernameChange(e.target.value)}
+                />
+                <Button onClick={handleSave} disabled={disabled}>
+                  {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                  Save
+                </Button>
+              </div>
               <p
-                className={`text-xs pt-1 ${
-                  errorMessage.includes("available")
-                    ? "text-green-500"
-                    : "text-red-500"
-                }`}
+                className={cn(
+                  "text-xs pt-1",
+                  errorMessage !== ""
+                    ? errorMessage.includes("available")
+                      ? "text-green-500"
+                      : "text-red-500"
+                    : "invisible"
+                )}
               >
-                {errorMessage}
+                {errorMessage !== "" ? errorMessage : username}
               </p>
             </div>
-          </div>
-          <div className="py-5 px-4 flex gap-2 items-center justify-between border rounded-md w-full">
-            <div>
-              <h2>Holdings</h2>
-              <p className="text-muted-foreground text-sm">
-                Allow others to see your portfolio holdings on your public
-                profile page
-              </p>
-            </div>
-            <Switch
-              checked={showHoldingsInPublic}
-              onCheckedChange={(value) => setShowHoldingsInPublic(value)}
-            />
-          </div>
-          <div className="py-5 px-4 flex gap-2 items-center justify-between border rounded-md w-full">
-            <div>
-              <h2>Portfolio metrics</h2>
-              <p className="text-muted-foreground text-sm">
-                Allow others to see your performance metrics such as realised
-                profit/loss, current value, etc
-              </p>
-            </div>
-            <Switch
-              checked={showMetricsInPublic}
-              onCheckedChange={(value) => setShowMetricsInPublic(value)}
-            />
           </div>
           <div className="py-5 px-4 flex gap-2 items-center justify-between border rounded-md w-full">
             <div>

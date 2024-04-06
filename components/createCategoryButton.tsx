@@ -73,7 +73,7 @@ function CreateCategoryButton() {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button className="justify-start" variant="ghost">
+        <Button className="justify-start w-full pr-8 bg-background hover:bg-primary/10">
           <Plus className="mr-2" size={20} /> Create category
         </Button>
       </DialogTrigger>

@@ -114,13 +114,13 @@ function Profile({ preferences }: ProfileProps) {
   return (
     <div className="grid grid-cols-5 grid-rows-7 h-full gap-6 p-6">
       {preferences.showHoldingsInPublic && (
-        <div className="col-span-2 row-span-3 bg-card border rounded-xl p-6">
+        <div className="col-span-2 row-span-3 bg-[#171326] shadow-2xl border rounded-xl p-6">
           <AssetPieChart view="dashboard" assets={assets} />
         </div>
       )}
       {/* Performance */}
       {preferences.showMetricsInPublic && (
-        <div className="col-span-3 row-span-3 bg-card border rounded-xl p-6">
+        <div className="col-span-3 row-span-3 bg-[#171326] shadow-2xl border rounded-xl p-6">
           {historicalData ? (
             historicalData.length ? (
               <PortfolioLineChart
@@ -155,7 +155,7 @@ function Profile({ preferences }: ProfileProps) {
 
       {/* Asset Table */}
       {preferences.showHoldingsInPublic && (
-        <div className="col-span-3 row-span-4 bg-card border rounded-xl p-6">
+        <div className="col-span-3 row-span-4 bg-[#171326] shadow-2xl border rounded-xl p-6">
           <div className="flex justify-between">
             <div className="xl:flex xl:items-center xl:gap-1">
               <h3 className="font-semibold">Asset Overview</h3>
@@ -182,7 +182,7 @@ function Profile({ preferences }: ProfileProps) {
       )}
       {/* Metrics */}
       {preferences.showMetricsInPublic && (
-        <div className="col-span-2 row-span-4 bg-card border rounded-xl p-6">
+        <div className="col-span-2 row-span-4 bg-[#171326] shadow-2xl border rounded-xl p-6">
           <h3 className="font-semibold">Performance Metrics</h3>
           <p className="text-muted-foreground text-xs xl:text-sm">
             Analyze investment performance

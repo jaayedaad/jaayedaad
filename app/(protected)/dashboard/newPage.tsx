@@ -41,11 +41,24 @@ export function Dashboard({ assets }: { assets: TAsset[] }) {
   const [marqueeBarAssets, setMarqueeBarAssets] = useState<
     TAsset[] | undefined
   >(assets);
+  const [timeOfDay, setTimeOfDay] = useState("");
+  const [username, setUsername] = useState("");
 
   useEffect(() => {
+    const currentTime = new Date().getHours();
+
+    if (currentTime < 12) {
+      setTimeOfDay("morning");
+    } else if (currentTime >= 12 && currentTime < 18) {
+      setTimeOfDay("afternoon");
+    } else {
+      setTimeOfDay("evening");
+    }
+
     const fetchWhitelistedStatus = async () => {
       const user = await getCurrentUser();
       if (user) {
+        user.userData.username && setUsername(user.userData.username);
         const whitelisted = user.userData.whitelisted;
         setWhitelisted(whitelisted);
       }
@@ -117,28 +130,40 @@ export function Dashboard({ assets }: { assets: TAsset[] }) {
   return assets ? (
     <>
       <div className="px-6 sm:px-8 pt-6 pb-20 md:pb-24 lg:py-6 w-full lg:h-screen xl:h-screen flex flex-col">
-        <div className="inline-flex justify-between items-center lg:gap-6">
-          {marqueeBarAssets && (
-            <AssetMarqueeBar
-              data={marqueeBarAssets}
-              timeInterval={timeInterval}
+        <div className="inline-flex lg:grid lg:grid-cols-3 justify-between items-center lg:gap-6">
+          <div className="col-span-1">
+            <h3 className="text-lg">
+              Good {timeOfDay}, {username}
+            </h3>
+            <p>Your dashboard</p>
+          </div>
+          <div className="flex items-center col-span-2">
+            <div className="w-full">
+              {marqueeBarAssets && (
+                <AssetMarqueeBar
+                  data={marqueeBarAssets}
+                  timeInterval={timeInterval}
+                />
+              )}
+            </div>
+            <Image
+              src={jaayedaad_logo}
+              alt="Jaayedaad logo"
+              className="h-10 lg:hidden"
             />
-          )}
-          <Image
-            src={jaayedaad_logo}
-            alt="Jaayedaad logo"
-            className="h-10 lg:hidden"
-          />
-          <ChangeInterval onChange={onChange} />
+            <div className="w-fit">
+              <ChangeInterval onChange={onChange} />
+            </div>
+          </div>
         </div>
         <div className="min-h-[85vh] h-full mt-4">
           <div className="flex flex-col gap-4 sm:gap-6 md:gap-6 lg:gap-4 lg:grid lg:grid-rows-7 lg:grid-cols-3 lg:h-full text-foreground">
             {/* Asset distribution pie chart */}
-            <div className="col-span-1 row-span-3 bg-card border rounded-xl p-4">
+            <div className="col-span-1 row-span-3 bg-[#171326]/70 backdrop-blur shadow-2xl border rounded-xl p-4">
               <AssetPieChart view="dashboard" assets={assets} />
             </div>
             {/* Portfolio line chart */}
-            <div className="col-span-2 row-span-3 bg-card border rounded-xl p-4">
+            <div className="col-span-2 row-span-3 bg-[#171326]/70 backdrop-blur shadow-2xl border rounded-xl p-4">
               {historicalData ? (
                 historicalData.length ? (
                   <PortfolioLineChart
@@ -170,7 +195,7 @@ export function Dashboard({ assets }: { assets: TAsset[] }) {
               )}
             </div>
             {/* Asset Table */}
-            <div className="col-span-2 row-span-4 bg-card border rounded-xl p-4">
+            <div className="col-span-2 row-span-4 bg-[#171326]/70 backdrop-blur shadow-2xl border rounded-xl p-4">
               <div className="flex justify-between">
                 <div className="xl:flex xl:items-center xl:gap-1">
                   <h3 className="font-semibold">Asset Overview</h3>
@@ -198,7 +223,7 @@ export function Dashboard({ assets }: { assets: TAsset[] }) {
               </div>
             </div>
             {/* Performance metrics */}
-            <div className="col-span-1 row-span-4 bg-card border rounded-xl p-4 mb-4 md:mb-6 lg:mb-0">
+            <div className="col-span-1 row-span-4 bg-[#171326]/70 backdrop-blur shadow-2xl border rounded-xl p-4 mb-4 md:mb-6 lg:mb-0">
               <h3 className="font-semibold">Performance Metrics</h3>
               <p className="text-muted-foreground text-xs xl:text-sm">
                 Analyze investment performance
