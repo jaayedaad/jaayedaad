@@ -78,15 +78,16 @@ model Asset {
 }
 
 model Preference {
-  id                   String  @id @default(cuid())
-  publicVisibility     Boolean @default(false)
-  userId               String  @unique
-  defaultCurrency      String  @default("INR")
-  numberSystem         String  @default("Indian")
-  showHoldingsInPublic Boolean @default(false)
-  showMetricsInPublic  Boolean @default(false)
-  performanceBarOrder  String  @default("Ascending")
-  user                 User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id                        String  @id @default(cuid())
+  publicVisibility          Boolean @default(false)
+  userId                    String  @unique
+  defaultCurrency           String  @default("INR")
+  numberSystem              String  @default("Indian")
+  showHoldingsInPublic      Boolean @default(false)
+  showMetricsInPublic       Boolean @default(false)
+  performanceBarOrder       String  @default("Ascending")
+  user                      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  dashboardAmountVisibility Boolean @default(true)
 }
 
 enum TransactionType {

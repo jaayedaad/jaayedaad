@@ -92,3 +92,20 @@ export async function getAllAssets() {
     }
   }
 }
+
+export const deleteUserInSia = async (userId: string) => {
+  const username = "username";
+  const password = "1234";
+  const basicAuth =
+    "Basic " + Buffer.from(username + ":" + password).toString("base64");
+
+  await fetch(
+    `${process.env.SIA_API_URL}/worker/objects/${userId}?batch=true`,
+    {
+      method: "DELETE",
+      headers: {
+        Authorization: basicAuth,
+      },
+    }
+  );
+};

@@ -1,4 +1,5 @@
 import { AssetPriceUpdate, Transaction } from "@prisma/client";
+import dynamicIconImports from "lucide-react/dynamicIconImports";
 
 export type TAsset = {
   id: string;
@@ -27,11 +28,55 @@ export type TProfitLoss = {
   realisedProfitLoss: string;
 };
 
-export interface TSiaObject {
+export type TSiaObject = {
   eTag: string;
   health: number;
   modTime: string;
   name: string;
   size: number;
   mimeType: string;
-}
+};
+
+export type TConversionRates = {
+  [currency: string]: number;
+};
+
+export type TUser = {
+  id: string;
+  name: string;
+  username?: string;
+  email: string;
+  emailVerified: boolean;
+  image: string;
+  whitelisted: boolean;
+};
+
+export type TPreference = {
+  id: string;
+  publicVisibility: boolean;
+  userId: string;
+  defaultCurrency: string;
+  numberSystem: string;
+  showHoldingsInPublic: boolean;
+  showMetricsInPublic: boolean;
+  performanceBarOrder: string;
+  dashboardAmountVisibility: boolean;
+};
+
+export type TUserManualCategory = {
+  id: string;
+  icon: keyof typeof dynamicIconImports;
+  name: string;
+  userId: string;
+  assets: TAsset[];
+};
+
+export type TUnrealisedProfitLoss = {
+  type: string;
+  symbol: string;
+  compareValue: string;
+  currentValue: string;
+  prevClose: string;
+  interval: string;
+  unrealisedProfitLoss: string;
+};

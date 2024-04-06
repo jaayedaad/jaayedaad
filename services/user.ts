@@ -1,16 +1,19 @@
 "use server";
 
 import { prisma } from "@/lib/prisma";
-import { Session, getServerSession } from "next-auth";
-import { authOptions } from "@/lib/authOptions";
+import { Session } from "next-auth";
 import { decryptObjectValues } from "@/lib/dataSecurity";
-import { SIA_ENCRYPTION_KEY } from "@/constants/env";
+import { DATABASE_URL, SIA_API_URL, SIA_ENCRYPTION_KEY } from "@/constants/env";
+import { TUser } from "@/lib/types";
+import { deleteUserInSia } from "./thirdParty/sia";
 
 export const getUser = async (session: Session) => {
+  console.log("page user", session.user);
+
   if (!session.user || !session.user.email) {
     throw new Error("User not authenticated");
   }
-  const foundUser = await prisma.user.findUnique({
+  const user = await prisma.user.findUnique({
     where: {
       email: session.user.email,
     },
@@ -22,25 +25,25 @@ export const getUser = async (session: Session) => {
       },
     },
   });
-  if (!foundUser) {
+  if (!user) {
     throw new Error("User not found");
   }
 
   const encryptionKey =
-    foundUser.id.slice(0, 4) + SIA_ENCRYPTION_KEY + foundUser.id.slice(-4);
+    user.id.slice(0, 4) + SIA_ENCRYPTION_KEY + user.id.slice(-4);
 
   return {
-    id: foundUser.id,
-    name: foundUser.name,
-    username: foundUser.username,
-    email: foundUser.email,
-    emailVerified: foundUser.emailVerified,
-    image: foundUser.image,
-    whitelisted: foundUser.whitelisted,
+    id: user.id,
+    name: user.name,
+    username: user.username,
+    email: user.email,
+    emailVerified: user.emailVerified,
+    image: user.image,
+    whitelisted: user.whitelisted,
     usersManualCategories: decryptObjectValues(
-      foundUser.usersManualCategories,
+      user.usersManualCategories,
       encryptionKey
-    ) as typeof foundUser.usersManualCategories,
+    ) as typeof user.usersManualCategories,
   };
 };
 
@@ -51,4 +54,92 @@ export const isUsernameTaken = async (username: string): Promise<boolean> => {
     },
   });
   return user ? true : false;
+};
+
+export const getUserByEmail = async (email: string) => {
+  const user = await prisma.user.findUnique({
+    where: {
+      email,
+    },
+    include: {
+      usersManualCategories: {
+        include: {
+          assets: true,
+        },
+      },
+    },
+  });
+  if (user) {
+    const encryptionKey =
+      user.id.slice(0, 4) + SIA_ENCRYPTION_KEY + user.id.slice(-4);
+
+    return {
+      usersManualCategories: decryptObjectValues(
+        user.usersManualCategories,
+        encryptionKey
+      ) as typeof user.usersManualCategories,
+      id: user?.id,
+      name: user?.name,
+      username: user?.username,
+      email: user?.email,
+      emailVerified: user?.emailVerified,
+      whitelisted: user.whitelisted,
+      image: user?.image,
+    };
+  }
+};
+
+export const getUserByUsername = async (username: string) => {
+  const user = await prisma.user.findUnique({
+    where: {
+      username,
+    },
+  });
+  if (!user) {
+    throw new Error("User not found");
+  }
+
+  return user;
+};
+
+export const updateUser = async (
+  email: string,
+  data: {
+    name?: string;
+    username?: string;
+    image?: string;
+  }
+) => {
+  const user = await prisma.user.update({
+    where: {
+      email,
+    },
+    data,
+  });
+  return user;
+};
+
+export const deleteUser = async (userId: string): Promise<boolean> => {
+  try {
+    const user = await prisma.user.findUnique({
+      where: {
+        id: userId,
+      },
+    });
+    if (!user) {
+      throw new Error("User not found");
+    }
+
+    if (SIA_API_URL) {
+      deleteUserInSia(user.id);
+    }
+    if (DATABASE_URL) {
+      await prisma.user.delete({
+        where: { id: userId },
+      });
+    }
+    return true;
+  } catch {
+    return false;
+  }
 };

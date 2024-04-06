@@ -1,63 +1,36 @@
-"use client";
-import { Bell, UserRound } from "lucide-react";
-import Preferences from "@/components/preferences";
-import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/helper";
-import { useSession } from "next-auth/react";
-import { useEffect, useState } from "react";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/authOptions";
+import { redirect } from "next/navigation";
+import { getPreferenceFromUserId } from "@/services/preference";
+import PublicProfileSettings from "@/components/publicProfileSettings";
+import PreferenceComponent from "@/components/preference";
 import AccountSettings from "@/components/accountSettings";
-import { Preference } from "@prisma/client";
-import { getPreferences } from "@/actions/getPreferencesAction";
-import LoadingSpinner from "@/components/ui/loading-spinner";
-import { getCurrentUser } from "@/actions/getCurrentUser";
-import ProfileSettings from "@/components/profileSettings";
 
-function SettingsPage() {
-  const { data: session } = useSession();
-  const [selectedOption, setSelectedOption] = useState("Preferences");
-  const [preferences, setPreferences] = useState<Preference>();
-  const [username, setUsername] = useState<string | null>(null);
+export default async function Settings() {
+  const session = await getServerSession(authOptions);
+  if (!session || !session?.user) {
+    redirect("/auth/signin");
+  }
 
-  useEffect(() => {
-    getPreferences().then((preferences: Preference) => {
-      setPreferences(preferences);
-    });
-    getCurrentUser().then((res) => {
-      if (res?.userData) {
-        setUsername(res.userData.username);
-      }
-    });
-  }, []);
+  const preference = await getPreferenceFromUserId(session.user.id);
+  if (!preference) {
+    throw new Error("Preference not found");
+  }
 
   return (
-    session && (
-      <div className="pb-6 pt-12 px-6 w-full h-screen overflow-auto ">
-        <div>
-          <div className="text-muted-foreground flex gap-1 mb-4">
-            {preferences && username ? (
-              <div className="flex flex-col w-full gap-6">
-                <ProfileSettings
-                  preferences={preferences}
-                  setPreferences={setPreferences}
-                />
-                <Preferences
-                  preferences={preferences}
-                  setPreferences={setPreferences}
-                />
-                <AccountSettings
-                  username={username}
-                  preferences={preferences}
-                  setPreferences={setPreferences}
-                />
-              </div>
-            ) : (
-              <LoadingSpinner />
-            )}
+    <div className="pb-6 pt-12 px-6 w-full h-screen overflow-auto ">
+      <div>
+        <div className="text-muted-foreground flex gap-1 mb-4">
+          <div className="flex flex-col w-full gap-6">
+            <PublicProfileSettings preference={preference} />
+            <PreferenceComponent preference={preference} />
+            <AccountSettings
+              username={session.user.username}
+              preference={preference}
+            />
           </div>
         </div>
       </div>
-    )
+    </div>
   );
 }
-
-export default SettingsPage;

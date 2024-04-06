@@ -1,44 +1,55 @@
 "use client";
+import { TAsset, TConversionRates, TInterval, TPreference } from "@/lib/types";
 import AssetPieChart from "@/components/assetPieChart";
 import AssetTable from "@/components/assetTable";
 import ChangeInterval from "@/components/changeInterval";
-import PerformanceMetrics from "@/components/performanceMetrics";
+import ManualTransactionChart from "@/components/manualTransactionChart";
 import PortfolioLineChart from "@/components/portfolioLineChart";
 import LoadingSpinner from "@/components/ui/loading-spinner";
-import { calculateRealisedProfitLoss } from "@/helper/realisedValueCalculator";
+import { defaultCategories } from "@/constants/category";
 import { getUnrealisedProfitLossArray } from "@/helper/unrealisedValueCalculator";
-import { useEffect, useState } from "react";
+import { redirect } from "next/navigation";
+import React, { useEffect, useState } from "react";
 import jaayedaad_logo from "@/public/jaayedaad_logo.svg";
 import Image from "next/image";
 import AssetMarqueeBar from "@/components/assetMarqueeBar";
-import {
-  TAsset,
-  TInterval,
-  TProfitLoss,
-  TConversionRates,
-  TPreference,
-} from "@/lib/types";
-import WhitelistingModal from "@/components/whitelistingModal";
-import MockLineChart from "@/components/mock/mockLineChart";
-import MockAssetTable from "@/components/mock/mockAssetTable";
 
-export function Dashboard({
+function Page({
   username,
-  whitelisted,
-  assets,
-  conversionRates,
+  assetCategory,
+  reverseMappedName,
+  filteredAssets,
   historicalData,
+  conversionRates,
   preferences,
 }: {
   username: string;
-  whitelisted: boolean;
-  assets: TAsset[];
+  assetCategory: string;
+  reverseMappedName: string;
+  filteredAssets?: TAsset[];
+  historicalData: any;
   conversionRates: TConversionRates;
-  historicalData: any; // TODO: define type in return of this method from ssr
   preferences: TPreference;
 }) {
-  const [realisedProfitLoss, setRealisedProfitLoss] = useState<string>();
-  const [timeInterval, setTimeInterval] = useState<TInterval>("All");
+  const [assetsToView, setAssetsToView] = useState<TAsset[] | undefined>(
+    filteredAssets
+  );
+
+  const categoryExist = filteredAssets?.some(
+    (asset) => asset.type.toLowerCase() === reverseMappedName
+  );
+
+  let manualCategoryAsset: TAsset[] | undefined;
+  if (categoryExist) {
+    manualCategoryAsset = filteredAssets?.filter(
+      (asset) => asset.type.toLowerCase() === reverseMappedName
+    );
+  }
+
+  const [manualCategoryAssets, setManualCategoryAssets] = useState<
+    TAsset[] | undefined
+  >(manualCategoryAsset);
+  const [timeInterval, setTimeInterval] = useState<TInterval>("1d");
   const [unrealisedProfitLossArray, setUnrealisedProfitLossArray] = useState<
     {
       type: string;
@@ -50,11 +61,6 @@ export function Dashboard({
       unrealisedProfitLoss: string;
     }[]
   >();
-  const [realisedProfitLossArray, setRealisedProfitLossArray] =
-    useState<TProfitLoss[]>();
-  const [marqueeBarAssets, setMarqueeBarAssets] = useState<
-    TAsset[] | undefined
-  >(assets);
   const [timeOfDay, setTimeOfDay] = useState("");
 
   useEffect(() => {
@@ -70,29 +76,35 @@ export function Dashboard({
   }, []);
 
   useEffect(() => {
-    if (assets && conversionRates) {
-      if (historicalData?.length) {
-        const unrealisedResults = getUnrealisedProfitLossArray(
-          historicalData,
-          assets,
-          conversionRates
-        );
-        setUnrealisedProfitLossArray(unrealisedResults);
+    async function getPageData() {
+      if (filteredAssets && filteredAssets.length) {
+        if (!defaultCategories.includes(reverseMappedName)) {
+          if (!categoryExist) {
+            redirect("/dashboard");
+          }
+        } else {
+          if (
+            !filteredAssets.filter(
+              (asset) => asset.type.toLowerCase() === reverseMappedName
+            ).length
+          ) {
+            redirect("/dashboard");
+          } else {
+            if (historicalData) {
+              const unrealisedResults = getUnrealisedProfitLossArray(
+                historicalData,
+                filteredAssets,
+                conversionRates
+              );
+              setUnrealisedProfitLossArray(unrealisedResults);
+            }
+          }
+        }
       }
-      const realisedProfitLossResults = calculateRealisedProfitLoss(
-        assets,
-        conversionRates
-      );
-      if (timeInterval === "All") {
-        setRealisedProfitLoss(
-          realisedProfitLossResults.filter(
-            (profitLoss) => profitLoss.interval === "All"
-          )[0].realisedProfitLoss
-        );
-      }
-      setRealisedProfitLossArray(realisedProfitLossResults);
     }
-  }, [historicalData, timeInterval, conversionRates]);
+
+    getPageData();
+  }, [filteredAssets, reverseMappedName]);
 
   // Get today's date
   const today = new Date();
@@ -103,13 +115,8 @@ export function Dashboard({
 
   const onChange = (value: TInterval) => {
     setTimeInterval(value);
-    const profitLoss = realisedProfitLossArray?.filter(
-      (profitLoss) => profitLoss.interval === value
-    )[0].realisedProfitLoss;
-    setRealisedProfitLoss(profitLoss);
-
-    if (value !== "All" && assets) {
-      const updatedAssetsToView = assets.map((asset) => {
+    if (value !== "All" && filteredAssets) {
+      const updatedAssetsToView = filteredAssets.map((asset) => {
         const matchingIntervalData = unrealisedProfitLossArray?.find(
           (data) => data.symbol === asset.symbol && data.interval === value
         );
@@ -123,27 +130,27 @@ export function Dashboard({
         }
         return asset;
       });
-      setMarqueeBarAssets(updatedAssetsToView);
+      setAssetsToView(updatedAssetsToView);
     } else {
-      setMarqueeBarAssets(assets);
+      setAssetsToView(filteredAssets);
     }
   };
 
-  return assets ? (
-    <>
-      <div className="px-6 sm:px-8 pt-6 pb-20 md:pb-24 lg:py-6 w-full lg:h-screen xl:h-screen flex flex-col">
+  return filteredAssets ? (
+    filteredAssets.length ? (
+      <div className="px-6 sm:px-8 pt-6 pb-24 md:pb-32 lg:py-6 w-full lg:h-screen xl:h-screen flex flex-col">
         <div className="inline-flex lg:grid lg:grid-cols-3 justify-between items-center lg:gap-6">
           <div className="col-span-1">
             <h3 className="text-lg">
               Good {timeOfDay}, {username}
             </h3>
-            <p>Your dashboard</p>
+            <p>Your {assetCategory}</p>
           </div>
           <div className="flex items-center col-span-2">
             <div className="w-full">
-              {marqueeBarAssets && (
+              {assetsToView && (
                 <AssetMarqueeBar
-                  data={marqueeBarAssets}
+                  data={assetsToView}
                   timeInterval={timeInterval}
                   performanceBarOrder={preferences.performanceBarOrder}
                 />
@@ -161,11 +168,10 @@ export function Dashboard({
         </div>
         <div className="min-h-[85vh] h-full mt-4">
           <div className="flex flex-col gap-4 sm:gap-6 md:gap-6 lg:gap-4 lg:grid lg:grid-rows-7 lg:grid-cols-3 lg:h-full text-foreground">
-            {/* Asset distribution pie chart */}
-            <div className="col-span-1 row-span-3 bg-[#171326]/70 backdrop-blur shadow-2xl border rounded-xl p-4">
+            <div className="row-span-3 col-span-1 border rounded-xl p-4">
               <AssetPieChart
-                view="dashboard"
-                assets={assets}
+                view={reverseMappedName}
+                assets={filteredAssets}
                 dashboardAmountVisibility={
                   preferences.dashboardAmountVisibility
                 }
@@ -174,13 +180,12 @@ export function Dashboard({
                 conversionRates={conversionRates}
               />
             </div>
-            {/* Portfolio line chart */}
-            <div className="col-span-2 row-span-3 bg-[#171326]/70 backdrop-blur shadow-2xl border rounded-xl p-4">
+            <div className="row-span-3 col-span-2 border rounded-xl p-4">
               {historicalData ? (
-                historicalData.length ? (
+                defaultCategories.includes(reverseMappedName) ? (
                   <PortfolioLineChart
                     data={historicalData}
-                    view="dashboard"
+                    view={reverseMappedName}
                     timeInterval={timeInterval}
                     dashboardAmountVisibility={
                       preferences.dashboardAmountVisibility
@@ -189,20 +194,22 @@ export function Dashboard({
                     defaultCurrency={preferences.defaultCurrency}
                   />
                 ) : (
-                  <div>
-                    <h3 className="font-semibold">Portfolio Performance</h3>
-                    <p className="text-muted-foreground text-xs xl:text-sm">
-                      Insight into your portfolio&apos;s value dynamics
-                    </p>
-                    <div className="h-40 flex items-center justify-center">
-                      <MockLineChart />
-                    </div>
-                  </div>
+                  manualCategoryAssets && (
+                    <ManualTransactionChart
+                      manualCategoryAssets={manualCategoryAssets}
+                      timeInterval={timeInterval}
+                      dashboardAmountVisibility={
+                        preferences.dashboardAmountVisibility
+                      }
+                      numberSystem={preferences.numberSystem}
+                      defaultCurrency={preferences.defaultCurrency}
+                    />
+                  )
                 )
               ) : (
                 <div>
                   <h3 className="font-semibold">Portfolio Performance</h3>
-                  <p className="text-muted-foreground text-xs xl:text-sm">
+                  <p className="text-muted-foreground text-sm">
                     Insight into your portfolio&apos;s value dynamics
                   </p>
                   <div className="h-40 flex items-center">
@@ -211,66 +218,50 @@ export function Dashboard({
                 </div>
               )}
             </div>
-            {/* Asset Table */}
-            <div className="col-span-2 row-span-4 bg-[#171326]/70 backdrop-blur shadow-2xl border rounded-xl p-4">
+            <div className="row-span-4 flex flex-col col-span-3 border rounded-xl p-4">
               <div className="flex justify-between">
                 <div className="xl:flex xl:items-center xl:gap-1">
                   <h3 className="font-semibold">Asset Overview</h3>
                   <p className="text-muted-foreground text-xs xl:text-sm">
-                    Collection of your assets
+                    Collection of your {reverseMappedName}
                   </p>
                 </div>
                 <div>
-                  <p className="text-muted-foreground text-end text-xs xl:text-sm">
-                    As on ({yesterday.toLocaleDateString("en-GB")})
+                  <p className="text-muted-foreground text-right text-xs xl:text-sm">
+                    Last update on ({yesterday.toLocaleDateString("en-GB")})
                   </p>
                 </div>
               </div>
               <div className="mt-6">
-                {assets.length ? (
+                {assetsToView ? (
                   <AssetTable
-                    data={assets}
+                    data={assetsToView}
                     historicalData={historicalData}
+                    view={reverseMappedName}
                     timelineInterval={timeInterval}
-                    intervalChangeData={unrealisedProfitLossArray}
                     conversionRates={conversionRates}
                     preferences={preferences}
                   />
                 ) : (
-                  <MockAssetTable />
+                  <div className="h-56 flex items-center">
+                    <LoadingSpinner />
+                  </div>
                 )}
               </div>
-            </div>
-            {/* Performance metrics */}
-            <div className="col-span-1 row-span-4 bg-[#171326]/70 backdrop-blur shadow-2xl border rounded-xl p-4 mb-4 md:mb-6 lg:mb-0">
-              <h3 className="font-semibold">Performance Metrics</h3>
-              <p className="text-muted-foreground text-xs xl:text-sm">
-                Analyze investment performance
-              </p>
-              <PerformanceMetrics
-                assets={assets}
-                realisedProfitLoss={realisedProfitLoss}
-                unrealisedProfitLossArray={unrealisedProfitLossArray}
-                timeInterval={timeInterval}
-                dashboardAmountVisibility={
-                  preferences.dashboardAmountVisibility
-                }
-                numberSystem={preferences.numberSystem}
-                defaultCurrency={preferences.defaultCurrency}
-                conversionRates={conversionRates}
-              />
             </div>
           </div>
         </div>
       </div>
-      <WhitelistingModal whitelisted={whitelisted} />
-    </>
+    ) : (
+      <div className="px-6 sm:px-8 pt-6 pb-24 lg:py-6 w-full h-screen flex flex-col items-center justify-center">
+        <div className="text-lg">You don&apos;t own any {assetCategory}</div>
+      </div>
+    )
   ) : (
-    <div className="flex flex-col justify-center items-center gap-2 w-full h-auto">
+    <div className="px-6 sm:px-8 pt-6 pb-24 lg:py-6 w-full h-screen flex flex-col items-center justify-center">
       <LoadingSpinner />
-      <div>Loading your dashboard...</div>
     </div>
   );
 }
 
-export default Dashboard;
+export default Page;

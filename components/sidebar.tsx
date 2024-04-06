@@ -4,8 +4,6 @@ import { Button } from "./ui/button";
 import {
   Bitcoin,
   CandlestickChart,
-  EyeIcon,
-  EyeOffIcon,
   Home,
   Plus,
   Settings,
@@ -14,28 +12,29 @@ import {
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/helper";
 import Link from "next/link";
-import { Toggle } from "./ui/toggle";
-import { useVisibility } from "@/contexts/visibility-context";
 import { Dialog, DialogContent, DialogTitle, DialogTrigger } from "./ui/dialog";
 import AddTransaction from "./addTransaction";
-import { useData } from "@/contexts/data-context";
-import jaayedaad_logo from "@/public/jaayedaad_logo.svg";
-import Image from "next/image";
 import CreateCategoryButton from "./createCategoryButton";
 import dynamicIconImports from "lucide-react/dynamicIconImports";
 import DynamicIcon from "./dynamicIcon";
 import JaayedaadLogo from "@/public/branding/jaayedaadLogo";
+import { TUserManualCategory } from "@/lib/types";
 
-function Sidebar() {
+function Sidebar({
+  usersManualCategories,
+  defaultCurrency,
+}: {
+  usersManualCategories: TUserManualCategory[];
+  defaultCurrency: string;
+}) {
   const currentTab = decodeURIComponent(usePathname());
-  const { user } = useData();
   const [open, setOpen] = useState(false);
 
   const uniqueCategorySet = new Set<{
     name: string;
     icon: keyof typeof dynamicIconImports;
   }>();
-  user?.usersManualCategories.forEach((category) => {
+  usersManualCategories.forEach((category) => {
     uniqueCategorySet.add({
       name: category.name,
       icon: category.icon,
@@ -160,7 +159,11 @@ function Sidebar() {
                   Add transactions to your portfolio
                 </p>
               </div>
-              <AddTransaction handleModalState={setOpen} />
+              <AddTransaction
+                usersManualCategories={usersManualCategories}
+                handleModalState={setOpen}
+                defaultCurrency={defaultCurrency}
+              />
             </DialogContent>
           </Dialog>
         </div>

@@ -3,15 +3,18 @@ import Marquee from "react-fast-marquee";
 import { TAsset, TInterval } from "@/lib/types";
 import { cn } from "@/lib/helper";
 import { ArrowDownIcon, ArrowUpIcon } from "lucide-react";
-import { useCurrency } from "@/contexts/currency-context";
 
 interface AssetMarqueeBarProps {
   data: TAsset[];
   timeInterval: TInterval;
+  performanceBarOrder: string;
 }
 
-function AssetMarqueeBar({ data, timeInterval }: AssetMarqueeBarProps) {
-  const { performanceBarOrder } = useCurrency();
+function AssetMarqueeBar({
+  data,
+  timeInterval,
+  performanceBarOrder,
+}: AssetMarqueeBarProps) {
   useEffect(() => {}, [timeInterval]);
 
   // Sort data based on performanceBarOrder

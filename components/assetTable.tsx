@@ -8,17 +8,14 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { ArrowDownIcon, ArrowUpDown, ArrowUpIcon } from "lucide-react";
-import { TAsset, TInterval } from "@/lib/types";
+import { TAsset, TConversionRates, TInterval, TPreference } from "@/lib/types";
 import { ScrollArea } from "./ui/scroll-area";
 import { cn } from "@/lib/helper";
-import { useVisibility } from "@/contexts/visibility-context";
 import { useEffect, useState } from "react";
 import ViewAsset from "./viewAsset";
 import { Button } from "./ui/button";
 import AssetTableCaption from "./assetTableCaption";
 import { useRouter } from "next/navigation";
-import { getConversionRate } from "@/actions/getConversionRateAction";
-import { useCurrency } from "@/contexts/currency-context";
 
 interface AssetTableProps {
   data: TAsset[];
@@ -35,6 +32,8 @@ interface AssetTableProps {
     interval: string;
     unrealisedProfitLoss: string;
   }[];
+  conversionRates: TConversionRates;
+  preferences: TPreference;
 }
 
 function AssetTable({
@@ -44,9 +43,10 @@ function AssetTable({
   isPublic,
   timelineInterval,
   intervalChangeData,
+  conversionRates,
+  preferences,
 }: AssetTableProps) {
-  const { visible } = useVisibility();
-  const { defaultCurrency } = useCurrency();
+  const { defaultCurrency } = preferences;
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [assetToView, setAssetToView] = useState<TAsset>();
@@ -60,9 +60,6 @@ function AssetTable({
   const [manualAsset, setManualAsset] = useState<TAsset>();
   const [filteredAsset, setFilteredAsset] = useState<TAsset[]>();
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
-  const [conversionRates, setConversionRates] = useState<{
-    [currency: string]: number;
-  }>();
 
   const assetTypeMappings: Record<string, string> = {
     "Common Stock": "Stocks",
@@ -82,8 +79,6 @@ function AssetTable({
 
   useEffect(() => {
     async function fetchData() {
-      const conversionRate = await getConversionRate();
-      setConversionRates(conversionRate);
       if (view) {
         if (filters.hasOwnProperty(view)) {
           setFilteredAsset(data.filter(filters[view]));
@@ -121,7 +116,7 @@ function AssetTable({
         data.forEach((asset) => {
           if (asset.quantity !== "0") {
             const assetCurrency = asset.buyCurrency.toLowerCase();
-            const currencyConversion = conversionRate[assetCurrency];
+            const currencyConversion = conversionRates[assetCurrency];
             const multiplier = 1 / currencyConversion;
             const existingType = groupedAssets.find(
               (data) => data.type === asset.type
@@ -228,7 +223,7 @@ function AssetTable({
     filteredAsset.length > 0 && (
       <>
         <Table>
-          {!isPublic && <AssetTableCaption />}
+          {!isPublic && <AssetTableCaption preferences={preferences} />}
           <ScrollArea className="w-full xl:h-[33vh] lg:h-[30vh]">
             <TableHeader className="bg-secondary sticky top-0">
               {view ? (
@@ -345,7 +340,7 @@ function AssetTable({
                         >
                           <TableCell>{asset.name}</TableCell>
                           <TableCell className="text-right px-8">
-                            {visible
+                            {preferences.dashboardAmountVisibility
                               ? parseFloat(asset.quantity).toLocaleString(
                                   "en-IN"
                                 )
@@ -382,7 +377,7 @@ function AssetTable({
                           </TableCell>
                           <TableCell className="text-right px-8">
                             <div className="flex flex-col">
-                              {visible
+                              {preferences.dashboardAmountVisibility
                                 ? conversionRates &&
                                   (
                                     asset.compareValue /
@@ -403,7 +398,7 @@ function AssetTable({
                             }`}
                           >
                             <div className="flex flex-col">
-                              {visible
+                              {preferences.dashboardAmountVisibility
                                 ? conversionRates &&
                                   (
                                     asset.currentValue /
@@ -462,14 +457,14 @@ function AssetTable({
                           {assetTypeMappings[asset.type] || asset.type}
                         </TableCell>
                         <TableCell className="text-right px-8">
-                          {visible
+                          {preferences.dashboardAmountVisibility
                             ? parseFloat(
                                 asset.compareValue.toFixed(2)
                               ).toLocaleString("en-IN")
                             : "* ".repeat(5)}
                         </TableCell>
                         <TableCell className="text-right px-8">
-                          {visible
+                          {preferences.dashboardAmountVisibility
                             ? parseFloat(
                                 asset.currentValue.toFixed(2)
                               ).toLocaleString("en-IN")
@@ -485,7 +480,7 @@ function AssetTable({
                             )}
                           >
                             (
-                            {visible
+                            {preferences.dashboardAmountVisibility
                               ? (+(
                                   asset.currentValue - asset.compareValue
                                 ).toFixed(2)).toLocaleString("en-IN")
@@ -542,6 +537,8 @@ function AssetTable({
             manualAsset={manualAsset}
             historicalData={historicalData}
             conversionRates={conversionRates}
+            numberSystem={preferences.numberSystem}
+            defaultCurrency={preferences.defaultCurrency}
           />
         )}
       </>

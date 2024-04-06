@@ -1,6 +1,6 @@
-import { TAsset, TInterval } from "@/lib/types";
-import { useCurrency } from "@/contexts/currency-context";
-import { useVisibility } from "@/contexts/visibility-context";
+"use client";
+
+import { TAsset, TConversionRates, TInterval } from "@/lib/types";
 import { cn } from "@/lib/helper";
 import { ArrowDown, ArrowUp } from "lucide-react";
 import React, { useEffect, useState } from "react";
@@ -11,6 +11,10 @@ function PerformanceMetrics({
   realisedProfitLoss,
   unrealisedProfitLossArray,
   timeInterval,
+  dashboardAmountVisibility,
+  numberSystem,
+  defaultCurrency,
+  conversionRates,
 }: {
   assets: TAsset[];
   realisedProfitLoss: string | undefined;
@@ -24,9 +28,11 @@ function PerformanceMetrics({
     unrealisedProfitLoss: string;
   }[];
   timeInterval: TInterval;
+  dashboardAmountVisibility: boolean;
+  numberSystem: string;
+  defaultCurrency: string;
+  conversionRates: TConversionRates;
 }) {
-  const { visible } = useVisibility();
-  const { conversionRates, numberSystem, defaultCurrency } = useCurrency();
   const [unrealisedProfitLoss, setUnrealisedProfitLoss] = useState<number>();
 
   useEffect(() => {
@@ -66,7 +72,7 @@ function PerformanceMetrics({
           <div className="flex items-center gap-1">
             <span className="text-2xl font-bold">
               {conversionRates && assets.length
-                ? visible
+                ? dashboardAmountVisibility
                   ? formatter.format(
                       parseFloat(
                         assets
@@ -135,7 +141,7 @@ function PerformanceMetrics({
               )}
               <div className="text-sm flex items-center">
                 {unrealisedProfitLoss
-                  ? visible
+                  ? dashboardAmountVisibility
                     ? formatter.format(unrealisedProfitLoss)
                     : "* ".repeat(5)
                   : "- - -"}
@@ -164,7 +170,7 @@ function PerformanceMetrics({
           >
             <span className="text-2xl font-bold">
               {assets.length && realisedProfitLoss
-                ? visible
+                ? dashboardAmountVisibility
                   ? formatter.format(+realisedProfitLoss)
                   : "* ".repeat(5)
                 : "- - -"}

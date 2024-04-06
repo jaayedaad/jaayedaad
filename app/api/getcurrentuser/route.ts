@@ -29,15 +29,13 @@ export async function GET() {
           foundUser.usersManualCategories,
           encryptionKey
         ) as typeof foundUser.usersManualCategories,
-        userData: {
-          id: foundUser?.id,
-          name: foundUser?.name,
-          username: foundUser?.username,
-          email: foundUser?.email,
-          emailVerified: foundUser?.emailVerified,
-          whitelisted: foundUser.whitelisted,
-          image: foundUser?.image,
-        },
+        id: foundUser?.id,
+        name: foundUser?.name,
+        username: foundUser?.username,
+        email: foundUser?.email,
+        emailVerified: foundUser?.emailVerified,
+        whitelisted: foundUser.whitelisted,
+        image: foundUser?.image,
       };
 
       return new Response(JSON.stringify(response));

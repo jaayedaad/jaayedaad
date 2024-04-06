@@ -18,9 +18,14 @@ import { cn } from "@/lib/helper";
 type searchResultProps = {
   results: Array<any>;
   handleModalState: React.Dispatch<React.SetStateAction<boolean>>;
+  defaultCurrency: string;
 };
 
-const SearchResults = ({ results, handleModalState }: searchResultProps) => {
+const SearchResults = ({
+  results,
+  handleModalState,
+  defaultCurrency,
+}: searchResultProps) => {
   const [showForm, setShowForm] = useState(false);
   const [selectedAsset, setSelectedAsset] = useState<{
     instrument_name: string;
@@ -93,6 +98,7 @@ const SearchResults = ({ results, handleModalState }: searchResultProps) => {
         <TransactionForm
           selectedAsset={selectedAsset}
           modalOpen={handleModalState}
+          defaultCurrency={defaultCurrency}
         />
       </>
     )

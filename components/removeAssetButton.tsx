@@ -11,14 +11,12 @@ import {
 
 import { Trash } from "lucide-react";
 import { toast } from "sonner";
-import { useData } from "@/contexts/data-context";
 
 interface RemoveAssetButtonProps {
   assetId: string;
 }
 
 function RemoveAssetButton({ assetId }: RemoveAssetButtonProps) {
-  const { updateData } = useData();
   const [openDeleteWarning, setOpenDeleteWarning] = useState(false);
   const handleRemoveAsset = async (assetId: string) => {
     fetch("/api/assets/remove", {
@@ -29,8 +27,8 @@ function RemoveAssetButton({ assetId }: RemoveAssetButtonProps) {
       .then((res) => {
         if (res.success) {
           toast.success("Asset removed successfully!");
-          updateData();
           setOpenDeleteWarning(false);
+          window.location.reload();
         } else {
           toast.error("Error removing asset!");
           setOpenDeleteWarning(false);

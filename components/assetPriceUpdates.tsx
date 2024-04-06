@@ -25,14 +25,12 @@ import { Input } from "./ui/input";
 import { DatePicker } from "./ui/date-picker";
 import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
-import { useData } from "@/contexts/data-context";
 
 interface AssetPriceUpdatesProps {
   assetToView: TAsset;
 }
 
 function AssetPriceUpdates({ assetToView }: AssetPriceUpdatesProps) {
-  const { updateData } = useData();
   const [showUpdatePriceForm, setShowUpdatePriceForm] = useState(false);
   const [updatePrice, setUpdatePrice] = useState("0");
   const [updateDate, setUpdateDate] = useState<Date>();
@@ -62,7 +60,6 @@ function AssetPriceUpdates({ assetToView }: AssetPriceUpdatesProps) {
             setShowUpdatePriceForm(false);
             setUpdatePrice("0");
             toast.success(data.success);
-            updateData();
           }
         });
     } else {

@@ -5,7 +5,7 @@ import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 import { cn } from "@/lib/helper";
 import { signIn } from "next-auth/react";
-import { checkUsernameAvailabilityAction } from "@/app/actions";
+import { isUsernameTakenAction } from "@/app/actions";
 
 function ClaimUsername() {
   const [username, setUsername] = useState<string>("");
@@ -22,7 +22,7 @@ function ClaimUsername() {
       setDisplayMessage("Username must be at least 3 characters!");
       return;
     }
-    const exists = await checkUsernameAvailabilityAction(username);
+    const exists = await isUsernameTakenAction(username);
     if (!exists) {
       setDisplayMessage("Username available");
       setAvailable(true);

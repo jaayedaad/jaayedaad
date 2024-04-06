@@ -1,6 +1,5 @@
 "use client";
 import { TAsset, TInterval } from "@/lib/types";
-import { useVisibility } from "@/contexts/visibility-context";
 import {
   formatIndianNumber,
   formatInternationalNumber,
@@ -8,27 +7,29 @@ import {
 import { prepareHistoricalDataForManualCategory } from "@/helper/manualAssetsHistoryMaker";
 import React, { useEffect, useState } from "react";
 import { Area, AreaChart, Tooltip, XAxis, YAxis } from "recharts";
-import ChangeInterval from "./changeInterval";
 import { prepareLineChartData } from "@/helper/prepareLineChartData";
 import { accumulateLineChartData } from "@/helper/lineChartDataAccumulator";
-import { useCurrency } from "@/contexts/currency-context";
 
 interface ManualTransactionChartProps {
   manualCategoryAssets: TAsset[];
   timeInterval?: TInterval | undefined;
+  dashboardAmountVisibility: boolean;
+  numberSystem: string;
+  defaultCurrency: string;
 }
 
 function ManualTransactionChart({
   manualCategoryAssets,
   timeInterval,
+  dashboardAmountVisibility,
+  numberSystem,
+  defaultCurrency,
 }: ManualTransactionChartProps) {
-  const { visible } = useVisibility();
-  const { numberSystem, defaultCurrency } = useCurrency();
   const formatter = new Intl.NumberFormat(
     numberSystem === "Indian" ? "en-IN" : "en-US",
     {
       style: "currency",
-      currency: defaultCurrency,
+      currency: defaultCurrency || "INR",
       minimumFractionDigits: 2,
       maximumFractionDigits: 2,
     }
@@ -123,7 +124,7 @@ function ManualTransactionChart({
               tickLine={false}
               axisLine={false}
               tickFormatter={(tick) =>
-                visible
+                dashboardAmountVisibility
                   ? numberSystem === "Indian"
                     ? formatIndianNumber(tick)
                     : formatInternationalNumber(tick)
@@ -138,7 +139,7 @@ function ManualTransactionChart({
                     <div className="rounded-lg border bg-background p-2 shadow-sm">
                       <div className="flex flex-col">
                         <span className="font-bold text-muted-foreground flex items-center">
-                          {visible
+                          {dashboardAmountVisibility
                             ? formatter.format(parseFloat(value!))
                             : "* ".repeat(5)}
                         </span>

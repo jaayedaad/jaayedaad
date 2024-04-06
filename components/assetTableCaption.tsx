@@ -18,40 +18,30 @@ import {
   SelectValue,
 } from "./ui/select";
 import { currencies } from "@/constants/currency";
-import { getPreferences } from "@/actions/getPreferencesAction";
-import { Preference } from "@prisma/client";
 import { Loader2 } from "lucide-react";
-import { useCurrency } from "@/contexts/currency-context";
 import { cn } from "@/lib/helper";
+import { TPreference } from "@/lib/types";
+import { updatePreferenceAction } from "@/app/(protected)/dashboard/settings/actions";
+import { toast } from "sonner";
 
-function AssetTableCaption() {
-  const { setGlobalCurrency } = useCurrency();
+function AssetTableCaption({ preferences }: { preferences: TPreference }) {
   const [open, setOpen] = useState(false);
-  const [defaultCurrency, setDefaultCurrency] = useState<string>();
+  const [defaultCurrency, setDefaultCurrency] = useState<string>(
+    preferences.defaultCurrency
+  );
   const [loading, setLoading] = useState(false);
-  const [userPreferences, setUserPreferences] = useState<Preference>();
 
-  useEffect(() => {
-    getPreferences().then((preferences: Preference) => {
-      setDefaultCurrency(preferences.defaultCurrency);
-      setUserPreferences(preferences);
-    });
-  }, []);
-
-  const hadnleConfirmCurrency = async () => {
-    if (defaultCurrency && userPreferences) {
+  const handleUpdateCurrency = async () => {
+    if (defaultCurrency) {
       try {
         setLoading(true);
-        const preferences = {
-          ...userPreferences,
-          defaultCurrency: defaultCurrency,
-        };
-        await fetch("/api/user/preferences", {
-          method: "POST",
-          body: JSON.stringify(preferences),
-        });
+        const updated = await updatePreferenceAction({ defaultCurrency });
+        if (!updated) {
+          throw new Error();
+        }
+      } catch {
+        toast.error("Failed to update default currency");
       } finally {
-        setGlobalCurrency(defaultCurrency);
         setOpen(false);
         setLoading(false);
       }
@@ -115,7 +105,7 @@ function AssetTableCaption() {
               </Select>
             </div>
             <div className="inline-flex justify-end">
-              <Button onClick={() => hadnleConfirmCurrency()}>
+              <Button onClick={() => handleUpdateCurrency()}>
                 {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                 Confirm
               </Button>

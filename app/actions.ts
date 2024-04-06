@@ -2,7 +2,7 @@
 
 import { isUsernameTaken } from "@/services/user";
 
-export const checkUsernameAvailabilityAction = async (
+export const isUsernameTakenAction = async (
   username: string
 ): Promise<boolean> => {
   return isUsernameTaken(username);

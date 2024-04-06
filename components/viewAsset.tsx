@@ -10,14 +10,12 @@ import TransactionHistory from "./transactionHistory";
 import { prepareHistoricalDataForManualCategory } from "@/helper/manualAssetsHistoryMaker";
 import { TAsset, TInterval, TProfitLoss } from "@/lib/types";
 import AssetPriceUpdates from "./assetPriceUpdates";
-import { getConversionRate } from "@/actions/getConversionRateAction";
 import {
   calculateUnrealisedProfitLoss,
   getUnrealisedProfitLossArray,
 } from "@/helper/unrealisedValueCalculator";
 import { calculateRealisedProfitLoss } from "@/helper/realisedValueCalculator";
 import LoadingSpinner from "./ui/loading-spinner";
-import { useCurrency } from "@/contexts/currency-context";
 import { ScrollArea } from "./ui/scroll-area";
 
 interface ViewAssetProps {
@@ -29,6 +27,8 @@ interface ViewAssetProps {
   conversionRates: {
     [currency: string]: number;
   };
+  numberSystem: string;
+  defaultCurrency: string;
 }
 
 function ViewAsset({
@@ -38,8 +38,9 @@ function ViewAsset({
   manualAsset,
   historicalData,
   conversionRates,
+  numberSystem,
+  defaultCurrency,
 }: ViewAssetProps) {
-  const { numberSystem, defaultCurrency } = useCurrency();
   const [dataToShow, setDataToShow] = useState<
     {
       name: string;
@@ -83,16 +84,15 @@ function ViewAsset({
   useEffect(() => {
     async function fetchData() {
       if (assetToView) {
-        const conversionRate = await getConversionRate();
         const unrealisedResults = getUnrealisedProfitLossArray(
           historicalData,
           [assetToView],
-          conversionRate
+          conversionRates
         );
         setUnrealisedProfitLossArray(unrealisedResults);
         const realisedProfitLossResults = calculateRealisedProfitLoss(
           [assetToView],
-          conversionRate
+          conversionRates
         );
         setRealisedProfitLossArray(realisedProfitLossResults);
         setAssetSummary({
@@ -276,7 +276,7 @@ function ViewAsset({
     numberSystem === "Indian" ? "en-IN" : "en-US",
     {
       style: "currency",
-      currency: defaultCurrency,
+      currency: defaultCurrency || "INR",
       minimumFractionDigits: 2,
       maximumFractionDigits: 2,
     }
@@ -361,7 +361,13 @@ function ViewAsset({
                   <ChangeInterval onChange={onChange} />
                 </div>
               </div>
-              {dataToShow && <AssetLineChart dataToShow={dataToShow} />}
+              {dataToShow && (
+                <AssetLineChart
+                  dataToShow={dataToShow}
+                  numberSystem={numberSystem}
+                  defaultCurrency={defaultCurrency}
+                />
+              )}
               {assetSummary && assetToView ? (
                 <div className="mt-8 grid grid-cols-2 grid-rows-4 lg:grid-cols-4 lg:grid-rows-2 gap-4">
                   <div>
@@ -428,10 +434,16 @@ function ViewAsset({
             <TabsContent value="transactions">
               {assetToView
                 ? assetToView && (
-                    <TransactionHistory assetName={assetToView.name} />
+                    <TransactionHistory
+                      assetToView={assetToView}
+                      defaultCurrency={defaultCurrency}
+                    />
                   )
                 : manualAsset && (
-                    <TransactionHistory assetName={manualAsset.name} />
+                    <TransactionHistory
+                      assetToView={manualAsset}
+                      defaultCurrency={defaultCurrency}
+                    />
                   )}
             </TabsContent>
             {manualAsset !== undefined && (

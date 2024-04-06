@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { categories as builtInCategories } from "@/constants/category";
 import { currencies } from "@/constants/currency";
-import { useData } from "@/contexts/data-context";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -28,18 +27,22 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Check, ChevronsUpDown } from "lucide-react";
-import { useCurrency } from "@/contexts/currency-context";
 import DynamicIcon from "./dynamicIcon";
 import dynamicIconImports from "lucide-react/dynamicIconImports";
+import { TUserManualCategory } from "@/lib/types";
 
 interface ManualTransactionFormPropsType {
+  usersManualCategories: TUserManualCategory[];
   modalOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  defaultCurrency: string;
 }
 
-function ManualTransactionForm({ modalOpen }: ManualTransactionFormPropsType) {
-  const { updateData, user } = useData();
-  const { defaultCurrency } = useCurrency();
-  user?.usersManualCategories.forEach((manualCategory) => {
+function ManualTransactionForm({
+  usersManualCategories,
+  modalOpen,
+  defaultCurrency,
+}: ManualTransactionFormPropsType) {
+  usersManualCategories.forEach((manualCategory) => {
     const existingCategory = builtInCategories.some(
       (category) => category.value === manualCategory.name
     );
@@ -98,7 +101,6 @@ function ManualTransactionForm({ modalOpen }: ManualTransactionFormPropsType) {
       method: "POST",
       body: JSON.stringify(asset),
     });
-    updateData();
     setLoading(false);
     modalOpen(false);
     toast.success("Transaction confirmed!");
@@ -112,6 +114,8 @@ function ManualTransactionForm({ modalOpen }: ManualTransactionFormPropsType) {
       currentPrice: "",
       date: "",
     });
+
+    window.location.reload();
   }
 
   async function handleManualSellTransaction() {
@@ -147,7 +151,6 @@ function ManualTransactionForm({ modalOpen }: ManualTransactionFormPropsType) {
         if (data.success) {
           setLoading(false);
           modalOpen(false);
-          updateData();
           toast.success(data.success);
           // Reset the manual transaction states
           setManualTransaction({
@@ -159,6 +162,7 @@ function ManualTransactionForm({ modalOpen }: ManualTransactionFormPropsType) {
             currentPrice: "",
             date: "",
           });
+          window.location.reload();
         }
       });
   }

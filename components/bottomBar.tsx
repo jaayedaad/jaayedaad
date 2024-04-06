@@ -1,6 +1,4 @@
 "use client";
-import { useData } from "@/contexts/data-context";
-import { useVisibility } from "@/contexts/visibility-context";
 import { usePathname } from "next/navigation";
 import React, { useState } from "react";
 import { Button } from "./ui/button";
@@ -30,15 +28,23 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import AddTransaction from "./addTransaction";
+import { TUserManualCategory } from "@/lib/types";
+import { updatePreferenceAction } from "@/app/(protected)/dashboard/settings/actions";
 
-function BottomBar() {
+function BottomBar({
+  dashboardAmountVisibility,
+  usersManualCategories,
+  defaultCurrency,
+}: {
+  dashboardAmountVisibility: boolean;
+  usersManualCategories: TUserManualCategory[];
+  defaultCurrency: string;
+}) {
   const currentTab = decodeURIComponent(usePathname());
-  const { user } = useData();
-  const { visible, setVisible } = useVisibility();
   const [open, setOpen] = useState(false);
 
   const uniqueCategorySet = new Set<string>();
-  user?.usersManualCategories.forEach((category) =>
+  usersManualCategories.forEach((category) =>
     uniqueCategorySet.add(category.name)
   );
   const manualCategoryList = Array.from(uniqueCategorySet);
@@ -168,16 +174,28 @@ function BottomBar() {
               Add transactions to your portfolio
             </p>
           </div>
-          <AddTransaction handleModalState={setOpen} />
+          <AddTransaction
+            usersManualCategories={usersManualCategories}
+            handleModalState={setOpen}
+            defaultCurrency={defaultCurrency}
+          />
         </DialogContent>
       </Dialog>
 
       <Button
         className="w-full h-full"
         variant="ghost"
-        onClick={() => setVisible(!visible)}
+        onClick={async () =>
+          await updatePreferenceAction({
+            dashboardAmountVisibility: !dashboardAmountVisibility,
+          })
+        }
       >
-        {visible ? <EyeIcon size={20} /> : <EyeOffIcon size={20} />}
+        {dashboardAmountVisibility ? (
+          <EyeIcon size={20} />
+        ) : (
+          <EyeOffIcon size={20} />
+        )}
       </Button>
       <Button
         asChild

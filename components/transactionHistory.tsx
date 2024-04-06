@@ -1,4 +1,3 @@
-import { useData } from "@/contexts/data-context";
 import React, { useState } from "react";
 import {
   Table,
@@ -17,14 +16,18 @@ import { ScrollArea } from "./ui/scroll-area";
 import TransactionForm from "./transactionForm";
 import { Plus } from "lucide-react";
 import RemoveAssetButton from "./removeAssetButton";
+import { TAsset } from "@/lib/types";
 
-function TransactionHistory({ assetName }: { assetName: string }) {
-  const { assets } = useData();
+function TransactionHistory({
+  assetToView,
+  defaultCurrency,
+}: {
+  assetToView: TAsset;
+  defaultCurrency: string;
+}) {
   const [open, setOpen] = useState(false);
   const [showTransactionForm, setShowTransactionForm] = useState(false);
   const [transactionToEdit, setTransactionToEdit] = useState<Transaction>();
-
-  const assetToView = assets?.find((asset) => asset.name === assetName);
 
   return (
     <div className="mt-4 flex flex-col justify-between">
@@ -111,6 +114,7 @@ function TransactionHistory({ assetName }: { assetName: string }) {
                     exchange: assetToView.exchange,
                   }}
                   modalOpen={setShowTransactionForm}
+                  defaultCurrency={defaultCurrency}
                 />
               )}
             </DialogContent>

@@ -10,9 +10,7 @@ import {
 } from "./ui/select";
 import { currencies } from "@/constants/currency";
 import { Button } from "./ui/button";
-import { useData } from "@/contexts/data-context";
 import { toast } from "sonner";
-import { useCurrency } from "@/contexts/currency-context";
 
 interface transactionFormPropsType {
   selectedAsset: {
@@ -23,14 +21,14 @@ interface transactionFormPropsType {
     exchange: string;
   };
   modalOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  defaultCurrency: string;
 }
 
 function TransactionForm({
   selectedAsset,
   modalOpen,
+  defaultCurrency,
 }: transactionFormPropsType) {
-  const { updateData } = useData();
-  const { defaultCurrency } = useCurrency();
   const [loading, setLoading] = useState(false);
   const [assetQuantity, setAssetQuantity] = useState<string>("");
   const [assetPrice, setAssetPrice] = useState(selectedAsset?.prevClose);
@@ -66,7 +64,7 @@ function TransactionForm({
     setAssetPrice("");
     setDate("");
     setCurrency(defaultCurrency.toUpperCase());
-    updateData();
+    window.location.reload();
   };
 
   // Sell assets handler
@@ -102,7 +100,7 @@ function TransactionForm({
           setAssetPrice("");
           setDate("");
           setCurrency(defaultCurrency.toUpperCase());
-          updateData();
+          window.location.reload();
         }
       });
   };

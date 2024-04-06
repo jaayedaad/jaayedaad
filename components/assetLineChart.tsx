@@ -1,4 +1,3 @@
-import { useCurrency } from "@/contexts/currency-context";
 import {
   formatIndianNumber,
   formatInternationalNumber,
@@ -15,13 +14,16 @@ import {
 
 function AssetLineChart({
   dataToShow,
+  numberSystem,
+  defaultCurrency,
 }: {
   dataToShow: {
     name: string;
     amt: number;
   }[];
+  numberSystem: string;
+  defaultCurrency: string;
 }) {
-  const { numberSystem, defaultCurrency } = useCurrency();
   const formatter = new Intl.NumberFormat(
     numberSystem === "Indian" ? "en-IN" : "en-US",
     {

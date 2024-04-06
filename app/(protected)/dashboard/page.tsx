@@ -3,21 +3,46 @@ import Dashboard from "./newPage";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/authOptions";
 import { redirect } from "next/navigation";
-import { getUser } from "@/services/user";
+import { getConversionRate } from "@/services/thirdParty/currency";
+import { getHistoricalData } from "@/services/thirdParty/twelveData";
+import { getPreferenceFromUserId } from "@/services/preference";
 
 const DashboardPage = async () => {
   const session = await getServerSession(authOptions);
-  if (!session) {
+  if (!session || !session?.user) {
     redirect("/auth/signin");
   }
-  const user = await getUser(session);
-  if (!user.username) {
+  if (!session.user.username) {
     redirect("/auth/onboarding");
   }
-  let assets = await getAssetsByUser(user.email);
-  const quotedAssets = await getAssetsQuoteFromApi(assets);
+  const assets = await getAssetsQuoteFromApi(
+    await getAssetsByUser(session.user.email)
+  );
 
-  return <Dashboard assets={quotedAssets} />;
+  const currencyConversionRates = await getConversionRate(session.user.id);
+  if (!currencyConversionRates) {
+    throw new Error("Currency conversion rates not found");
+  }
+  const historicalData = await getHistoricalData(session.user.id, assets);
+
+  const preferences = await getPreferenceFromUserId(session.user.id);
+  if (!preferences) {
+    throw new Error("Preference not found");
+  }
+
+  console.log("currencyConversionRates", currencyConversionRates);
+  console.log("historicalData", historicalData);
+
+  return (
+    <Dashboard
+      username={session.user.username}
+      whitelisted={session.user.whitelisted}
+      assets={assets}
+      conversionRates={currencyConversionRates}
+      historicalData={historicalData}
+      preferences={preferences}
+    />
+  );
 };
 
 export default DashboardPage;

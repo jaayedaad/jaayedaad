@@ -13,7 +13,6 @@ import { Button } from "./ui/button";
 import { Transaction } from "@prisma/client";
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
-import { useData } from "@/contexts/data-context";
 
 interface EditTransactionProps {
   open: boolean;
@@ -28,7 +27,6 @@ function EditTransaction({
   transaction,
   transactionList,
 }: EditTransactionProps) {
-  const { updateData } = useData();
   const [editedQuantity, setEditedQuantity] = useState(transaction.quantity);
   const [editedPrice, setEditedPrice] = useState(transaction.price);
   const [editedDate, setEditedDate] = useState(transaction.date);
@@ -51,7 +49,6 @@ function EditTransaction({
         } else {
           setLoading(false);
           setOpen(false);
-          updateData();
           toast.success(data.success);
         }
       });

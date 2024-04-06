@@ -1,11 +1,9 @@
 "use client";
-import { TAsset } from "@/lib/types";
+import { TAsset, TConversionRates } from "@/lib/types";
 import { useState } from "react";
 import { PieChart, Pie, Sector, Cell, Tooltip } from "recharts";
 import LoadingSpinner from "./ui/loading-spinner";
-import { useVisibility } from "@/contexts/visibility-context";
 import colors from "@/constants/colors";
-import { useCurrency } from "@/contexts/currency-context";
 import MockPieChart from "./mock/mockPieChart";
 
 const COLORS = colors;
@@ -86,17 +84,26 @@ const renderActiveShape = (props: any) => {
 interface PieChartProps {
   assets: TAsset[] | undefined;
   view: string; // "stocks" | "crypto" | "funds" | "dashboard"
+  dashboardAmountVisibility: boolean;
+  numberSystem: string;
+  defaultCurrency: string;
+  conversionRates: TConversionRates;
 }
 
-function AssetPieChart({ view, assets }: PieChartProps) {
-  const { visible } = useVisibility();
+function AssetPieChart({
+  view,
+  assets,
+  dashboardAmountVisibility,
+  numberSystem,
+  defaultCurrency,
+  conversionRates,
+}: PieChartProps) {
   let data = assets;
-  const { numberSystem, defaultCurrency, conversionRates } = useCurrency();
   const formatter = new Intl.NumberFormat(
     numberSystem === "Indian" ? "en-IN" : "en-US",
     {
       style: "currency",
-      currency: defaultCurrency || "USD",
+      currency: defaultCurrency || "INR",
       minimumFractionDigits: 2,
       maximumFractionDigits: 2,
     }
@@ -201,7 +208,7 @@ function AssetPieChart({ view, assets }: PieChartProps) {
                       <div className="rounded-lg border bg-background p-2 shadow-sm">
                         <div className="flex flex-col">
                           <span className="font-bold flex items-center">
-                            {visible
+                            {dashboardAmountVisibility
                               ? formatter.format(parseFloat(value!))
                               : "* ".repeat(5)}
                           </span>

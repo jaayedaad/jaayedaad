@@ -1,13 +1,13 @@
+"use client";
+
 import React, { useEffect, useState } from "react";
 import { Area, AreaChart, Tooltip, XAxis, YAxis } from "recharts";
 import { accumulateLineChartData } from "@/helper/lineChartDataAccumulator";
-import { useVisibility } from "@/contexts/visibility-context";
 import {
   formatIndianNumber,
   formatInternationalNumber,
 } from "@/helper/indianNumberingFormatter";
 import { prepareLineChartData } from "@/helper/prepareLineChartData";
-import { useCurrency } from "@/contexts/currency-context";
 import { TInterval } from "@/lib/types";
 
 interface FilterMap {
@@ -18,18 +18,22 @@ function PortfolioLineChart({
   data,
   view,
   timeInterval,
+  dashboardAmountVisibility,
+  numberSystem,
+  defaultCurrency,
 }: {
   data: any[];
   view: string;
   timeInterval?: TInterval;
+  dashboardAmountVisibility: boolean;
+  numberSystem: string;
+  defaultCurrency: string;
 }) {
-  const { visible } = useVisibility();
-  const { numberSystem, defaultCurrency } = useCurrency();
   const formatter = new Intl.NumberFormat(
     numberSystem === "Indian" ? "en-IN" : "en-US",
     {
       style: "currency",
-      currency: defaultCurrency,
+      currency: defaultCurrency || "INR",
       minimumFractionDigits: 2,
       maximumFractionDigits: 2,
     }
@@ -132,7 +136,7 @@ function PortfolioLineChart({
               tickLine={false}
               axisLine={false}
               tickFormatter={(tick) =>
-                visible
+                dashboardAmountVisibility
                   ? numberSystem === "Indian"
                     ? formatIndianNumber(tick)
                     : formatInternationalNumber(tick)
@@ -147,7 +151,7 @@ function PortfolioLineChart({
                     <div className="rounded-lg border bg-background p-2 shadow-sm">
                       <div className="flex flex-col">
                         <span className="font-bold text-muted-foreground flex items-center">
-                          {visible
+                          {dashboardAmountVisibility
                             ? formatter.format(parseFloat(value!))
                             : "* ".repeat(5)}
                         </span>

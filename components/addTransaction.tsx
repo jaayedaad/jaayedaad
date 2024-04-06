@@ -5,13 +5,18 @@ import SearchField from "@/components/searchField";
 import LoadingSpinner from "@/components/ui/loading-spinner";
 import ManualTransactionForm from "./manualTransactionForm";
 import { Button } from "./ui/button";
+import { TUserManualCategory } from "@/lib/types";
 
 interface AddTransactionPropsType {
+  usersManualCategories: TUserManualCategory[];
   handleModalState: React.Dispatch<React.SetStateAction<boolean>>;
+  defaultCurrency: string;
 }
 
 export default function AddTransaction({
+  usersManualCategories,
   handleModalState,
+  defaultCurrency,
 }: AddTransactionPropsType) {
   const [searchQuery, setSearchQuery] = useState("");
   const [results, setResults] = useState<Array<any>>([]);
@@ -123,10 +128,15 @@ export default function AddTransaction({
               <SearchResults
                 results={results}
                 handleModalState={handleModalState}
+                defaultCurrency={defaultCurrency}
               />
             </>
           ) : showManualTransactionForm ? (
-            <ManualTransactionForm modalOpen={handleModalState} />
+            <ManualTransactionForm
+              usersManualCategories={usersManualCategories}
+              modalOpen={handleModalState}
+              defaultCurrency={defaultCurrency}
+            />
           ) : (
             <div className="text-center my-12">Search for any assets!</div>
           )}
