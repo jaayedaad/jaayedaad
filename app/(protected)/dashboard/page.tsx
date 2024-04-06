@@ -30,9 +30,6 @@ const DashboardPage = async () => {
     throw new Error("Preference not found");
   }
 
-  console.log("currencyConversionRates", currencyConversionRates);
-  console.log("historicalData", historicalData);
-
   return (
     <Dashboard
       username={session.user.username}

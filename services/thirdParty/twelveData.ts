@@ -1,3 +1,6 @@
+"use server";
+
+import { TWELVEDATA_API_KEY } from "@/constants/env";
 import { calculateCurrentValue } from "@/lib/assetCalculation";
 import { areDatesEqual } from "@/lib/helper";
 import { TAsset } from "@/lib/types";
@@ -11,7 +14,7 @@ export const fetchQuoteFromApi = async (asset: TAsset): Promise<TAsset> => {
         {
           method: "GET",
           headers: {
-            Authorization: `apikey ${process.env.NEXT_PUBLIC_TWELVEDATA_API_KEY}`,
+            Authorization: `apikey ${TWELVEDATA_API_KEY}`,
           },
         }
       );
@@ -91,7 +94,7 @@ export const getHistoricalData = async (userId: string, assets: TAsset[]) => {
           {
             method: "GET",
             headers: {
-              Authorization: `apikey ${process.env.NEXT_PUBLIC_TWELVEDATA_API_KEY}`,
+              Authorization: `apikey ${TWELVEDATA_API_KEY}`,
             },
           }
         );
@@ -101,14 +104,20 @@ export const getHistoricalData = async (userId: string, assets: TAsset[]) => {
           {
             method: "GET",
             headers: {
-              Authorization: `apikey ${process.env.NEXT_PUBLIC_TWELVEDATA_API_KEY}`,
+              Authorization: `apikey ${TWELVEDATA_API_KEY}`,
             },
           }
         );
       }
 
       const data = await res.json();
-      if (data.code !== 429) {
+      if (data.code === 401) {
+        throw new Error("Twelve Data API key is invalid");
+      } else if (data.code === 429) {
+        throw new Error("Twelve Data API rate limit exceeded");
+      }
+
+      if (data.code === undefined) {
         // Calculate total value of asset and add it to the data object
         data.values.forEach((dayData: any) => {
           dayData.date = new Date(dayData.datetime).getTime() / 1000;
@@ -152,4 +161,23 @@ export const getHistoricalData = async (userId: string, assets: TAsset[]) => {
     }
   });
   return historicalData;
+};
+
+export const searchAssetsFromApi = async (searchQuery: string) => {
+  try {
+    const url = `https://api.twelvedata.com/symbol_search?symbol=${searchQuery}&outputsize=9`;
+    const options = {
+      method: "GET",
+      headers: {
+        Authorization: `apikey ${TWELVEDATA_API_KEY}`,
+      },
+    };
+
+    const res = await fetch(url, options);
+    const { data } = await res.json();
+
+    return data;
+  } catch (error) {
+    console.error("Error fetching search results:", error);
+  }
 };

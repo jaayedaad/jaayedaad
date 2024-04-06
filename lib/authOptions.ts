@@ -3,6 +3,7 @@ import { AuthOptions } from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 import { prisma } from "@/lib/prisma";
 import { getUserByEmail } from "@/services/user";
+import { GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET } from "@/constants/env";
 
 export const authOptions: AuthOptions = {
   adapter: PrismaAdapter(prisma),
@@ -11,8 +12,8 @@ export const authOptions: AuthOptions = {
   },
   providers: [
     GoogleProvider({
-      clientId: process.env.GOOGLE_CLIENT_ID,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+      clientId: GOOGLE_CLIENT_ID,
+      clientSecret: GOOGLE_CLIENT_SECRET,
     }),
   ],
   callbacks: {
@@ -26,8 +27,6 @@ export const authOptions: AuthOptions = {
 
     async session({ session, token }) {
       session.user = token.user;
-      console.log("session", session);
-
       return session;
     },
   },

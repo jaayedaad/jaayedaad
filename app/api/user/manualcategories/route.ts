@@ -5,6 +5,13 @@ import CryptoJS from "crypto-js";
 import { createId } from "@paralleldrive/cuid2";
 import dynamicIconImports from "lucide-react/dynamicIconImports";
 import { encryptObjectValues } from "@/lib/dataSecurity";
+import {
+  DATABASE_URL,
+  ENCRYPTION_KEY,
+  SIA_ADMIN_PASSWORD,
+  SIA_ADMIN_USERNAME,
+  SIA_API_URL,
+} from "@/constants/env";
 
 export async function POST(req: Request) {
   const session = await getServerSession(authOptions);
@@ -28,21 +35,19 @@ export async function POST(req: Request) {
     });
 
     if (user) {
-      const username = "username";
-      const password = "1234";
+      const username = SIA_ADMIN_USERNAME;
+      const password = SIA_ADMIN_PASSWORD;
       const basicAuth =
         "Basic " + Buffer.from(username + ":" + password).toString("base64");
 
       const encryptionKey =
-        user.id.slice(0, 4) +
-        process.env.SIA_ENCRYPTION_KEY +
-        user.id.slice(-4);
+        user.id.slice(0, 4) + ENCRYPTION_KEY + user.id.slice(-4);
 
       // create a new category
       const manualCategoryId = createId();
-      if (process.env.SIA_API_URL) {
+      if (SIA_API_URL) {
         await fetch(
-          `${process.env.SIA_API_URL}/worker/objects/${user.id}/usersManualCategories/${manualCategoryId}/data`,
+          `${SIA_API_URL}/worker/objects/${user.id}/usersManualCategories/${manualCategoryId}/data`,
           {
             method: "PUT",
             headers: {
@@ -62,7 +67,7 @@ export async function POST(req: Request) {
           }
         );
       }
-      if (process.env.DATABASE_URL) {
+      if (DATABASE_URL) {
         // encrypt data
         const encryptedData: {
           id: string;

@@ -13,6 +13,13 @@ import {
   encryptDataValue,
   encryptObjectValues,
 } from "@/lib/dataSecurity";
+import {
+  DATABASE_URL,
+  ENCRYPTION_KEY,
+  SIA_ADMIN_PASSWORD,
+  SIA_ADMIN_USERNAME,
+  SIA_API_URL,
+} from "@/constants/env";
 
 export async function POST(req: Request) {
   const assetId = createId();
@@ -36,9 +43,7 @@ export async function POST(req: Request) {
 
   if (rawUser) {
     const encryptionKey =
-      rawUser.id.slice(0, 4) +
-      process.env.SIA_ENCRYPTION_KEY +
-      rawUser.id.slice(-4);
+      rawUser.id.slice(0, 4) + ENCRYPTION_KEY + rawUser.id.slice(-4);
 
     // decrypt the user data
     const user = {
@@ -53,20 +58,20 @@ export async function POST(req: Request) {
       ) as typeof rawUser.usersManualCategories,
     };
 
-    if (process.env.SIA_API_URL) {
+    if (SIA_API_URL) {
       const existingAsset = await findExistingAssetFromSia(
         user.id,
         body.symbol,
         body.name,
         body.isManualEntry
       );
-      const username = "username";
-      const password = "1234";
+      const username = SIA_ADMIN_USERNAME;
+      const password = SIA_ADMIN_PASSWORD;
       const basicAuth =
         "Basic " + Buffer.from(username + ":" + password).toString("base64");
 
       const res = await fetch(
-        `${process.env.SIA_API_URL}/workers/object/${user.id}/assets`,
+        `${SIA_API_URL}/workers/object/${user.id}/assets`,
         {
           method: "GET",
         }
@@ -80,7 +85,7 @@ export async function POST(req: Request) {
           if (existingCategoryId) {
             // add asset to sia
             fetch(
-              `${process.env.SIA_API_URL}/worker/objects/${user.id}/assets/${assetId}/data`,
+              `${SIA_API_URL}/worker/objects/${user.id}/assets/${assetId}/data`,
               {
                 method: "PUT",
                 headers: {
@@ -108,7 +113,7 @@ export async function POST(req: Request) {
             // create a new category
             const manualCategoryId = createId();
             await fetch(
-              `${process.env.SIA_API_URL}/worker/objects/${user.id}/usersManualCategories/${manualCategoryId}/data`,
+              `${SIA_API_URL}/worker/objects/${user.id}/usersManualCategories/${manualCategoryId}/data`,
               {
                 method: "PUT",
                 headers: {
@@ -130,7 +135,7 @@ export async function POST(req: Request) {
 
             // add asset to sia
             await fetch(
-              `${process.env.SIA_API_URL}/worker/objects/${user.id}/assets/${assetId}/data`,
+              `${SIA_API_URL}/worker/objects/${user.id}/assets/${assetId}/data`,
               {
                 method: "PUT",
                 headers: {
@@ -153,7 +158,7 @@ export async function POST(req: Request) {
           }
 
           await fetch(
-            `${process.env.SIA_API_URL}/worker/objects/${user.id}/assets/${assetId}/assetPriceUpdates/${assetPriceUpdateId}`,
+            `${SIA_API_URL}/worker/objects/${user.id}/assets/${assetId}/assetPriceUpdates/${assetPriceUpdateId}`,
             {
               method: "PUT",
               headers: {
@@ -175,7 +180,7 @@ export async function POST(req: Request) {
         } else {
           // add asset to sia
           fetch(
-            `${process.env.SIA_API_URL}/worker/objects/${user.id}/assets/${assetId}/data`,
+            `${SIA_API_URL}/worker/objects/${user.id}/assets/${assetId}/data`,
             {
               method: "PUT",
               headers: {
@@ -200,7 +205,7 @@ export async function POST(req: Request) {
         }
         // add asset's transaction to sia
         fetch(
-          `${process.env.SIA_API_URL}/worker/objects/${user.id}/assets/${assetId}/transactions/${transactionId}`,
+          `${SIA_API_URL}/worker/objects/${user.id}/assets/${assetId}/transactions/${transactionId}`,
           {
             method: "PUT",
             headers: {
@@ -237,7 +242,7 @@ export async function POST(req: Request) {
         };
         // add asset's transaction to sia
         fetch(
-          `${process.env.SIA_API_URL}/worker/objects/${user.id}/assets/${existingAsset.id}/transactions/${transactionId}`,
+          `${SIA_API_URL}/worker/objects/${user.id}/assets/${existingAsset.id}/transactions/${transactionId}`,
           {
             method: "PUT",
             headers: {
@@ -266,7 +271,7 @@ export async function POST(req: Request) {
           if (!body.isManualEntry) {
             // add asset to sia
             fetch(
-              `${process.env.SIA_API_URL}/worker/objects/${user.id}/assets/${existingAsset.id}/data`,
+              `${SIA_API_URL}/worker/objects/${user.id}/assets/${existingAsset.id}/data`,
               {
                 method: "PUT",
                 headers: {
@@ -291,7 +296,7 @@ export async function POST(req: Request) {
           } else {
             // add asset to sia
             fetch(
-              `${process.env.SIA_API_URL}/worker/objects/${user.id}/assets/${existingAsset.id}/data`,
+              `${SIA_API_URL}/worker/objects/${user.id}/assets/${existingAsset.id}/data`,
               {
                 method: "PUT",
                 headers: {
@@ -316,7 +321,7 @@ export async function POST(req: Request) {
             });
 
             await fetch(
-              `${process.env.SIA_API_URL}/worker/objects/${user.id}/assets/${existingAsset.id}/assetPriceUpdates/${assetPriceUpdateId}`,
+              `${SIA_API_URL}/worker/objects/${user.id}/assets/${existingAsset.id}/assetPriceUpdates/${assetPriceUpdateId}`,
               {
                 method: "PUT",
                 headers: {
@@ -336,7 +341,7 @@ export async function POST(req: Request) {
               }
             );
             await fetch(
-              `${process.env.SIA_API_URL}/worker/objects/${user.id}/assets/${existingAsset.id}/assetPriceUpdates/${assetPriceUpdateId}`,
+              `${SIA_API_URL}/worker/objects/${user.id}/assets/${existingAsset.id}/assetPriceUpdates/${assetPriceUpdateId}`,
               {
                 method: "PUT",
                 headers: {
@@ -359,7 +364,7 @@ export async function POST(req: Request) {
         }
       }
     }
-    if (process.env.DATABASE_URL) {
+    if (DATABASE_URL) {
       const existingAsset = user?.assets.find((asset) => {
         if (asset.symbol) {
           return asset.symbol === body.symbol;

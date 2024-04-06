@@ -6,6 +6,7 @@ import LoadingSpinner from "@/components/ui/loading-spinner";
 import ManualTransactionForm from "./manualTransactionForm";
 import { Button } from "./ui/button";
 import { TUserManualCategory } from "@/lib/types";
+import { searchAssetsFromApi } from "@/services/thirdParty/twelveData";
 
 interface AddTransactionPropsType {
   usersManualCategories: TUserManualCategory[];
@@ -43,21 +44,11 @@ export default function AddTransaction({
     setLoadingAsset(false);
 
     try {
-      // search API endpoint
-      const url = `https://api.twelvedata.com/symbol_search?symbol=${searchQuery}&outputsize=9`;
-      const options = {
-        method: "GET",
-        headers: {
-          Authorization: `apikey ${process.env.NEXT_PUBLIC_TWELVEDATA_API_KEY}`,
-        },
-      };
-
-      const res = await fetch(url, options);
-      const { data: resultsFromAPI } = await res.json();
+      const resultsFromApi = await searchAssetsFromApi(searchQuery);
 
       // Merge resultsFromDB with resultsFromAPI, keeping all items from resultsFromDB and adding unmatched items from resultsFromAPI
       const mergedResults = resultsFromDB.map((dbResult: any) => {
-        const matchingResult = resultsFromAPI.find(
+        const matchingResult = resultsFromApi.find(
           (apiResult: any) =>
             apiResult.instrument_name === dbResult.instrument_name
         );
@@ -65,7 +56,7 @@ export default function AddTransaction({
       });
 
       // Add unmatched items from resultsFromAPI
-      resultsFromAPI.forEach((apiResult: any) => {
+      resultsFromApi.forEach((apiResult: any) => {
         const isUnmatched = !resultsFromDB.some(
           (dbResult: any) =>
             dbResult.instrument_name === apiResult.instrument_name

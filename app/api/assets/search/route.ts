@@ -3,6 +3,7 @@ import { authOptions } from "@/lib/authOptions";
 import { decryptObjectValues } from "@/lib/dataSecurity";
 import { Asset } from "@prisma/client";
 import { getServerSession } from "next-auth";
+import { ENCRYPTION_KEY } from "@/constants/env";
 
 // Function to calculate similarity between two strings
 function similarityScore(str1: string, str2: string) {
@@ -59,7 +60,7 @@ export async function POST(req: Request) {
 
   if (user) {
     const encryptionKey =
-      user.id.slice(0, 4) + process.env.SIA_ENCRYPTION_KEY + user.id.slice(-4);
+      user.id.slice(0, 4) + ENCRYPTION_KEY + user.id.slice(-4);
     const assets = decryptObjectValues(
       user.assets,
       encryptionKey

@@ -2,6 +2,7 @@ import { prisma } from "@/lib/prisma";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/authOptions";
 import { decryptObjectValues } from "@/lib/dataSecurity";
+import { ENCRYPTION_KEY } from "@/constants/env";
 
 export async function GET() {
   const session = await getServerSession(authOptions);
@@ -20,9 +21,7 @@ export async function GET() {
     });
     if (foundUser) {
       const encryptionKey =
-        foundUser.id.slice(0, 4) +
-        process.env.SIA_ENCRYPTION_KEY +
-        foundUser.id.slice(-4);
+        foundUser.id.slice(0, 4) + ENCRYPTION_KEY + foundUser.id.slice(-4);
 
       const response = {
         usersManualCategories: decryptObjectValues(

@@ -1,3 +1,9 @@
+import {
+  ENCRYPTION_KEY,
+  SIA_ADMIN_PASSWORD,
+  SIA_ADMIN_USERNAME,
+  SIA_API_URL,
+} from "@/constants/env";
 import { TSiaObject } from "@/lib/types";
 import CryptoJS from "crypto-js";
 
@@ -5,16 +11,15 @@ export default async function findExistingCategoryFromSia(
   userId: string,
   categoryName: string
 ) {
-  const username = "username";
-  const password = "1234";
+  const username = SIA_ADMIN_USERNAME;
+  const password = SIA_ADMIN_PASSWORD;
   const basicAuth =
     "Basic " + Buffer.from(username + ":" + password).toString("base64");
 
-  const encryptionKey =
-    userId.slice(0, 4) + process.env.SIA_ENCRYPTION_KEY + userId.slice(-4);
+  const encryptionKey = userId.slice(0, 4) + ENCRYPTION_KEY + userId.slice(-4);
 
   const res = await fetch(
-    `${process.env.SIA_API_URL}/workers/object/${userId}/usersManualCategories/`,
+    `${SIA_API_URL}/workers/object/${userId}/usersManualCategories/`,
     {
       method: "GET",
       headers: {
@@ -28,8 +33,8 @@ export default async function findExistingCategoryFromSia(
     const categoryAddressArray = response.map((res: TSiaObject) => res.name);
 
     const requests = categoryAddressArray.map((address) =>
-      fetch(`${process.env.SIA_API_URL}/worker/objects${address}`).then(
-        (response) => response.json()
+      fetch(`${SIA_API_URL}/worker/objects${address}`).then((response) =>
+        response.json()
       )
     );
     const responses = await Promise.all(requests);

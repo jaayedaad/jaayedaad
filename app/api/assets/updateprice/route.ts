@@ -4,6 +4,13 @@ import { authOptions } from "@/lib/authOptions";
 import { createId } from "@paralleldrive/cuid2";
 import CryptoJS from "crypto-js";
 import { encryptObjectValues } from "@/lib/dataSecurity";
+import {
+  DATABASE_URL,
+  ENCRYPTION_KEY,
+  SIA_ADMIN_PASSWORD,
+  SIA_ADMIN_USERNAME,
+  SIA_API_URL,
+} from "@/constants/env";
 
 export async function POST(req: Request) {
   const body: {
@@ -27,16 +34,16 @@ export async function POST(req: Request) {
   });
 
   if (user) {
-    const username = "username";
-    const password = "1234";
+    const username = SIA_ADMIN_USERNAME;
+    const password = SIA_ADMIN_PASSWORD;
     const basicAuth =
       "Basic " + Buffer.from(username + ":" + password).toString("base64");
 
     const encryptionKey =
-      user.id.slice(0, 4) + process.env.SIA_ENCRYPTION_KEY + user.id.slice(-4);
+      user.id.slice(0, 4) + ENCRYPTION_KEY + user.id.slice(-4);
 
     const assetPriceUpdateId = createId();
-    if (process.env.DATABASE_URL) {
+    if (DATABASE_URL) {
       // encrypt data
       const encryptedData: {
         id: string;
@@ -56,9 +63,9 @@ export async function POST(req: Request) {
         data: encryptedData,
       });
     }
-    if (process.env.SIA_API_URL) {
+    if (SIA_API_URL) {
       await fetch(
-        `${process.env.SIA_API_URL}/worker/objects/${user.id}/assets/${body.assetId}/assetPriceUpdates/${assetPriceUpdateId}`,
+        `${SIA_API_URL}/worker/objects/${user.id}/assets/${body.assetId}/assetPriceUpdates/${assetPriceUpdateId}`,
         {
           method: "PUT",
           headers: {

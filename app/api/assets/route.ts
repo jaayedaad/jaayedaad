@@ -3,6 +3,7 @@ import { authOptions } from "@/lib/authOptions";
 import { decryptObjectValues } from "@/lib/dataSecurity";
 import { getServerSession } from "next-auth";
 import { getAllAssets } from "@/services/thirdParty/sia";
+import { DATABASE_URL, ENCRYPTION_KEY, SIA_API_URL } from "@/constants/env";
 
 export async function GET() {
   const session = await getServerSession(authOptions);
@@ -14,14 +15,12 @@ export async function GET() {
     });
 
     const encryptionKey =
-      user?.id.slice(0, 4) +
-      process.env.SIA_ENCRYPTION_KEY +
-      user?.id.slice(-4);
+      user?.id.slice(0, 4) + ENCRYPTION_KEY + user?.id.slice(-4);
 
-    if (process.env.SIA_API_URL) {
+    if (SIA_API_URL) {
       const assets = await getAllAssets();
       return Response.json(assets);
-    } else if (process.env.DATABASE_URL) {
+    } else if (DATABASE_URL) {
       let assets = await prisma.asset.findMany({
         where: {
           userId: user?.id,

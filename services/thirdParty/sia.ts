@@ -5,11 +5,17 @@ import getAllTransactions from "../../sia/getAllTransactions";
 import CryptoJS from "crypto-js";
 import getAllPriceUpdates from "@/helper/sia/findAllPriceUpdates";
 import { TAsset, TSiaObject } from "@/lib/types";
+import {
+  ENCRYPTION_KEY,
+  SIA_ADMIN_PASSWORD,
+  SIA_ADMIN_USERNAME,
+  SIA_API_URL,
+} from "@/constants/env";
 
 export async function getAllAssets() {
   const session = await getServerSession(authOptions);
-  const username = "username";
-  const password = "1234";
+  const username = SIA_ADMIN_USERNAME;
+  const password = SIA_ADMIN_PASSWORD;
   const basicAuth =
     "Basic " + Buffer.from(username + ":" + password).toString("base64");
   if (session?.user) {
@@ -20,12 +26,10 @@ export async function getAllAssets() {
     });
     if (user) {
       const encryptionKey =
-        user.id.slice(0, 4) +
-        process.env.SIA_ENCRYPTION_KEY +
-        user.id.slice(-4);
+        user.id.slice(0, 4) + ENCRYPTION_KEY + user.id.slice(-4);
 
       const res = await fetch(
-        `${process.env.SIA_API_URL}/worker/objects/${user.id}/assets/`,
+        `${SIA_API_URL}/worker/objects/${user.id}/assets/`,
         {
           method: "GET",
           headers: {
@@ -39,7 +43,7 @@ export async function getAllAssets() {
         const assetAddressArray = response.map((res: TSiaObject) => res.name);
 
         const requests = assetAddressArray.map((address) =>
-          fetch(`${process.env.SIA_API_URL}/worker/objects${address}data`, {
+          fetch(`${SIA_API_URL}/worker/objects${address}data`, {
             method: "GET",
             headers: {
               Authorization: basicAuth,
@@ -94,18 +98,15 @@ export async function getAllAssets() {
 }
 
 export const deleteUserInSia = async (userId: string) => {
-  const username = "username";
-  const password = "1234";
+  const username = SIA_ADMIN_USERNAME;
+  const password = SIA_ADMIN_PASSWORD;
   const basicAuth =
     "Basic " + Buffer.from(username + ":" + password).toString("base64");
 
-  await fetch(
-    `${process.env.SIA_API_URL}/worker/objects/${userId}?batch=true`,
-    {
-      method: "DELETE",
-      headers: {
-        Authorization: basicAuth,
-      },
-    }
-  );
+  await fetch(`${SIA_API_URL}/worker/objects/${userId}?batch=true`, {
+    method: "DELETE",
+    headers: {
+      Authorization: basicAuth,
+    },
+  });
 };

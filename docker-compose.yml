@@ -1,42 +1,71 @@
 version: "3.3"
 services:
-  postgres:
-    image: postgres:15-alpine
-    volumes:
-      - jaayedaad-db:/var/lib/postgresql/data
-    environment:
-      - POSTGRES_DB=postgres
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
+  traefik:
+    image: traefik:v2.8
+    command:
+      - "--api.insecure=true"
+      - "--providers.docker=true"
+      - "--entrypoints.web.address=:80"
+      - "--entrypoints.websecure.address=:443"
     ports:
-      - 5432:5432
+      - "80:80"
+      - "443:443"
+      - "8080:8080"
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock"
 
-  # renterd:
-  #   image: ghcr.io/siafoundation/renterd:master-zen
-  #   environment:
-  #     - RENTERD_SEED=wreck soup text security race silly canoe enrich walnut filter vote taxi
-  #     - RENTERD_API_PASSWORD=test
-  #   ports:
-  #     - 9880:9880
-  #     - 9881:9881
-  #     - 7070:7070
+  # postgres:
+  #   image: postgres:15-alpine
   #   volumes:
-  #     - ./data:/data
-  #   restart: unless-stopped
-  #   stop_grace_period: 5m
-
-  # jaayedaad-web:
-  #   build: .
-  #   ports:
-  #     - 3000:3000
+  #     - jaayedaad-db:/var/lib/postgresql/data
   #   environment:
-  #     - DATABASE_URL=postgresql://postgres:postgres@localhost:5432/jaayedaad-db?schema=public
-  #     - SIA_ENCRYPTION_KEY=text
-  #     - NEXTAUTH_SECRET=XIs3WWt6BIh3aZI95QM0Ggph/GwxkgK3kL8kpRHRrMo=
+  #     - POSTGRES_DB=postgres
+  #     - POSTGRES_USER=postgres
+  #     - POSTGRES_PASSWORD=postgres
+  #   ports:
+  #     - 5432:5432
 
-  #   depends_on:
-  #     - postgres
-  #     - renterd
+  renterd:
+    image: ghcr.io/siafoundation/renterd:master-zen
+    environment:
+      - RENTERD_SEED=<jaayedaad-sia-seed>
+      - RENTERD_API_PASSWORD=<jaayedaad-sia-password>
+    ports:
+      - 9880:9880
+      - 9881:9881
+      - 7070:7070
+    volumes:
+      - ./data:/data
+    restart: unless-stopped
+    stop_grace_period: 5m
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.renterd.rule=Host(`sia.jaayedaad.com`)"
+      - "traefik.http.routers.renterd.entrypoints=websecure"
+      - "traefik.http.services.renterd.loadbalancer.server.port=9880"
+
+  jaayedaad-web:
+    build: .
+    ports:
+      - 3000:3000
+    environment:
+      - DATABASE_URL=<jaayedaad-database-url>
+      - ENCRYPTION_KEY=<jaayedaad-encryption-key>
+      - NEXTAUTH_SECRET=<jaayedaad-nextauth-secret>
+      - GOOGLE_CLIENT_ID=<jaayedaad-google-client-id>
+      - GOOGLE_CLIENT_SECRET=<jaayedaad-google-client-secret>
+      - TWELVEDATA_API_KEY=<jaayedaad-twelvedata-api-key>
+      - SIA_ADMIN_USERNAME=<jaayedaad-sia-admin-username>
+      - SIA_ADMIN_PASSWORD=<jaayedaad-sia-admin-password>
+
+    depends_on:
+      # - postgres
+      - renterd
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.jaayedaad-web.rule=Host(`jaayedaad.com`)"
+      - "traefik.http.routers.jaayedaad-web.entrypoints=websecure"
+      - "traefik.http.services.jaayedaad-web.loadbalancer.server.port=3000"
 
 volumes:
   jaayedaad-db:

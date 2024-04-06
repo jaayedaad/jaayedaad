@@ -3,13 +3,11 @@
 import { prisma } from "@/lib/prisma";
 import { Session } from "next-auth";
 import { decryptObjectValues } from "@/lib/dataSecurity";
-import { DATABASE_URL, SIA_API_URL, SIA_ENCRYPTION_KEY } from "@/constants/env";
+import { DATABASE_URL, SIA_API_URL, ENCRYPTION_KEY } from "@/constants/env";
 import { TUser } from "@/lib/types";
 import { deleteUserInSia } from "./thirdParty/sia";
 
 export const getUser = async (session: Session) => {
-  console.log("page user", session.user);
-
   if (!session.user || !session.user.email) {
     throw new Error("User not authenticated");
   }
@@ -30,7 +28,7 @@ export const getUser = async (session: Session) => {
   }
 
   const encryptionKey =
-    user.id.slice(0, 4) + SIA_ENCRYPTION_KEY + user.id.slice(-4);
+    user.id.slice(0, 4) + ENCRYPTION_KEY + user.id.slice(-4);
 
   return {
     id: user.id,
@@ -71,7 +69,7 @@ export const getUserByEmail = async (email: string) => {
   });
   if (user) {
     const encryptionKey =
-      user.id.slice(0, 4) + SIA_ENCRYPTION_KEY + user.id.slice(-4);
+      user.id.slice(0, 4) + ENCRYPTION_KEY + user.id.slice(-4);
 
     return {
       usersManualCategories: decryptObjectValues(

@@ -1,6 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { decryptObjectValues } from "@/lib/dataSecurity";
-import { SIA_API_URL, SIA_ENCRYPTION_KEY } from "@/constants/env";
+import { SIA_API_URL, ENCRYPTION_KEY } from "@/constants/env";
 import { getAllAssets } from "@/services/thirdParty/sia";
 import { TAsset } from "@/lib/types";
 import { fetchQuoteFromApi } from "@/services/thirdParty/twelveData";
@@ -17,7 +17,7 @@ export const getAssetsByUser = async (email: string) => {
   }
 
   const encryptionKey =
-    user?.id.slice(0, 4) + SIA_ENCRYPTION_KEY + user?.id.slice(-4);
+    user?.id.slice(0, 4) + ENCRYPTION_KEY + user?.id.slice(-4);
 
   if (SIA_API_URL) {
     const assets = await getAllAssets();

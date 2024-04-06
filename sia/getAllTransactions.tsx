@@ -4,11 +4,17 @@ import { getServerSession } from "next-auth";
 import CryptoJS from "crypto-js";
 import { TSiaObject } from "@/lib/types";
 import { Transaction } from "@prisma/client";
+import {
+  ENCRYPTION_KEY,
+  SIA_ADMIN_PASSWORD,
+  SIA_ADMIN_USERNAME,
+  SIA_API_URL,
+} from "@/constants/env";
 
 export default async function getAllTransactions(assetId: string) {
   const session = await getServerSession(authOptions);
-  const username = "username";
-  const password = "1234";
+  const username = SIA_ADMIN_USERNAME;
+  const password = SIA_ADMIN_PASSWORD;
   const basicAuth =
     "Basic " + Buffer.from(username + ":" + password).toString("base64");
 
@@ -20,12 +26,10 @@ export default async function getAllTransactions(assetId: string) {
     });
     if (user) {
       const encryptionKey =
-        user.id.slice(0, 4) +
-        process.env.SIA_ENCRYPTION_KEY +
-        user.id.slice(-4);
+        user.id.slice(0, 4) + ENCRYPTION_KEY + user.id.slice(-4);
 
       const res = await fetch(
-        `${process.env.SIA_API_URL}/worker/objects/${user.id}/assets/${assetId}/transactions/`,
+        `${SIA_API_URL}/worker/objects/${user.id}/assets/${assetId}/transactions/`,
         {
           method: "GET",
           headers: {
@@ -41,7 +45,7 @@ export default async function getAllTransactions(assetId: string) {
       );
 
       const requests = transactionAddressArray.map((address) =>
-        fetch(`${process.env.SIA_API_URL}/worker/objects${address}`, {
+        fetch(`${SIA_API_URL}/worker/objects${address}`, {
           method: "GET",
           headers: {
             Authorization: basicAuth,

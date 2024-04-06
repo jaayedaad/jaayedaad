@@ -10,6 +10,13 @@ import { isValidTransactions } from "@/helper/canSellAssets";
 import CryptoJS from "crypto-js";
 import { getAssetById } from "@/sia/getAssetById";
 import { encryptDataValue, encryptObjectValues } from "@/lib/dataSecurity";
+import {
+  DATABASE_URL,
+  ENCRYPTION_KEY,
+  SIA_ADMIN_PASSWORD,
+  SIA_ADMIN_USERNAME,
+  SIA_API_URL,
+} from "@/constants/env";
 
 interface requestBody {
   transactionToEdit: Transaction;
@@ -23,18 +30,17 @@ async function updateTransaction(
   currentQuantity: number,
   futureQuantity: number
 ) {
-  const username = "username";
-  const password = "1234";
+  const username = SIA_ADMIN_USERNAME;
+  const password = SIA_ADMIN_PASSWORD;
   const basicAuth =
     "Basic " + Buffer.from(username + ":" + password).toString("base64");
 
-  const encryptionKey =
-    userId.slice(0, 4) + process.env.SIA_ENCRYPTION_KEY + userId.slice(-4);
+  const encryptionKey = userId.slice(0, 4) + ENCRYPTION_KEY + userId.slice(-4);
   const avgBuyPrice = calculateAvgBuyPrice(transactionList);
-  if (process.env.SIA_API_URL) {
+  if (SIA_API_URL) {
     // update transaction
     await fetch(
-      `${process.env.SIA_API_URL}/worker/objects/${userId}/assets/${transactionToEdit.assetId}/transactions/${transactionToEdit.id}`,
+      `${SIA_API_URL}/worker/objects/${userId}/assets/${transactionToEdit.assetId}/transactions/${transactionToEdit.id}`,
       {
         method: "PUT",
         headers: {
@@ -56,7 +62,7 @@ async function updateTransaction(
     // update asset price and quantity
     const assetToUpdate = await getAssetById(userId, transactionToEdit.assetId);
     await fetch(
-      `${process.env.SIA_API_URL}/worker/objects/${userId}/assets/${assetToUpdate.id}/data`,
+      `${SIA_API_URL}/worker/objects/${userId}/assets/${assetToUpdate.id}/data`,
       {
         method: "PUT",
         headers: {
@@ -75,7 +81,7 @@ async function updateTransaction(
       }
     );
   }
-  if (process.env.DATABASE_URL) {
+  if (DATABASE_URL) {
     // encrypt data
     const encryptedData: {
       quantity: string;

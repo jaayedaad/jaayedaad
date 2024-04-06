@@ -1,3 +1,9 @@
+import {
+  ENCRYPTION_KEY,
+  SIA_ADMIN_PASSWORD,
+  SIA_ADMIN_USERNAME,
+  SIA_API_URL,
+} from "@/constants/env";
 import { TSiaObject } from "@/lib/types";
 import { Asset } from "@prisma/client";
 import CryptoJS from "crypto-js";
@@ -8,22 +14,18 @@ export default async function findExistingAssetFromSia(
   assetName: string,
   isManualEntry: boolean | undefined
 ) {
-  const username = "username";
-  const password = "1234";
+  const username = SIA_ADMIN_USERNAME;
+  const password = SIA_ADMIN_PASSWORD;
   const basicAuth =
     "Basic " + Buffer.from(username + ":" + password).toString("base64");
 
-  const encryptionKey =
-    userId.slice(0, 4) + process.env.SIA_ENCRYPTION_KEY + userId.slice(-4);
-  const res = await fetch(
-    `${process.env.SIA_API_URL}/worker/objects/${userId}/assets/`,
-    {
-      method: "GET",
-      headers: {
-        Authorization: basicAuth,
-      },
-    }
-  );
+  const encryptionKey = userId.slice(0, 4) + ENCRYPTION_KEY + userId.slice(-4);
+  const res = await fetch(`${SIA_API_URL}/worker/objects/${userId}/assets/`, {
+    method: "GET",
+    headers: {
+      Authorization: basicAuth,
+    },
+  });
 
   let existingAsset: Asset | undefined;
 
@@ -34,7 +36,7 @@ export default async function findExistingAssetFromSia(
     const assetAddressArray = response.map((res: TSiaObject) => res.name);
 
     const requests = assetAddressArray.map((address) =>
-      fetch(`${process.env.SIA_API_URL}/worker/objects${address}data`, {
+      fetch(`${SIA_API_URL}/worker/objects${address}data`, {
         method: "GET",
         headers: {
           AUthorization: basicAuth,

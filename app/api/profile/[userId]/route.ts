@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { decryptObjectValues } from "@/lib/dataSecurity";
+import { ENCRYPTION_KEY } from "@/constants/env";
 
 export async function GET(
   request: Request,
@@ -20,7 +21,7 @@ export async function GET(
       return new Response("User has a private profile", { status: 403 });
     } else {
       const encryptionKey =
-        userId.slice(0, 4) + process.env.SIA_ENCRYPTION_KEY + userId.slice(-4);
+        userId.slice(0, 4) + ENCRYPTION_KEY + userId.slice(-4);
 
       let assets = await prisma.asset.findMany({
         where: {
