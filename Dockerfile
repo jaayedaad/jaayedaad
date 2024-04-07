@@ -43,7 +43,7 @@ COPY --from=builder --chown=nextuser:nextgroup /app/prisma ./prisma
 ARG DATABASE_URL
 ENV DATABASE_URL=$DATABASE_URL
 
-RUN  yarn add prisma && DATABASE_URL=$DATABASE_URL yarn prisma:migrate:deploy
+RUN yarn add prisma
 
 RUN apk add --no-cache curl
 
@@ -54,4 +54,4 @@ EXPOSE 3000
 
 ENV PORT 3000
 
-CMD ["node", "server.js"]
+CMD yarn prisma:migrate:deploy && exec node server.js
