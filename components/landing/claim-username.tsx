@@ -6,6 +6,7 @@ import { Button } from "../ui/button";
 import { cn } from "@/lib/helper";
 import { signIn } from "next-auth/react";
 import { isUsernameTakenAction } from "@/app/actions";
+import posthog from "posthog-js";
 
 function ClaimUsername() {
   const [username, setUsername] = useState<string>("");
@@ -38,6 +39,7 @@ function ClaimUsername() {
       if (username) {
         if (username.trim() !== "") {
           verifyUsername(username);
+          posthog.capture("username_check", { username });
         }
       } else {
         setDisplayMessage("");

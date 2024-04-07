@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
+import posthog from "posthog-js";
 import { useCallback, useEffect, useState } from "react";
 
 export const UsernameInputComponent = () => {
@@ -22,6 +23,7 @@ export const UsernameInputComponent = () => {
       console.log(username);
 
       await updateUsernameAction(username);
+      posthog.capture("username_claimed", { username });
       router.push("/dashboard");
     } else {
       setSubmitting(false);

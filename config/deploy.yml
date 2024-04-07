@@ -1,0 +1,84 @@
+service: jaayedaaad-kamal
+
+image: jaayedaad/jaayedaad-kamal
+
+servers:
+  web:
+    hosts:
+      - 52.57.36.126
+    labels:
+      traefik.http.routers.jaayedaad-kamal.entrypoints: websecure
+      traefik.http.routers.jaayedaad-kamal.rule: Host(`jaayedaad.com`)
+      traefik.http.routers.jaayedaad-kamal.tls.certresolver: letsencrypt
+
+registry:
+  server: ghcr.io
+  username: shubhampalriwala
+  password:
+    - KAMAL_REGISTRY_PASSWORD
+
+env:
+  clear:
+    NODE_ENV: production
+  secret:
+    - DATABASE_URL
+    - NEXTAUTH_SECRET
+    - ENCRYPTION_KEY
+    - GOOGLE_CLIENT_ID
+    - GOOGLE_CLIENT_SECRET
+    - TWELVEDATA_API_KEY
+    - SIA_ADMIN_USERNAME
+    - SIA_ADMIN_PASSWORD
+    - NEXT_PUBLIC_POSTHOG_KEY
+    - NEXT_PUBLIC_POSTHOG_HOST
+
+ssh:
+  user: ubuntu
+
+builder:
+  context: .
+  dockerfile: ./Dockerfile
+  args:
+    - NEXT_PUBLIC_POSTHOG_KEY
+    - NEXT_PUBLIC_POSTHOG_HOST
+
+  multiarch: false
+  cache:
+    type: registry
+    options: mode=max,image-manifest=true,oci-mediatypes=true
+
+traefik:
+  options:
+    publish:
+      - "443:443"
+    volume:
+      - "/letsencrypt/acme.json:/letsencrypt/acme.json"
+  args:
+    entryPoints.web.address: ":80"
+    entryPoints.websecure.address: ":443"
+    entryPoints.web.http.redirections.entryPoint.to: websecure
+    entryPoints.web.http.redirections.entryPoint.scheme: https
+    entryPoints.web.http.redirections.entrypoint.permanent: true
+    certificatesResolvers.letsencrypt.acme.email: "shubhamwithjaayedaad@gmail.com"
+    certificatesResolvers.letsencrypt.acme.storage: "/letsencrypt/acme.json"
+    certificatesResolvers.letsencrypt.acme.httpchallenge: true
+    certificatesResolvers.letsencrypt.acme.httpchallenge.entrypoint: web
+
+accessories:
+  # Sia Renterd
+  renterd:
+    image: ghcr.io/siafoundation/renterd:master-zen
+    host: 52.57.36.126
+    port: "172.31.23.160:9880:9880"
+    directories:
+      - data:/data
+    env:
+      secret:
+        - RENTERD_SEED
+        - RENTERD_API_PASSWORD
+
+healthcheck:
+  path: /api/health
+  port: 3000
+  max_attempts: 10
+  interval: 20s

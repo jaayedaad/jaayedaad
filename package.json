@@ -9,6 +9,7 @@
     "vercel-build": "prisma generate && prisma migrate deploy && next build",
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate dev",
+    "prisma:migrate:deploy": "prisma migrate deploy",
     "lint": "next lint"
   },
   "dependencies": {
@@ -37,6 +38,7 @@
     "next": "14.0.4",
     "next-auth": "^4.24.5",
     "next-themes": "^0.2.1",
+    "posthog-js": "^1.118.1",
     "react": "^18",
     "react-day-picker": "^8.10.0",
     "react-dom": "^18",

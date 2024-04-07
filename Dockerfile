@@ -1,28 +1,26 @@
-# Rebuild the source code only when needed
-FROM node:20-alpine AS builder
-
+# Install dependencies only when needed
+FROM node:20-alpine AS deps
 RUN apk add --no-cache libc6-compat
+WORKDIR /app
 COPY package.json yarn.lock ./
 RUN yarn install --frozen-lockfile
 
-COPY app /app
-COPY components/ /components
-COPY constants/ /constants
-COPY helper/ /helper
-COPY lib/ /lib
-COPY prisma/ /prisma
-COPY public/ /public
-COPY services/ /services
-COPY sia/ /sia
-COPY types/ /types
-COPY .eslintrc.json /eslintrc.json
-COPY env.d.ts /env.d.ts
-COPY components.json /components.json
-COPY middleware.ts /middleware.ts
-COPY next.config.js /next.config.js
-COPY postcss.config.js /postcss.config.js
-COPY tailwind.config.ts /tailwind.config.ts
-COPY tsconfig.json /tsconfig.json
+# Rebuild the source code only when needed
+FROM node:20-alpine AS builder
+
+WORKDIR /app
+
+COPY --from=deps /app/node_modules ./node_modules
+
+COPY . .
+
+ENV NODE_ENV production
+
+ARG NEXT_PUBLIC_POSTHOG_KEY
+ENV NEXT_PUBLIC_POSTHOG_KEY=$NEXT_PUBLIC_POSTHOG_KEY
+
+ARG NEXT_PUBLIC_POSTHOG_HOST
+ENV NEXT_PUBLIC_POSTHOG_HOST=$NEXT_PUBLIC_POSTHOG_HOST
 
 RUN yarn prisma:generate && yarn build
 
@@ -35,16 +33,20 @@ ENV NODE_ENV production
 RUN addgroup --system --gid 1001 nextgroup
 RUN adduser --system --uid 1001 nextuser
 
-COPY --from=builder ./public ./public
-COPY --from=builder ./package.json ./package.json
+COPY --from=builder /app/public ./public
+COPY --from=builder /app/package.json ./package.json
 
-# Automatically leverage output traces to reduce image size
-# https://nextjs.org/docs/advanced-features/output-file-tracing
-COPY --from=builder --chown=nextuser:nextgroup ./.next/standalone ./
-COPY --from=builder --chown=bloguser:bloggroup ./.next/static ./.next/static
+COPY --from=builder --chown=nextuser:nextgroup /app/.next/standalone ./
+COPY --from=builder --chown=nextuser:nextgroup /app/.next/static ./.next/static
+COPY --from=builder --chown=nextuser:nextgroup /app/prisma ./prisma
+
+RUN yarn add prisma && yarn prisma:migrate:deploy
+
+RUN apk add --no-cache curl
 
 USER nextuser
 
+ENV HOSTNAME "0.0.0.0"
 EXPOSE 3000
 
 ENV PORT 3000

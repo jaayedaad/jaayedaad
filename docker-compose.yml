@@ -1,35 +1,21 @@
 version: "3.3"
 services:
-  traefik:
-    image: traefik:v2.8
-    command:
-      - "--api.insecure=true"
-      - "--providers.docker=true"
-      - "--entrypoints.web.address=:80"
-      - "--entrypoints.websecure.address=:443"
-    ports:
-      - "80:80"
-      - "443:443"
-      - "8080:8080"
+  postgres:
+    image: postgres:15-alpine
     volumes:
-      - "/var/run/docker.sock:/var/run/docker.sock"
-
-  # postgres:
-  #   image: postgres:15-alpine
-  #   volumes:
-  #     - jaayedaad-db:/var/lib/postgresql/data
-  #   environment:
-  #     - POSTGRES_DB=postgres
-  #     - POSTGRES_USER=postgres
-  #     - POSTGRES_PASSWORD=postgres
-  #   ports:
-  #     - 5432:5432
+      - jaayedaad-db:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=<postgres-database-name>
+      - POSTGRES_USER=<postgres-username>
+      - POSTGRES_PASSWORD=<postgres-password>
+    ports:
+      - 5432:5432
 
   renterd:
     image: ghcr.io/siafoundation/renterd:master-zen
     environment:
-      - RENTERD_SEED=<jaayedaad-sia-seed>
-      - RENTERD_API_PASSWORD=<jaayedaad-sia-password>
+      - RENTERD_SEED=<renterd-seed>
+      - RENTERD_API_PASSWORD=<renterd-api-password>
     ports:
       - 9880:9880
       - 9881:9881
@@ -38,11 +24,6 @@ services:
       - ./data:/data
     restart: unless-stopped
     stop_grace_period: 5m
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.renterd.rule=Host(`sia.jaayedaad.com`)"
-      - "traefik.http.routers.renterd.entrypoints=websecure"
-      - "traefik.http.services.renterd.loadbalancer.server.port=9880"
 
   jaayedaad-web:
     build: .
@@ -59,13 +40,8 @@ services:
       - SIA_ADMIN_PASSWORD=<jaayedaad-sia-admin-password>
 
     depends_on:
-      # - postgres
+      - postgres
       - renterd
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.jaayedaad-web.rule=Host(`jaayedaad.com`)"
-      - "traefik.http.routers.jaayedaad-web.entrypoints=websecure"
-      - "traefik.http.services.jaayedaad-web.loadbalancer.server.port=3000"
 
 volumes:
   jaayedaad-db:

@@ -22,6 +22,9 @@ declare global {
 
       // TWELVE DATA API KEY
       TWELVEDATA_API_KEY: string;
+
+      NEXT_PUBLIC_POSTHOG_KEY: string;
+      NEXT_PUBLIC_POSTHOG_HOST: string;
     }
   }
 }
