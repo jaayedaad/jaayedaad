@@ -5,6 +5,7 @@ declare global {
       GOOGLE_CLIENT_ID: string;
       GOOGLE_CLIENT_SECRET: string;
       NEXTAUTH_SECRET: string;
+      NEXTAUTH_URL: string;
 
       // Deployment environment
       NODE_ENV: string;

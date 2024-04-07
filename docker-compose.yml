@@ -33,6 +33,7 @@ services:
       - DATABASE_URL=<jaayedaad-database-url>
       - ENCRYPTION_KEY=<jaayedaad-encryption-key>
       - NEXTAUTH_SECRET=<jaayedaad-nextauth-secret>
+      - NEXTAUTH_URL=<jaayedaad-nextauth-url>
       - GOOGLE_CLIENT_ID=<jaayedaad-google-client-id>
       - GOOGLE_CLIENT_SECRET=<jaayedaad-google-client-secret>
       - TWELVEDATA_API_KEY=<jaayedaad-twelvedata-api-key>
