@@ -26,14 +26,13 @@ import { deleteUserAction } from "@/app/(protected)/dashboard/settings/actions";
 
 interface AccountSettingsProps {
   username: string;
-  preference: TPreference;
 }
 
-function AccountSettings({ username, preference }: AccountSettingsProps) {
+function AccountSettings({ username }: AccountSettingsProps) {
   const [loading, setLoading] = useState(false);
   const [newUsername, setNewUsername] = useState<string | null>(username);
   const [errorMessage, setErrorMessage] = useState("");
-  const [disabled, setDisabled] = useState(false);
+  const [disabled, setDisabled] = useState(true);
 
   const handleSave = async () => {
     try {
@@ -71,13 +70,17 @@ function AccountSettings({ username, preference }: AccountSettingsProps) {
 
   useEffect(() => {
     const timerId = setTimeout(async () => {
-      if (newUsername && username !== newUsername) {
-        if (newUsername !== "") {
-          const message = await verifyUsernameAction(newUsername);
-          setDisabled(message !== "Username available");
-          setErrorMessage(message);
+      if (newUsername) {
+        if (username !== newUsername) {
+          if (newUsername !== "") {
+            const message = await verifyUsernameAction(newUsername);
+            setDisabled(message !== "Username available");
+            setErrorMessage(message);
+          } else {
+            setErrorMessage("Username cannot be empty!");
+          }
         } else {
-          setErrorMessage("Username cannot be empty!");
+          setErrorMessage("");
         }
       }
     }, 1000);
@@ -103,7 +106,7 @@ function AccountSettings({ username, preference }: AccountSettingsProps) {
       <Separator />
 
       <div className="flex flex-col gap-4">
-        <div className="py-5 px-4 flex gap-2 items-center justify-between border rounded-md w-full">
+        <div className="py-5 px-4 flex gap-2 items-center justify-between border rounded-lg w-full">
           <div>
             <h2 className="text-foreground">Username</h2>
             <p className="text-muted-foreground text-sm">
@@ -138,7 +141,7 @@ function AccountSettings({ username, preference }: AccountSettingsProps) {
             </p>
           </div>
         </div>
-        <div className="py-5 px-4 flex gap-2 items-center justify-between border rounded-md w-full">
+        <div className="py-5 px-4 flex gap-2 items-center justify-between border rounded-lg w-full">
           <div>
             <h2 className="text-red-600">Danger Zone</h2>
             <p className="text-muted-foreground text-sm">

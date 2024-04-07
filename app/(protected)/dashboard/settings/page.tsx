@@ -24,10 +24,7 @@ export default async function Settings() {
           <div className="flex flex-col w-full gap-6">
             <PublicProfileSettings preference={preference} />
             <PreferenceComponent preference={preference} />
-            <AccountSettings
-              username={session.user.username}
-              preference={preference}
-            />
+            <AccountSettings username={session.user.username} />
           </div>
         </div>
       </div>

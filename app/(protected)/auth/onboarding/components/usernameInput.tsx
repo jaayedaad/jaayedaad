@@ -19,6 +19,8 @@ export const UsernameInputComponent = () => {
     setSubmitting(true);
     const isUsernameValid = await verifyUsernameAction(username);
     if (isUsernameValid) {
+      console.log(username);
+
       await updateUsernameAction(username);
       router.push("/dashboard");
     } else {
@@ -29,9 +31,9 @@ export const UsernameInputComponent = () => {
   useEffect(() => {
     const claimedUsername = localStorage.getItem("claimedUsername");
     if (claimedUsername) {
-      localStorage.removeItem("claimedUsername");
       setUsername(claimedUsername);
       handleSubmit();
+      localStorage.removeItem("claimedUsername");
     }
   }, [handleSubmit]);
 

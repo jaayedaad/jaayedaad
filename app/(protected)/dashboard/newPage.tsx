@@ -21,6 +21,7 @@ import {
 import WhitelistingModal from "@/components/whitelistingModal";
 import MockLineChart from "@/components/mock/mockLineChart";
 import MockAssetTable from "@/components/mock/mockAssetTable";
+import MockPieChart from "@/components/mock/mockPieChart";
 
 export function Dashboard({
   username,

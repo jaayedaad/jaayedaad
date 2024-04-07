@@ -55,7 +55,7 @@ function PreferenceComponent({ preference: preferences }: PreferenceProps) {
       <Separator />
 
       <div className="flex flex-col gap-4">
-        <div className="py-5 px-4 flex items-center justify-between border rounded-md w-full">
+        <div className="py-5 px-4 flex items-center justify-between border rounded-lg w-full">
           <div>
             <h2 className="text-foreground">Default currency</h2>
             <p className="text-muted-foreground text-sm">
@@ -85,7 +85,7 @@ function PreferenceComponent({ preference: preferences }: PreferenceProps) {
             </Select>
           </div>
         </div>
-        <div className="py-5 px-4 flex items-center justify-between border rounded-md w-full">
+        <div className="py-5 px-4 flex items-center justify-between border rounded-lg w-full">
           <div>
             <h2 className="text-foreground">Default numbering system</h2>
             <p className="text-muted-foreground text-sm">
@@ -115,7 +115,7 @@ function PreferenceComponent({ preference: preferences }: PreferenceProps) {
             </Select>
           </div>
         </div>
-        <div className="py-5 px-4 flex items-center justify-between border rounded-md w-full">
+        <div className="py-5 px-4 flex items-center justify-between border rounded-lg w-full">
           <div>
             <h2 className="text-foreground">Asset performance bar</h2>
             <p className="text-muted-foreground text-sm">
@@ -145,7 +145,7 @@ function PreferenceComponent({ preference: preferences }: PreferenceProps) {
             </Select>
           </div>
         </div>
-        <div className="py-5 px-4 flex items-center justify-between border rounded-md w-full">
+        <div className="py-5 px-4 flex items-center justify-between border rounded-lg w-full">
           <div>
             <h2 className="text-foreground">Mode toggle</h2>
             <p className="text-muted-foreground text-sm">

@@ -26,7 +26,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { Check, ChevronsUpDown } from "lucide-react";
+import { Check, ChevronsUpDown, Loader2 } from "lucide-react";
 import DynamicIcon from "./dynamicIcon";
 import dynamicIconImports from "lucide-react/dynamicIconImports";
 import { TUserManualCategory } from "@/lib/types";
@@ -174,8 +174,10 @@ function ManualTransactionForm({
         <div className="text-sm text-muted-foreground">
           Make transactions for assets like property, jewellery, etc
         </div>
-        <div className="grid grid-cols-4 py-4 gap-4">
-          <div className="col-span-1 self-center">Category</div>
+        <div className="grid grid-cols-4 pt-4 gap-4">
+          <div className="col-span-1 self-center after:content-['*'] after:ml-0.5 after:text-red-500">
+            Category
+          </div>
           <div className="col-span-3">
             <Popover open={open} onOpenChange={setOpen}>
               <PopoverTrigger asChild>
@@ -302,7 +304,7 @@ function ManualTransactionForm({
                         <DynamicIcon
                           className="h-4 w-4 mr-2"
                           name={iconName.label}
-                        />{" "}
+                        />
                         {iconName.label}
                       </CommandItem>
                     ))}
@@ -314,7 +316,9 @@ function ManualTransactionForm({
               <DynamicIcon className="h-4 w-4" name={icon} />
             </Button>
           </div>
-          <div className="col-span-1 self-center">Name</div>
+          <div className="col-span-1 self-center after:content-['*'] after:ml-0.5 after:text-red-500">
+            Name
+          </div>
           <Input
             className="col-span-3"
             placeholder={`${
@@ -328,7 +332,7 @@ function ManualTransactionForm({
               }))
             }
           />
-          <div className="col-span-1 self-center">
+          <div className="col-span-1 self-center after:content-['*'] after:ml-0.5 after:text-red-500">
             {manualTransaction.type === "FD" ? "Interest rate" : "Quantity"}
           </div>
           <Input
@@ -369,11 +373,13 @@ function ManualTransactionForm({
               })}
             </SelectContent>
           </Select>
-          <div className="col-span-1 self-center">Date</div>
+          <div className="col-span-1 self-center after:content-['*'] after:ml-0.5 after:text-red-500">
+            Date
+          </div>
           <div className="col-span-3">
             <DatePicker onSelect={handleDateSelect} />
           </div>
-          <div className="col-span-1 self-center">
+          <div className="col-span-1 self-center after:content-['*'] after:ml-0.5 after:text-red-500">
             {manualTransaction.type === "FD"
               ? "Principal Amount"
               : "Your price"}
@@ -396,7 +402,7 @@ function ManualTransactionForm({
           />
           <div
             className={cn(
-              "col-span-1 self-center",
+              "col-span-1 self-center after:content-['*'] after:ml-0.5 after:text-red-500",
               manualTransaction.type === "FD" && "invisible"
             )}
           >
@@ -423,6 +429,7 @@ function ManualTransactionForm({
               onClick={() => handleManualBuyTransaction()}
               disabled={loading}
             >
+              {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               {manualTransaction.type === "FD" ? "Create" : "Buy"}
             </Button>
             <Button
@@ -430,6 +437,7 @@ function ManualTransactionForm({
               onClick={() => handleManualSellTransaction()}
               disabled={loading}
             >
+              {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               {manualTransaction.type === "FD" ? "Break" : "Sell"}
             </Button>
           </div>

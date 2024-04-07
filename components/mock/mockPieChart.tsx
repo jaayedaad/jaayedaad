@@ -22,27 +22,7 @@ const chartData = [
   },
 ];
 
-const renderActiveShape = (props: any) => {
-  const { cx, cy, innerRadius, outerRadius, startAngle, endAngle, fill } =
-    props;
-
-  return (
-    <g>
-      <Sector
-        cx={cx}
-        cy={cy}
-        innerRadius={innerRadius}
-        outerRadius={outerRadius}
-        startAngle={startAngle}
-        endAngle={endAngle}
-        fill={fill}
-      />
-    </g>
-  );
-};
-
 function MockPieChart() {
-  const [activeIndex, setActiveIndex] = useState(-1);
   return (
     <div>
       <PieChart width={400} height={200}>
@@ -50,8 +30,6 @@ function MockPieChart() {
           data={chartData}
           cx="50%"
           cy="50%"
-          activeIndex={activeIndex}
-          activeShape={renderActiveShape}
           labelLine={false}
           startAngle={90}
           endAngle={-360}
@@ -60,7 +38,6 @@ function MockPieChart() {
           paddingAngle={chartData.length > 1 ? 5 : 0}
           stroke="none"
           dataKey="value"
-          onMouseEnter={(_, index) => setActiveIndex(index)}
         >
           {chartData?.map((entry, index) => (
             <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />

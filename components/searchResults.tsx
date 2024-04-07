@@ -15,6 +15,11 @@ import { ScrollArea } from "./ui/scroll-area";
 import TransactionForm from "./transactionForm";
 import { cn } from "@/lib/helper";
 
+const reverseAssetTypeMappings: Record<string, string> = {
+  "Common Stock": "Stocks",
+  "Digital Currency": "Crypto",
+};
+
 type searchResultProps = {
   results: Array<any>;
   handleModalState: React.Dispatch<React.SetStateAction<boolean>>;
@@ -90,10 +95,14 @@ const SearchResults = ({
   ) : (
     selectedAsset && (
       <>
-        <div className="grid grid-cols-4 gap-4 grid-rows-1 bg-secondary p-2">
+        <div className="grid grid-cols-5 gap-4 grid-rows-1 bg-secondary py-2">
           <div className="col-span-2">{selectedAsset.instrument_name}</div>
-          <div className="text-right">{selectedAsset.exchange}</div>
           <div className="text-right">{selectedAsset.symbol}</div>
+          <div className="text-right">{selectedAsset.exchange}</div>
+          <div className="text-right">
+            {reverseAssetTypeMappings[selectedAsset.instrument_type] ||
+              selectedAsset.instrument_type}
+          </div>
         </div>
         <TransactionForm
           selectedAsset={selectedAsset}

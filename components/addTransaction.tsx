@@ -97,11 +97,12 @@ export default function AddTransaction({
           searchQuery={searchQuery}
           handleSearchChange={handleSearchChange}
         />
+        OR
         <div className="text-center">
           <Button
             onClick={() => handleManualTransaction()}
             className="text-muted-foreground text-center"
-            variant="ghost"
+            variant="outline"
           >
             + add manually
           </Button>

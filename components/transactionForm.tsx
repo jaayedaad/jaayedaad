@@ -11,6 +11,7 @@ import {
 import { currencies } from "@/constants/currency";
 import { Button } from "./ui/button";
 import { toast } from "sonner";
+import { Loader2 } from "lucide-react";
 
 interface transactionFormPropsType {
   selectedAsset: {
@@ -117,8 +118,10 @@ function TransactionForm({
   return (
     <>
       <div>
-        <div className="grid grid-cols-4 py-4 gap-4">
-          <div className="text-base col-span-1">Quantity</div>
+        <div className="grid grid-cols-4 pt-4 gap-4">
+          <div className="text-base col-span-1 after:content-['*'] after:ml-0.5 after:text-red-500">
+            Quantity
+          </div>
           <Input
             placeholder="Quantity"
             className="col-span-3 no-spinner"
@@ -128,11 +131,15 @@ function TransactionForm({
               handleAssetQuantiy(e.target.value);
             }}
           />
-          <div className="col-span-1 text-base">Date</div>
+          <div className="col-span-1 text-base after:content-['*'] after:ml-0.5 after:text-red-500">
+            Date
+          </div>
           <div className="col-span-3">
             <DatePicker onSelect={handleDateSelect} />
           </div>
-          <div className="col-span-1">Price</div>
+          <div className="col-span-1 after:content-['*'] after:ml-0.5 after:text-red-500">
+            Price
+          </div>
           <Input
             placeholder="Buy / Sell price"
             className="no-spinner col-span-2"
@@ -177,6 +184,7 @@ function TransactionForm({
                 }
                 disabled={loading}
               >
+                {loading && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
                 Buy
               </Button>
               <Button
@@ -184,6 +192,7 @@ function TransactionForm({
                 onClick={() => handleSellAssets(selectedAsset.instrument_name)}
                 disabled={loading}
               >
+                {loading && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
                 Sell
               </Button>
             </div>
