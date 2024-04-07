@@ -27,6 +27,7 @@ env:
     - GOOGLE_CLIENT_ID
     - GOOGLE_CLIENT_SECRET
     - TWELVEDATA_API_KEY
+    - SIA_API_URL
     - SIA_ADMIN_USERNAME
     - SIA_ADMIN_PASSWORD
     - NEXT_PUBLIC_POSTHOG_KEY
@@ -69,6 +70,11 @@ accessories:
   renterd:
     image: ghcr.io/siafoundation/renterd:master-zen
     host: 52.57.36.126
+    options:
+      publish:
+        - 9880:9880
+        - 9881:9881
+        - 7070:7070
     port: "172.31.23.160:9880:9880"
     directories:
       - data:/data
