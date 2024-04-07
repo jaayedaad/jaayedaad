@@ -24,6 +24,8 @@ jobs:
       SIA_ADMIN_PASSWORD: ${{ secrets.SIA_ADMIN_PASSWORD }}
       NEXT_PUBLIC_POSTHOG_KEY: ${{ secrets.NEXT_PUBLIC_POSTHOG_KEY }}
       NEXT_PUBLIC_POSTHOG_HOST: ${{ secrets.NEXT_PUBLIC_POSTHOG_HOST }}
+      RENTERD_SEED: ${{ secrets.RENTERD_SEED }}
+      RENTERD_API_PASSWORD: ${{ secrets.RENTERD_API_PASSWORD }}
 
     steps:
       - name: Checkout code
