@@ -40,9 +40,6 @@ COPY --from=builder --chown=nextuser:nextgroup /app/.next/standalone ./
 COPY --from=builder --chown=nextuser:nextgroup /app/.next/static ./.next/static
 COPY --from=builder --chown=nextuser:nextgroup /app/prisma ./prisma
 
-ARG DATABASE_URL
-ENV DATABASE_URL=$DATABASE_URL
-
 RUN yarn add prisma && yarn prisma:migrate:deploy
 
 RUN apk add --no-cache curl
