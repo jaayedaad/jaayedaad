@@ -6,6 +6,7 @@ import { redirect } from "next/navigation";
 import { getHistoricalData } from "@/services/thirdParty/twelveData";
 import { getConversionRate } from "@/services/thirdParty/currency";
 import { getPreferenceFromUserId } from "@/services/preference";
+import { prepareHistoricalDataForManualCategory } from "@/helper/manualAssetsHistoryMaker";
 
 const reverseAssetTypeMappings: Record<string, string> = {
   stocks: "common stock",
@@ -28,9 +29,11 @@ export default async function AssetPage({
   const assets = await getAssetsQuoteFromApi(
     await getAssetsByUser(session.user.email)
   );
+
   const filteredAssets = assets?.filter(
     (asset) => asset.type.toLowerCase() === reverseMappedName
   );
+
   const currencyConversionRates = await getConversionRate(session.user.id);
   if (!currencyConversionRates) {
     throw new Error("Currency conversion rates not found");

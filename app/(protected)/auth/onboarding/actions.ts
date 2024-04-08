@@ -17,7 +17,7 @@ export const updateUsernameAction = async (
   if (usernameIsValid !== "Username available") {
     return false;
   }
-  console.log("username", username);
+
   const updatedUser = await updateUser(session.user.email, { username });
   if (!updatedUser) {
     return false;

@@ -141,7 +141,7 @@ export function Dashboard({
             <p>Your dashboard</p>
           </div>
           <div className="flex items-center col-span-2">
-            <div className="w-full">
+            <div className="w-[77%]">
               {marqueeBarAssets && (
                 <AssetMarqueeBar
                   data={marqueeBarAssets}

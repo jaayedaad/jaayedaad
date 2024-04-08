@@ -20,13 +20,15 @@ import {
   SIA_ADMIN_USERNAME,
   SIA_API_URL,
 } from "@/constants/env";
+import { defaultCategories } from "@/constants/category";
 
 export async function POST(req: Request) {
   const assetId = createId();
   const transactionId = createId();
   const assetPriceUpdateId = createId();
 
-  let body = await req.json();
+  let { icon, ...body } = await req.json();
+
   const session = await getServerSession(authOptions);
 
   const rawUser = await prisma.user.findUnique({
@@ -81,8 +83,86 @@ export async function POST(req: Request) {
         body.type
       );
       if (!existingAsset) {
+        const belongsToDefaultCategory = defaultCategories.includes(
+          body.type.toLowerCase()
+        );
         if (body.isManualEntry) {
-          if (existingCategoryId) {
+          if (!belongsToDefaultCategory) {
+            if (existingCategoryId) {
+              // add asset to sia
+              fetch(
+                `${SIA_API_URL}/worker/objects/${user.id}/assets/${assetId}/data`,
+                {
+                  method: "PUT",
+                  headers: {
+                    Authorization: basicAuth,
+                  },
+                  body: JSON.stringify({
+                    data: CryptoJS.AES.encrypt(
+                      JSON.stringify({
+                        ...body,
+                        id: assetId,
+                        userId: user.id,
+                        symbol: null,
+                        manualCategoryId: existingCategoryId,
+                      }),
+                      encryptionKey
+                    ).toString(),
+                  }),
+                }
+              ).then((response) => {
+                if (!response.ok) {
+                  throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+              });
+            } else {
+              // create a new category
+              const manualCategoryId = createId();
+              await fetch(
+                `${SIA_API_URL}/worker/objects/${user.id}/usersManualCategories/${manualCategoryId}/data`,
+                {
+                  method: "PUT",
+                  headers: {
+                    Authorization: basicAuth,
+                  },
+                  body: JSON.stringify({
+                    data: CryptoJS.AES.encrypt(
+                      JSON.stringify({
+                        id: manualCategoryId,
+                        icon: icon,
+                        name: body.type,
+                        userId: user.id,
+                      }),
+                      encryptionKey
+                    ).toString(),
+                  }),
+                }
+              );
+
+              // add asset to sia
+              await fetch(
+                `${SIA_API_URL}/worker/objects/${user.id}/assets/${assetId}/data`,
+                {
+                  method: "PUT",
+                  headers: {
+                    Authorization: basicAuth,
+                  },
+                  body: JSON.stringify({
+                    data: CryptoJS.AES.encrypt(
+                      JSON.stringify({
+                        ...body,
+                        id: assetId,
+                        userId: user.id,
+                        symbol: null,
+                        manualCategoryId: manualCategoryId,
+                      }),
+                      encryptionKey
+                    ).toString(),
+                  }),
+                }
+              );
+            }
+          } else {
             // add asset to sia
             fetch(
               `${SIA_API_URL}/worker/objects/${user.id}/assets/${assetId}/data`,
@@ -97,8 +177,6 @@ export async function POST(req: Request) {
                       ...body,
                       id: assetId,
                       userId: user.id,
-                      symbol: null,
-                      manualCategoryId: existingCategoryId,
                     }),
                     encryptionKey
                   ).toString(),
@@ -109,54 +187,7 @@ export async function POST(req: Request) {
                 throw new Error(`HTTP error! Status: ${response.status}`);
               }
             });
-          } else {
-            // create a new category
-            const manualCategoryId = createId();
-            await fetch(
-              `${SIA_API_URL}/worker/objects/${user.id}/usersManualCategories/${manualCategoryId}/data`,
-              {
-                method: "PUT",
-                headers: {
-                  Authorization: basicAuth,
-                },
-                body: JSON.stringify({
-                  data: CryptoJS.AES.encrypt(
-                    JSON.stringify({
-                      id: manualCategoryId,
-                      icon: body.icon,
-                      name: body.type,
-                      userId: user.id,
-                    }),
-                    encryptionKey
-                  ).toString(),
-                }),
-              }
-            );
-
-            // add asset to sia
-            await fetch(
-              `${SIA_API_URL}/worker/objects/${user.id}/assets/${assetId}/data`,
-              {
-                method: "PUT",
-                headers: {
-                  Authorization: basicAuth,
-                },
-                body: JSON.stringify({
-                  data: CryptoJS.AES.encrypt(
-                    JSON.stringify({
-                      ...body,
-                      id: assetId,
-                      userId: user.id,
-                      symbol: null,
-                      manualCategoryId: manualCategoryId,
-                    }),
-                    encryptionKey
-                  ).toString(),
-                }),
-              }
-            );
           }
-
           await fetch(
             `${SIA_API_URL}/worker/objects/${user.id}/assets/${assetId}/assetPriceUpdates/${assetPriceUpdateId}`,
             {
@@ -373,47 +404,58 @@ export async function POST(req: Request) {
         }
       });
       const manualEntry = body.isManualEntry;
+      const belongsToDefaultCategory = defaultCategories.includes(
+        body.type.toLowerCase()
+      );
       const assetType = body.type;
       // encrypt the body data
       body = encryptObjectValues(body, encryptionKey);
       if (!existingAsset) {
         let asset: Asset;
         if (manualEntry) {
-          const existingCategory = user.usersManualCategories.find(
-            (manualCategory) => manualCategory.name === assetType
-          );
-
-          if (existingCategory) {
-            asset = await prisma.asset.create({
-              data: {
-                ...body,
-                id: assetId,
-                userId: user.id,
-                manualCategoryId: existingCategory.id,
-              },
-            });
-          } else {
-            const manualCategoryId = createId();
-            const usersManualCategory = await prisma.usersManualCategory.create(
-              {
-                data: {
-                  id: manualCategoryId,
-                  icon: body.icon,
-                  name: body.type,
-                  userId: user.id,
-                },
-              }
+          if (!belongsToDefaultCategory) {
+            const existingCategory = user.usersManualCategories.find(
+              (manualCategory) => manualCategory.name === assetType
             );
+
+            if (existingCategory) {
+              asset = await prisma.asset.create({
+                data: {
+                  ...body,
+                  id: assetId,
+                  userId: user.id,
+                  manualCategoryId: existingCategory.id,
+                },
+              });
+            } else {
+              const manualCategoryId = createId();
+              const usersManualCategory =
+                await prisma.usersManualCategory.create({
+                  data: {
+                    id: manualCategoryId,
+                    icon: icon,
+                    name: body.type,
+                    userId: user.id,
+                  },
+                });
+              asset = await prisma.asset.create({
+                data: {
+                  ...body,
+                  id: assetId,
+                  userId: user.id,
+                  manualCategoryId: usersManualCategory.id,
+                },
+              });
+            }
+          } else {
             asset = await prisma.asset.create({
               data: {
                 ...body,
                 id: assetId,
                 userId: user.id,
-                manualCategoryId: usersManualCategory.id,
               },
             });
           }
-
           const assetPriceUpdate = await prisma.assetPriceUpdate.create({
             data: {
               id: assetPriceUpdateId,

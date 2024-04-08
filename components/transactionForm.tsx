@@ -30,7 +30,8 @@ function TransactionForm({
   modalOpen,
   defaultCurrency,
 }: transactionFormPropsType) {
-  const [loading, setLoading] = useState(false);
+  const [buying, setBuying] = useState(false);
+  const [selling, setSelling] = useState(false);
   const [assetQuantity, setAssetQuantity] = useState<string>("");
   const [assetPrice, setAssetPrice] = useState(selectedAsset?.prevClose);
   const [date, setDate] = useState<string>("");
@@ -42,7 +43,7 @@ function TransactionForm({
     type: string,
     exchange: string
   ) => {
-    setLoading(true);
+    setBuying(true);
     const asset = {
       name: name,
       symbol: symbol,
@@ -58,7 +59,7 @@ function TransactionForm({
       method: "POST",
       body: JSON.stringify(asset),
     });
-    setLoading(false);
+    setBuying(false);
     modalOpen(false);
     toast.success("Asset added successfully");
     setAssetQuantity("");
@@ -70,7 +71,7 @@ function TransactionForm({
 
   // Sell assets handler
   const handleSellAssets = async (instrument_name: string) => {
-    setLoading(true);
+    setSelling(true);
     const asset = {
       name: instrument_name,
       quantity: assetQuantity,
@@ -85,7 +86,7 @@ function TransactionForm({
       .then((response) => response.json())
       .then((data) => {
         if (data.error) {
-          setLoading(false);
+          setSelling(false);
           modalOpen(false);
           toast.error(data.error);
           setAssetQuantity("");
@@ -94,7 +95,7 @@ function TransactionForm({
           setCurrency(defaultCurrency.toUpperCase());
         }
         if (data.success) {
-          setLoading(false);
+          setSelling(false);
           modalOpen(false);
           toast.success(data.success);
           setAssetQuantity("");
@@ -182,17 +183,17 @@ function TransactionForm({
                     selectedAsset.exchange
                   )
                 }
-                disabled={loading}
+                disabled={buying}
               >
-                {loading && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+                {buying && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
                 Buy
               </Button>
               <Button
                 className="w-full"
                 onClick={() => handleSellAssets(selectedAsset.instrument_name)}
-                disabled={loading}
+                disabled={selling}
               >
-                {loading && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+                {selling && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
                 Sell
               </Button>
             </div>

@@ -82,7 +82,7 @@ export function getUnrealisedProfitLossArray(
     const pastDate = new Date(latestDate);
     pastDate.setDate(latestDate.getDate() - days);
 
-    assets.forEach((asset) => {
+    assets.forEach((asset, index) => {
       const assetCurrency = asset.buyCurrency.toLowerCase();
       const currencyConversion = conversionRate[assetCurrency];
       const multiplier = 1 / currencyConversion;
@@ -98,55 +98,54 @@ export function getUnrealisedProfitLossArray(
         quantityTillInterval = calculateTotalQuantity(transactions);
       }
 
-      if (asset.symbol) {
-        const assetHistory = historicalData.filter(
-          (history) => history.assetSymbol === asset.symbol
+      let assetHistory = historicalData[index];
+
+      if (!asset.isManualEntry) {
+        assetHistory = populateMissingDates(assetHistory);
+      }
+
+      const valueOfInterval = assetHistory.values.filter((value) => {
+        return (
+          new Date(pastDate.toDateString()).getTime() / 1000 <
+          new Date(value.date).getTime()
         );
+      });
 
-        const populatedHistory = populateMissingDates(assetHistory[0]);
-        const valueOfInterval = populatedHistory.values.filter((value) => {
-          return (
-            new Date(pastDate.toDateString()).getTime() / 1000 <
-            new Date(value.date).getTime()
-          );
-        });
-
-        const result = {
-          type: asset.type,
-          symbol: asset.symbol,
-          compareValue: (
-            quantityTillInterval *
-            +asset.buyPrice *
-            multiplier
-          ).toFixed(2),
-          currentValue: (
-            parseFloat(
-              transactions.length > 0
-                ? valueOfInterval[0].close
-                : valueOfInterval[valueOfInterval.length - 2].close
-            ) *
-            quantityTillInterval *
-            multiplier
-          ).toFixed(2),
-          prevClose:
+      const result = {
+        type: asset.type,
+        symbol: asset.symbol,
+        compareValue: (
+          quantityTillInterval *
+          +asset.buyPrice *
+          multiplier
+        ).toFixed(2),
+        currentValue: (
+          parseFloat(
             transactions.length > 0
               ? valueOfInterval[0].close
-              : valueOfInterval[valueOfInterval.length - 2].close,
-          interval: label,
-          unrealisedProfitLoss: (
-            (parseFloat(
-              transactions.length > 0
-                ? valueOfInterval[0].close
-                : valueOfInterval[valueOfInterval.length - 2].close
-            ) -
-              parseFloat(asset.buyPrice)) *
-            quantityTillInterval *
-            multiplier
-          ).toFixed(2),
-        };
+              : valueOfInterval[valueOfInterval.length - 2].close
+          ) *
+          quantityTillInterval *
+          multiplier
+        ).toFixed(2),
+        prevClose:
+          transactions.length > 0
+            ? valueOfInterval[0].close
+            : valueOfInterval[valueOfInterval.length - 2].close,
+        interval: label,
+        unrealisedProfitLoss: (
+          (parseFloat(
+            transactions.length > 0
+              ? valueOfInterval[0].close
+              : valueOfInterval[valueOfInterval.length - 2].close
+          ) -
+            parseFloat(asset.buyPrice)) *
+          quantityTillInterval *
+          multiplier
+        ).toFixed(2),
+      };
 
-        results.push(result);
-      }
+      results.push(result);
     });
   });
 
@@ -154,44 +153,78 @@ export function getUnrealisedProfitLossArray(
 }
 
 function populateMissingDates(rawData: AssetHistory) {
-  // Extract the values array from raw data
   const values = rawData.values.sort((a, b) => a.date - b.date);
+  const today = new Date(); // Get today's date
 
-  // Iterate through the values array to identify missing dates
+  // Populating missing dates between existing entries
   for (let i = 1; i < values.length; i++) {
     const currentDate = new Date(values[i].datetime);
     const previousDate = new Date(values[i - 1].datetime);
 
-    // Calculate the difference in days between current and previous dates
     const dayDiff =
       (currentDate.getTime() - previousDate.getTime()) / (1000 * 3600 * 24);
 
-    // If there is a gap of more than 1 day, populate missing dates
     if (dayDiff > 1) {
       for (let j = 1; j < dayDiff; j++) {
         const missingDate = new Date(previousDate);
         missingDate.setDate(previousDate.getDate() + j);
 
-        // Create a new data object using data from the previous date
-        const newData = {
-          datetime: missingDate.toISOString().slice(0, 10), // Format date as YYYY-MM-DD
-          open: values[i - 1].open,
-          high: values[i - 1].high,
-          low: values[i - 1].low,
-          close: values[i - 1].close,
-          volume: values[i - 1].volume,
-          previous_close: values[i - 1].previous_close,
-          date: Math.floor(missingDate.getTime() / 1000), // Convert date to timestamp
-          value: values[i - 1].value,
-        };
+        if (
+          !values.some(
+            (entry) => entry.datetime === missingDate.toISOString().slice(0, 10)
+          )
+        ) {
+          const newData = {
+            datetime: missingDate.toISOString().slice(0, 10),
+            open: values[i - 1].open,
+            high: values[i - 1].high,
+            low: values[i - 1].low,
+            close: values[i - 1].close,
+            volume: values[i - 1].volume,
+            previous_close: values[i - 1].previous_close,
+            date: Math.floor(missingDate.getTime() / 1000),
+            value: values[i - 1].value,
+          };
 
-        // Insert the new data object into the values array at the appropriate position
-        values.splice(i + (j - 1), 0, newData);
+          values.splice(i + (j - 1), 0, newData);
+        }
       }
     }
   }
 
-  // Update rawData with the modified values array
+  // Populating missing dates up to today's date
+  const lastDate = new Date(values[values.length - 1].datetime);
+  const daysUntilToday = Math.floor(
+    (today.getTime() - lastDate.getTime()) / (1000 * 3600 * 24)
+  );
+
+  if (daysUntilToday > 0) {
+    for (let k = 1; k <= daysUntilToday; k++) {
+      const missingDate = new Date(lastDate);
+      missingDate.setDate(lastDate.getDate() + k);
+
+      if (
+        !values.some(
+          (entry) => entry.datetime === missingDate.toISOString().slice(0, 10)
+        )
+      ) {
+        const newData = {
+          datetime: missingDate.toISOString().slice(0, 10),
+          open: values[values.length - 1].open,
+          high: values[values.length - 1].high,
+          low: values[values.length - 1].low,
+          close: values[values.length - 1].close,
+          volume: values[values.length - 1].volume,
+          previous_close: values[values.length - 1].previous_close,
+          date: Math.floor(missingDate.getTime() / 1000),
+          value: values[values.length - 1].value,
+        };
+
+        values.push(newData);
+      }
+    }
+  }
+
   rawData.values = values.sort((a, b) => a.date - b.date);
 
   return rawData;

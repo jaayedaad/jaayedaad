@@ -64,6 +64,7 @@ export function decryptObjectValues(obj: any, secretKey: string) {
         "manualCategoryId",
         "date",
         "buyDate",
+        "icon",
       ].includes(key)
     ) {
       if (typeof obj[key] === "object" && obj[key] !== null) {

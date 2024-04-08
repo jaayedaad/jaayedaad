@@ -54,10 +54,11 @@ function ManualTransactionForm({
       });
     }
   });
-  const [loading, setLoading] = useState(false);
+  const [buying, setBuying] = useState(false);
+  const [selling, setSelling] = useState(false);
   const [manualTransaction, setManualTransaction] = useState({
     name: "",
-    type: "Property",
+    type: "Common Stock",
     quantity: "",
     buyCurrency: defaultCurrency.toUpperCase(),
     price: "",
@@ -66,11 +67,11 @@ function ManualTransactionForm({
   });
 
   const [open, setOpen] = useState(false);
-  const [value, setValue] = useState("property");
+  const [value, setValue] = useState("common stock");
   const [commandSearch, setCommandSearch] = useState("");
   const [categories, setCategories] = useState(builtInCategories);
   const [icon, setIcon] =
-    useState<keyof typeof dynamicIconImports>("land-plot");
+    useState<keyof typeof dynamicIconImports>("candlestick-chart");
 
   type IconLabel = keyof typeof dynamicIconImports;
   const iconsArray = Object.keys(dynamicIconImports).map((key) => ({
@@ -86,7 +87,7 @@ function ManualTransactionForm({
   };
 
   async function handleManualBuyTransaction() {
-    setLoading(true);
+    setBuying(true);
 
     const { price, date, ...data } = manualTransaction;
     const asset = {
@@ -101,13 +102,13 @@ function ManualTransactionForm({
       method: "POST",
       body: JSON.stringify(asset),
     });
-    setLoading(false);
+    setBuying(false);
     modalOpen(false);
     toast.success("Transaction confirmed!");
     // Reset the manual transaction states
     setManualTransaction({
       name: "",
-      type: "Property",
+      type: "Common Stock",
       quantity: "",
       buyCurrency: defaultCurrency.toUpperCase(),
       price: "",
@@ -119,7 +120,7 @@ function ManualTransactionForm({
   }
 
   async function handleManualSellTransaction() {
-    setLoading(true);
+    setSelling(true);
 
     const asset = {
       name: manualTransaction.name,
@@ -135,12 +136,12 @@ function ManualTransactionForm({
       .then((response) => response.json())
       .then((data) => {
         if (data.error) {
-          setLoading(false);
+          setSelling(false);
           toast.error(data.error);
           // Reset the manual transaction states
           setManualTransaction({
             name: "",
-            type: "Property",
+            type: "Common Stock",
             quantity: "",
             buyCurrency: defaultCurrency.toUpperCase(),
             price: "",
@@ -149,13 +150,13 @@ function ManualTransactionForm({
           });
         }
         if (data.success) {
-          setLoading(false);
+          setSelling(false);
           modalOpen(false);
           toast.success(data.success);
           // Reset the manual transaction states
           setManualTransaction({
             name: "",
-            type: "Property",
+            type: "Common Stock",
             quantity: "",
             buyCurrency: defaultCurrency.toUpperCase(),
             price: "",
@@ -241,7 +242,7 @@ function ManualTransactionForm({
                           setIcon(category.icon);
                           setManualTransaction((prev) => ({
                             ...prev,
-                            type: currentValue,
+                            type: category.value,
                           }));
                           setOpen(false);
                         }}
@@ -427,17 +428,17 @@ function ManualTransactionForm({
             <Button
               className="w-full"
               onClick={() => handleManualBuyTransaction()}
-              disabled={loading}
+              disabled={buying}
             >
-              {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              {buying && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               {manualTransaction.type === "FD" ? "Create" : "Buy"}
             </Button>
             <Button
               className="w-full"
               onClick={() => handleManualSellTransaction()}
-              disabled={loading}
+              disabled={selling}
             >
-              {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              {selling && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               {manualTransaction.type === "FD" ? "Break" : "Sell"}
             </Button>
           </div>

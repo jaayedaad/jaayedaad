@@ -5,6 +5,9 @@ export const categories: {
   label: string;
   icon: keyof typeof dynamicIconImports;
 }[] = [
+  { value: "Common Stock", label: "Stocks", icon: "candlestick-chart" },
+  { value: "Digital Currency", label: "Crypto", icon: "bitcoin" },
+  { value: "Mutual Fund", label: "Mutual Funds", icon: "square-stack" },
   { value: "Property", label: "Property", icon: "land-plot" },
   { value: "Jewellery", label: "Jewellery", icon: "gem" },
   { value: "Deposits", label: "Fixed Deposit", icon: "landmark" },

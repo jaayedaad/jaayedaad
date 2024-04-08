@@ -20,8 +20,6 @@ export const UsernameInputComponent = () => {
     setSubmitting(true);
     const isUsernameValid = await verifyUsernameAction(username);
     if (isUsernameValid) {
-      console.log(username);
-
       await updateUsernameAction(username);
       posthog.capture("username_claimed", { username });
       router.push("/dashboard");

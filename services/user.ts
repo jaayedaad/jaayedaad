@@ -108,7 +108,6 @@ export const updateUser = async (
     image?: string;
   }
 ) => {
-  console.log(data);
   const user = await prisma.user.update({
     where: {
       email,
