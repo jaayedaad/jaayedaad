@@ -23,6 +23,7 @@ import {
   SIA_ADMIN_PASSWORD,
   SIA_ADMIN_USERNAME,
   SIA_API_URL,
+  USE_SIA,
 } from "@/constants/env";
 
 interface AssetWithTransaction extends PrismaAsset {
@@ -60,12 +61,13 @@ export async function PUT(req: Request) {
     const encryptionKey =
       user.id.slice(0, 4) + ENCRYPTION_KEY + user.id.slice(-4);
     let ownedAsset: AssetWithTransaction[] | TAsset[] | undefined;
-    if (SIA_API_URL) {
+    if (USE_SIA) {
       const userAssets = await getAllAssets();
       ownedAsset = userAssets?.filter(
         (asset) => asset.name === sellRequest.name
       );
-    } else if (DATABASE_URL) {
+    }
+    if (DATABASE_URL) {
       const userAssets = decryptObjectValues(
         user.assets,
         encryptionKey
@@ -87,7 +89,7 @@ export async function PUT(req: Request) {
 
           // set asset quantity to 0 if sell quantiy is same as asset quantity
           if (+asset.quantity - +sellQuantity == 0) {
-            if (SIA_API_URL) {
+            if (USE_SIA) {
               // update asset
               await fetch(
                 `${SIA_API_URL}/worker/objects/${user.id}/assets/${assetToSell.id}/data`,
@@ -122,7 +124,7 @@ export async function PUT(req: Request) {
           }
           // Update asset quantity if asset quantity is greater than sell quantity
           else if (+asset.quantity - +sellQuantity > 0) {
-            if (SIA_API_URL) {
+            if (USE_SIA) {
               // update asset's quantity
               await fetch(
                 `${SIA_API_URL}/worker/objects/${user.id}/assets/${assetToSell.id}/data`,
@@ -160,7 +162,7 @@ export async function PUT(req: Request) {
           }
 
           // make transaction
-          if (SIA_API_URL) {
+          if (USE_SIA) {
             // make transaction
             await fetch(
               `${SIA_API_URL}/worker/objects/${user.id}/assets/${assetToSell.id}/transactions/${transactionId}`,

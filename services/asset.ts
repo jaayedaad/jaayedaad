@@ -1,6 +1,11 @@
 import { prisma } from "@/lib/prisma";
 import { decryptObjectValues } from "@/lib/dataSecurity";
-import { SIA_API_URL, ENCRYPTION_KEY } from "@/constants/env";
+import {
+  SIA_API_URL,
+  ENCRYPTION_KEY,
+  USE_SIA,
+  DATABASE_URL,
+} from "@/constants/env";
 import { getAllAssets } from "@/services/thirdParty/sia";
 import { TAsset } from "@/lib/types";
 import { fetchQuoteFromApi } from "@/services/thirdParty/twelveData";
@@ -19,22 +24,25 @@ export const getAssetsByUser = async (email: string) => {
   const encryptionKey =
     user?.id.slice(0, 4) + ENCRYPTION_KEY + user?.id.slice(-4);
 
-  if (SIA_API_URL) {
+  if (DATABASE_URL) {
+    let assets = await prisma.asset.findMany({
+      where: {
+        userId: user.id,
+      },
+      include: {
+        transactions: true,
+        assetPriceUpdates: true,
+      },
+    });
+
+    assets = decryptObjectValues(assets, encryptionKey);
+    return assets || [];
+  } else if (USE_SIA) {
     const assets = await getAllAssets();
     return assets || [];
+  } else {
+    throw new Error("Neither DATABASE_URL nor USE_SIA is configured.");
   }
-  let assets = await prisma.asset.findMany({
-    where: {
-      userId: user.id,
-    },
-    include: {
-      transactions: true,
-      assetPriceUpdates: true,
-    },
-  });
-
-  assets = decryptObjectValues(assets, encryptionKey);
-  return assets || [];
 };
 
 export const getAssetsQuoteFromApi = async (assets: any): Promise<TAsset[]> => {

@@ -19,6 +19,7 @@ import {
   SIA_ADMIN_PASSWORD,
   SIA_ADMIN_USERNAME,
   SIA_API_URL,
+  USE_SIA,
 } from "@/constants/env";
 import { defaultCategories } from "@/constants/category";
 
@@ -60,7 +61,7 @@ export async function POST(req: Request) {
       ) as typeof rawUser.usersManualCategories,
     };
 
-    if (SIA_API_URL) {
+    if (USE_SIA) {
       const existingAsset = await findExistingAssetFromSia(
         user.id,
         body.symbol,
@@ -80,11 +81,11 @@ export async function POST(req: Request) {
       );
       const existingCategoryId = await findExistingCategoryFromSia(
         user.id,
-        body.type
+        body.category
       );
       if (!existingAsset) {
         const belongsToDefaultCategory = defaultCategories.includes(
-          body.type.toLowerCase()
+          body.category.toLowerCase()
         );
         if (body.isManualEntry) {
           if (!belongsToDefaultCategory) {
@@ -130,7 +131,7 @@ export async function POST(req: Request) {
                       JSON.stringify({
                         id: manualCategoryId,
                         icon: icon,
-                        name: body.type,
+                        name: body.category,
                         userId: user.id,
                       }),
                       encryptionKey
@@ -405,9 +406,9 @@ export async function POST(req: Request) {
       });
       const manualEntry = body.isManualEntry;
       const belongsToDefaultCategory = defaultCategories.includes(
-        body.type.toLowerCase()
+        body.category.toLowerCase()
       );
-      const assetType = body.type;
+      const assetType = body.category;
       // encrypt the body data
       body = encryptObjectValues(body, encryptionKey);
       if (!existingAsset) {
@@ -434,7 +435,7 @@ export async function POST(req: Request) {
                   data: {
                     id: manualCategoryId,
                     icon: icon,
-                    name: body.type,
+                    name: body.category,
                     userId: user.id,
                   },
                 });

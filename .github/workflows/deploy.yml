@@ -21,6 +21,7 @@ jobs:
       GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
       GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
       TWELVEDATA_API_KEY: ${{ secrets.TWELVEDATA_API_KEY }}
+      USE_SIA: ${{ secrets.USE_SIA }}
       SIA_API_URL: ${{ secrets.SIA_API_URL }}
       SIA_ADMIN_USERNAME: ${{ secrets.SIA_ADMIN_USERNAME }}
       SIA_ADMIN_PASSWORD: ${{ secrets.SIA_ADMIN_PASSWORD }}

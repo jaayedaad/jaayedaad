@@ -3,7 +3,12 @@
 import { prisma } from "@/lib/prisma";
 import { Session } from "next-auth";
 import { decryptObjectValues } from "@/lib/dataSecurity";
-import { DATABASE_URL, SIA_API_URL, ENCRYPTION_KEY } from "@/constants/env";
+import {
+  DATABASE_URL,
+  SIA_API_URL,
+  ENCRYPTION_KEY,
+  USE_SIA,
+} from "@/constants/env";
 import { TUser } from "@/lib/types";
 import { deleteUserInSia } from "./thirdParty/sia";
 
@@ -128,7 +133,7 @@ export const deleteUser = async (userId: string): Promise<boolean> => {
       throw new Error("User not found");
     }
 
-    if (SIA_API_URL) {
+    if (USE_SIA) {
       deleteUserInSia(user.id);
     }
     if (DATABASE_URL) {

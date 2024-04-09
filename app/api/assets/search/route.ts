@@ -42,7 +42,7 @@ function transformToResultFormat(
   return topMatchingAssets.map((asset) => ({
     instrument_name: asset.name,
     symbol: asset.symbol || "", // If symbol is null, set it to an empty string
-    instrument_type: asset.type,
+    instrument_type: asset.category,
     exchange: asset.exchange || "", // If exchange is null, set it to an empty string
   }));
 }
