@@ -103,7 +103,7 @@ function Supporters() {
     },
   ];
   return (
-    <div className="flex flex-col text-center lg:mt-44 mt-32">
+    <div className="flex flex-col text-center lg:mt-44 mt-8">
       <div>
         <p className="text-lg text-muted-foreground">
           Our users surprise us everyday at Jaayedaad
@@ -112,7 +112,7 @@ function Supporters() {
           See the categories that are already being tracked on our platform
         </p>
       </div>
-      <div className="flex flex-wrap justify-center mt-12 xl:px-44 ">
+      <div className="flex flex-wrap justify-center mt-12 xl:px-44 gap-y-2">
         <AnimatedTooltip items={categories} />
       </div>
     </div>

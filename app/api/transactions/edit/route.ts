@@ -16,6 +16,7 @@ import {
   SIA_ADMIN_PASSWORD,
   SIA_ADMIN_USERNAME,
   SIA_API_URL,
+  USE_SIA,
 } from "@/constants/env";
 
 interface requestBody {
@@ -37,7 +38,7 @@ async function updateTransaction(
 
   const encryptionKey = userId.slice(0, 4) + ENCRYPTION_KEY + userId.slice(-4);
   const avgBuyPrice = calculateAvgBuyPrice(transactionList);
-  if (SIA_API_URL) {
+  if (USE_SIA) {
     // update transaction
     await fetch(
       `${SIA_API_URL}/worker/objects/${userId}/assets/${transactionToEdit.assetId}/transactions/${transactionToEdit.id}`,

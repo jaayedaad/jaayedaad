@@ -110,8 +110,9 @@ function TransactionHistory({
                     instrument_name: assetToView.name,
                     symbol: assetToView.symbol,
                     prevClose: assetToView.prevClose,
-                    instrument_type: assetToView.type,
+                    instrument_type: assetToView.category,
                     exchange: assetToView.exchange,
+                    currency: assetToView.buyCurrency,
                   }}
                   modalOpen={setShowTransactionForm}
                   defaultCurrency={defaultCurrency}

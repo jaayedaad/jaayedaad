@@ -48,7 +48,7 @@ const label = (props: any) => {
         y={ey < cy ? ey + 18 : ey - 18}
         textAnchor={textAnchor}
         fill="#fff"
-        fontSize={13}
+        fontSize={16}
       >{`${payloadNameMappings[payload.name] || payload.name}`}</text>
       <text
         x={ex + (cos >= 0 ? 1 : -1) * 6}
@@ -56,7 +56,7 @@ const label = (props: any) => {
         dy={13}
         textAnchor={textAnchor}
         fill="#999"
-        fontSize={12}
+        fontSize={14}
       >{`(${(percent * 100).toFixed(2)}%)`}</text>
     </g>
   ) : null;
@@ -121,29 +121,29 @@ function AssetPieChart({
         const currencyConversion =
           conversionRates[item.buyCurrency.toLowerCase()];
         const multiplier = 1 / currencyConversion;
-        const type: string = item.type;
+        const category: string = item.category;
         const value = item.symbol
           ? item.currentValue * multiplier
           : +item.currentPrice;
-        sumByType[type] = (sumByType[type] || 0) + value;
+        sumByType[category] = (sumByType[category] || 0) + value;
       }
     });
   } else {
     const filters: Record<string, (asset: TAsset) => boolean> = {
-      "common stock": (asset) => asset.type === "Common Stock",
-      "digital currency": (asset) => asset.type === "Digital Currency",
-      "mutual fund": (asset) => asset.type === "Mutual Fund",
-      property: (asset) => asset.type === "Property",
-      jewellery: (asset) => asset.type === "Jewellery",
-      deposits: (asset) => asset.type === "Deposits",
-      others: (asset) => asset.type === "Others",
+      "common stock": (asset) => asset.category === "Common Stock",
+      "digital currency": (asset) => asset.category === "Digital Currency",
+      "mutual fund": (asset) => asset.category === "Mutual Fund",
+      property: (asset) => asset.category === "Property",
+      jewellery: (asset) => asset.category === "Jewellery",
+      deposits: (asset) => asset.category === "Deposits",
+      others: (asset) => asset.category === "Others",
     };
 
     const param = decodeURIComponent(view);
     if (param && filters.hasOwnProperty(param)) {
       data = data?.filter(filters[param]);
     } else {
-      data = data?.filter((asset) => asset.type === param.toUpperCase());
+      data = data?.filter((asset) => asset.category === param.toUpperCase());
     }
 
     data?.forEach((item) => {

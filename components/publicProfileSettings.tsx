@@ -42,16 +42,15 @@ function PublicProfileSettings({
   };
   return (
     <>
-      <div className="flex justify-between">
+      <div className="flex justify-between mt-4">
         <div>
-          <h2 className="text-3xl text-foreground font-bold">Profile</h2>
+          <h2 className="text-xl text-foreground font-bold">Profile</h2>
           <p className="text-sm text-muted-foreground">
             Configure your your public visibilities
           </p>
         </div>
       </div>
       <Separator />
-
       <div className="flex flex-col gap-4">
         <div className="py-5 px-4 flex items-center justify-between border rounded-lg w-full">
           <div>

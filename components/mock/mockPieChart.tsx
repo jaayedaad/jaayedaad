@@ -24,7 +24,7 @@ const chartData = [
 
 function MockPieChart() {
   return (
-    <div>
+    <div className="mt-12">
       <PieChart width={400} height={200}>
         <Pie
           data={chartData}

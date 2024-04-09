@@ -11,6 +11,7 @@ import {
   SIA_ADMIN_PASSWORD,
   SIA_ADMIN_USERNAME,
   SIA_API_URL,
+  USE_SIA,
 } from "@/constants/env";
 
 export async function POST(req: Request) {
@@ -45,7 +46,7 @@ export async function POST(req: Request) {
 
       // create a new category
       const manualCategoryId = createId();
-      if (SIA_API_URL) {
+      if (USE_SIA) {
         await fetch(
           `${SIA_API_URL}/worker/objects/${user.id}/usersManualCategories/${manualCategoryId}/data`,
           {

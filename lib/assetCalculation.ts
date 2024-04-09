@@ -24,7 +24,7 @@ export const calculateCurrentValue = (asset: TAsset): TAsset => {
     );
   };
 
-  if (asset.type === "Deposits") {
+  if (asset.category === "Deposits") {
     asset.currentValue = calculateCurrentValueForFD();
     asset.currentPrice = asset.currentValue.toString();
     asset.prevClose = asset.currentPrice;

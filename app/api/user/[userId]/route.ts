@@ -6,6 +6,7 @@ import {
   SIA_ADMIN_PASSWORD,
   SIA_ADMIN_USERNAME,
   SIA_API_URL,
+  USE_SIA,
 } from "@/constants/env";
 
 export async function POST(
@@ -31,7 +32,7 @@ export async function POST(
         "Basic " + Buffer.from(username + ":" + password).toString("base64");
 
       try {
-        if (SIA_API_URL) {
+        if (USE_SIA) {
           await fetch(`${SIA_API_URL}/worker/objects/${user.id}?batch=true`, {
             method: "DELETE",
             headers: {

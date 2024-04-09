@@ -28,9 +28,11 @@ export default async function AssetPage({
   const assets = await getAssetsQuoteFromApi(
     await getAssetsByUser(session.user.email)
   );
+
   const filteredAssets = assets?.filter(
-    (asset) => asset.type.toLowerCase() === reverseMappedName
+    (asset) => asset.category.toLowerCase() === reverseMappedName
   );
+
   const currencyConversionRates = await getConversionRate(session.user.id);
   if (!currencyConversionRates) {
     throw new Error("Currency conversion rates not found");

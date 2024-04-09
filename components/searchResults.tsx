@@ -14,14 +14,11 @@ import { useState } from "react";
 import { ScrollArea } from "./ui/scroll-area";
 import TransactionForm from "./transactionForm";
 import { cn } from "@/lib/helper";
-
-const reverseAssetTypeMappings: Record<string, string> = {
-  "Common Stock": "Stocks",
-  "Digital Currency": "Crypto",
-};
+import { TTwelveDataResult } from "@/lib/types";
+import { getAssetQuoteFromApiBySymbol } from "@/services/thirdParty/twelveData";
 
 type searchResultProps = {
-  results: Array<any>;
+  results: TTwelveDataResult[];
   handleModalState: React.Dispatch<React.SetStateAction<boolean>>;
   defaultCurrency: string;
 };
@@ -32,21 +29,15 @@ const SearchResults = ({
   defaultCurrency,
 }: searchResultProps) => {
   const [showForm, setShowForm] = useState(false);
-  const [selectedAsset, setSelectedAsset] = useState<{
-    instrument_name: string;
-    symbol: string;
-    instrument_type: string;
-    exchange: string;
-  }>();
+  const [selectedAsset, setSelectedAsset] = useState<TTwelveDataResult>();
+  const [assetPreviousClose, setAssetPreviousClose] = useState<string>("0");
 
-  const handleAddClick = async (
-    instrument_name: string,
-    symbol: string,
-    instrument_type: string,
-    exchange: string
-  ) => {
+  const handleAddClick = async (result: TTwelveDataResult) => {
+    const assetQuote = await getAssetQuoteFromApiBySymbol(result.symbol);
+    const assetPreviousClose = Number(assetQuote.previous_close);
+    setAssetPreviousClose(assetPreviousClose.toFixed(2));
     setShowForm(true);
-    setSelectedAsset({ instrument_name, symbol, instrument_type, exchange });
+    setSelectedAsset(result);
   };
 
   return results.length > 0 && !showForm ? (
@@ -72,14 +63,7 @@ const SearchResults = ({
                   <TableCell className="text-right">{result?.symbol}</TableCell>
                   <TableCell>
                     <Button
-                      onClick={() =>
-                        handleAddClick(
-                          result.instrument_name,
-                          result.symbol,
-                          result.instrument_type,
-                          result.exchange
-                        )
-                      }
+                      onClick={() => handleAddClick(result)}
                       className="w-full"
                     >
                       Add
@@ -94,22 +78,12 @@ const SearchResults = ({
     </ScrollArea>
   ) : (
     selectedAsset && (
-      <>
-        <div className="grid grid-cols-5 gap-4 grid-rows-1 bg-secondary py-2">
-          <div className="col-span-2">{selectedAsset.instrument_name}</div>
-          <div className="text-right">{selectedAsset.symbol}</div>
-          <div className="text-right">{selectedAsset.exchange}</div>
-          <div className="text-right">
-            {reverseAssetTypeMappings[selectedAsset.instrument_type] ||
-              selectedAsset.instrument_type}
-          </div>
-        </div>
-        <TransactionForm
-          selectedAsset={selectedAsset}
-          modalOpen={handleModalState}
-          defaultCurrency={defaultCurrency}
-        />
-      </>
+      <TransactionForm
+        previousClose={assetPreviousClose}
+        selectedAsset={selectedAsset}
+        modalOpen={handleModalState}
+        defaultCurrency={defaultCurrency}
+      />
     )
   );
 };

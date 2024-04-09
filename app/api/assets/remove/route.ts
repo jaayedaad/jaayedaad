@@ -6,6 +6,7 @@ import {
   SIA_ADMIN_PASSWORD,
   SIA_ADMIN_USERNAME,
   SIA_API_URL,
+  USE_SIA,
 } from "@/constants/env";
 
 export async function POST(req: Request) {
@@ -31,7 +32,7 @@ export async function POST(req: Request) {
     try {
       const body = await req.json();
       if (body.assetId) {
-        if (SIA_API_URL) {
+        if (USE_SIA) {
           await fetch(
             `${SIA_API_URL}/worker/objects/${user.id}/assets/${body.assetId}?batch=true`,
             {

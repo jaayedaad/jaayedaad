@@ -59,7 +59,7 @@ function ViewAsset({
     useState<TProfitLoss[]>();
   const [unrealisedProfitLossArray, setUnrealisedProfitLossArray] = useState<
     {
-      type: string;
+      category: string;
       symbol: string;
       compareValue: string;
       currentValue: string;

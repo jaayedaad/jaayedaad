@@ -29,7 +29,8 @@ function ChangeInterval({ onChange }: ChildProps) {
       <Button
         className={cn(
           "hover:bg-primary/10 bg-background",
-          activeInterval === "1w" && "bg-primary/20 hover:bg-primary/50"
+          activeInterval === "1w" &&
+            "bg-[#171326]/70 border hover:bg-primary/50"
         )}
         size="icon"
         onClick={() => {
@@ -42,7 +43,8 @@ function ChangeInterval({ onChange }: ChildProps) {
       <Button
         className={cn(
           "hover:bg-primary/10 bg-background",
-          activeInterval === "1m" && "bg-primary/20 hover:bg-primary/50"
+          activeInterval === "1m" &&
+            "bg-[#171326]/70 border hover:bg-primary/50"
         )}
         size="icon"
         onClick={() => {
@@ -55,7 +57,8 @@ function ChangeInterval({ onChange }: ChildProps) {
       <Button
         className={cn(
           "hover:bg-primary/10 bg-background",
-          activeInterval === "1y" && "bg-primary/20 hover:bg-primary/50"
+          activeInterval === "1y" &&
+            "bg-[#171326]/70 border hover:bg-primary/50"
         )}
         size="icon"
         onClick={() => {
@@ -69,7 +72,8 @@ function ChangeInterval({ onChange }: ChildProps) {
         size="icon"
         className={cn(
           "hover:bg-primary/10 bg-background",
-          activeInterval === "All" && "bg-primary/20 hover:bg-primary/50"
+          activeInterval === "All" &&
+            "bg-[#171326]/70 border hover:bg-primary/50"
         )}
         onClick={() => {
           setActiveInterval("All");

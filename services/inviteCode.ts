@@ -2,7 +2,6 @@
 import { prisma } from "@/lib/prisma";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/authOptions";
-import { getUser } from "./user";
 
 // function to check invite code
 export const checkInviteCode = async (inviteCode: string) => {
@@ -37,10 +36,10 @@ export const validateInviteCode = async (validatedInviteCode: {
     if (validatedInviteCode.usesLeft === 0) {
       return false;
     } else {
-      const user = await getUser(session);
+      const user = session.user;
       await prisma.user.update({
         where: {
-          email: user.email,
+          id: user.id,
         },
         data: {
           whitelisted: true,
@@ -54,7 +53,7 @@ export const validateInviteCode = async (validatedInviteCode: {
           usesLeft: validatedInviteCode.usesLeft - 1,
           usersInvited: {
             create: {
-              email: user.email,
+              userId: user.id,
             },
           },
         },

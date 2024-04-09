@@ -1,5 +1,13 @@
 export const ENCRYPTION_KEY = process.env.ENCRYPTION_KEY;
 export const DATABASE_URL = process.env.DATABASE_URL;
+export const USE_SIA =
+  process.env.USE_SIA === "1" &&
+  process.env.SIA_API_URL &&
+  process.env.SIA_API_URL.length > 0 &&
+  process.env.SIA_ADMIN_USERNAME &&
+  process.env.SIA_ADMIN_PASSWORD
+    ? true
+    : false;
 export const SIA_API_URL =
   process.env.SIA_API_URL && process.env.SIA_API_URL.length > 0
     ? process.env.SIA_API_URL

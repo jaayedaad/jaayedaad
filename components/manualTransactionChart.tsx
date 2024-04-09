@@ -77,7 +77,7 @@ function ManualTransactionChart({
         {dataToShow && dataToShow.length > 0 && (
           <AreaChart
             width={720}
-            height={160}
+            height={200}
             data={dataToShow}
             margin={{
               top: 20,

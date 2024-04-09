@@ -10,6 +10,7 @@ import {
   SIA_ADMIN_PASSWORD,
   SIA_ADMIN_USERNAME,
   SIA_API_URL,
+  USE_SIA,
 } from "@/constants/env";
 
 export async function POST(req: Request) {
@@ -43,27 +44,7 @@ export async function POST(req: Request) {
       user.id.slice(0, 4) + ENCRYPTION_KEY + user.id.slice(-4);
 
     const assetPriceUpdateId = createId();
-    if (DATABASE_URL) {
-      // encrypt data
-      const encryptedData: {
-        id: string;
-        price: string;
-        date: string;
-        assetId: string;
-      } = encryptObjectValues(
-        {
-          id: assetPriceUpdateId,
-          price: body.price,
-          date: body.date,
-          assetId: body.assetId,
-        },
-        encryptionKey
-      );
-      const priceUpdate = await prisma.assetPriceUpdate.create({
-        data: encryptedData,
-      });
-    }
-    if (SIA_API_URL) {
+    if (USE_SIA) {
       await fetch(
         `${SIA_API_URL}/worker/objects/${user.id}/assets/${body.assetId}/assetPriceUpdates/${assetPriceUpdateId}`,
         {
@@ -84,6 +65,26 @@ export async function POST(req: Request) {
           }),
         }
       );
+    }
+    if (DATABASE_URL) {
+      // encrypt data
+      const encryptedData: {
+        id: string;
+        price: string;
+        date: string;
+        assetId: string;
+      } = encryptObjectValues(
+        {
+          id: assetPriceUpdateId,
+          price: body.price,
+          date: body.date,
+          assetId: body.assetId,
+        },
+        encryptionKey
+      );
+      const priceUpdate = await prisma.assetPriceUpdate.create({
+        data: encryptedData,
+      });
     }
     return Response.json({ success: "Price update successful!" });
   } else {

@@ -5,12 +5,8 @@ import { Input } from "./ui/input";
 import { Button } from "./ui/button";
 import { checkInviteCode, validateInviteCode } from "@/services/inviteCode";
 import Link from "next/link";
-import { MoveLeftIcon } from "lucide-react";
-import {
-  LockedMailIcon,
-  MailIcon,
-  OpenMailIcon,
-} from "@/public/whitelisting-modal/whitelistingModalIcons";
+import { Loader2, MoveLeftIcon } from "lucide-react";
+import { MailIcon } from "@/public/whitelisting-modal/whitelistingModalIcons";
 import XLogo from "@/public/branding/XLogo";
 
 function WhitelistingModal({ whitelisted }: { whitelisted: boolean }) {
@@ -21,13 +17,12 @@ function WhitelistingModal({ whitelisted }: { whitelisted: boolean }) {
   );
   const [errorMessage, setErrorMessage] = useState("");
   const [disabled, setDisabled] = useState(true);
+  const [codeValidated, setCodeValidated] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const verifyInviteCode = async (inviteCode: string) => {
     const validatedInviteCode = await checkInviteCode(inviteCode);
     if (validatedInviteCode) {
-      setErrorMessage(" ");
-      setTitle("Congratulations!");
-      setSubtitle("Your invite code has been validated");
       setDisabled(false);
     } else {
       setTitle("Invalid invite code");
@@ -58,6 +53,7 @@ function WhitelistingModal({ whitelisted }: { whitelisted: boolean }) {
   };
 
   const handleVerifyInviteCode = async () => {
+    setLoading(true);
     const inviteCodeObject = await checkInviteCode(inviteCodeValue);
     if (inviteCodeObject) {
       const userWhitelisted = await validateInviteCode(inviteCodeObject);
@@ -67,52 +63,61 @@ function WhitelistingModal({ whitelisted }: { whitelisted: boolean }) {
     }
   };
 
+  const handleContinueClick = () => {
+    setCodeValidated(true);
+    setErrorMessage(" ");
+    setTitle("Congratulations!");
+    setSubtitle("Your invite code has been validated");
+  };
+
   return (
     <Dialog open={!whitelisted}>
       <DialogOverlay className="backdrop-blur-[6px] bg-transparent z-[49]" />
-      <DialogContent className="max-w-[40rem] h-80" closeButton="hidden">
+      <DialogContent className="max-w-[40rem] h-84" closeButton="hidden">
         <div>
           <Link href="/" className="flex items-center w-fit">
             <MoveLeftIcon className="mr-2" />
             Back to landing page
           </Link>
-          <div className="my-5 w-fit mx-auto">
-            <div className="flex gap-6 justify-center">
-              {errorMessage.includes("Invalid") ? (
-                <LockedMailIcon />
-              ) : errorMessage === "" ? (
-                <MailIcon />
-              ) : (
-                <OpenMailIcon />
-              )}
+          <div className="mt-10 w-full">
+            <div className="flex gap-8 ml-8">
+              <MailIcon />
               <div>
                 <p className="text-lg">{title}</p>
                 <p className="text-sm text-muted-foreground">{subtitle}</p>
               </div>
             </div>
-            <div className="flex gap-3 mt-6 px-4 w-full">
-              {disabled ? (
-                <div className="w-full">
-                  <Input
-                    value={inviteCodeValue}
-                    className="w-full"
-                    placeholder="Enter invite code"
-                    onChange={(e) =>
-                      handleInviteCodeValueChange(e.target.value)
-                    }
-                  />
-                  <p className="text-red-500 text-xs mt-1 inline-flex justify-end">
-                    {errorMessage.includes("Invalid") && errorMessage}
-                  </p>
+            <div className="flex gap-3 mt-2 px-4 w-full">
+              {!codeValidated ? (
+                <div className="w-full flex gap-4 justify-center">
+                  <div>
+                    <Input
+                      value={inviteCodeValue}
+                      className="w-full"
+                      placeholder="Enter invite code"
+                      onChange={(e) =>
+                        handleInviteCodeValueChange(e.target.value)
+                      }
+                    />
+                    <p className="text-red-500 text-xs mt-1 inline-flex justify-end">
+                      {errorMessage.includes("Invalid") && errorMessage}
+                    </p>
+                  </div>
+                  <Button onClick={handleContinueClick} disabled={disabled}>
+                    Continue
+                  </Button>
                 </div>
               ) : (
-                <Button
-                  className="disabled:pointer-events-auto disabled:hover:cursor-not-allowed"
-                  onClick={handleVerifyInviteCode}
-                  disabled={disabled}
-                >
-                  Welcome to your Jaayedaad Dashboard
-                </Button>
+                <div className="flex justify-center w-full">
+                  <Button
+                    className="disabled:pointer-events-auto disabled:hover:cursor-not-allowed"
+                    onClick={handleVerifyInviteCode}
+                    disabled={disabled}
+                  >
+                    {loading && <Loader2 className="h-4 w-4 animate-spin" />}
+                    Welcome to your Jaayedaad Dashboard
+                  </Button>
+                </div>
               )}
             </div>
             <p className="flex w-fit mx-auto mt-6 text-xs">

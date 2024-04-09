@@ -25,6 +25,7 @@ export function encryptObjectValues(obj: any, secretKey: string) {
         "id",
         "userId",
         "assetId",
+        "type",
         "manualCategoryId",
         "date",
         "buyDate",
@@ -61,9 +62,11 @@ export function decryptObjectValues(obj: any, secretKey: string) {
         "id",
         "userId",
         "assetId",
+        "type",
         "manualCategoryId",
         "date",
         "buyDate",
+        "icon",
       ].includes(key)
     ) {
       if (typeof obj[key] === "object" && obj[key] !== null) {

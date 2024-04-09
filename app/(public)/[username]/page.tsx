@@ -116,7 +116,7 @@ export default async function PublicProfile({
               {preferences.showHoldingsInPublic && (
                 <div className="col-span-3 row-span-4 bg-[#171326] shadow-2xl border rounded-xl p-6">
                   <div className="flex justify-between">
-                    <div className="xl:flex xl:items-center xl:gap-1">
+                    <div className="flex flex-col">
                       <h3 className="font-semibold">Asset Overview</h3>
                       <p className="text-muted-foreground text-xs xl:text-sm">
                         Collection of your assets

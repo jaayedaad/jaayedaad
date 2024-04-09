@@ -1,6 +1,8 @@
+import { cn } from "@/lib/helper";
 import React from "react";
 
 type svgIconProps = {
+  className?: string;
   width?: number;
   height?: number;
   fill?: string;
@@ -10,11 +12,11 @@ export function DataEncryptionIcon({
   width = 36,
   height = 36,
   fill = "black",
+  className,
 }: svgIconProps) {
   return (
     <svg
-      width={width}
-      height={height}
+      className={cn(className)}
       viewBox="0 0 140 159"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
@@ -300,14 +302,14 @@ export function BlockchainIcon({
 }
 
 export function InviteOnlyIcon({
-  width = 36,
-  height = 36,
+  width,
+  height,
   fill = "#38D9EB",
+  className,
 }: svgIconProps) {
   return (
     <svg
-      width={width}
-      height={height}
+      className={cn(className)}
       viewBox="0 0 96 96"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
