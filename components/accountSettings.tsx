@@ -5,7 +5,6 @@ import { Button } from "./ui/button";
 import { Loader2, Trash2 } from "lucide-react";
 import { Separator } from "./ui/separator";
 import { toast } from "sonner";
-import LoadingSpinner from "./ui/loading-spinner";
 import {
   Dialog,
   DialogContent,
@@ -17,7 +16,7 @@ import {
 import { Input } from "./ui/input";
 import { signOut } from "next-auth/react";
 import { cn } from "@/lib/helper";
-import { TPreference } from "@/lib/types";
+
 import {
   updateUsernameAction,
   verifyUsernameAction,
@@ -95,9 +94,9 @@ function AccountSettings({ username }: AccountSettingsProps) {
 
   return (
     <>
-      <div className="flex justify-between">
+      <div className="flex justify-between mt-4">
         <div>
-          <h2 className="text-3xl text-foreground font-bold">Account</h2>
+          <h2 className="text-xl text-foreground font-bold">Account</h2>
           <p className="text-sm text-muted-foreground">
             Control what others can see about you
           </p>

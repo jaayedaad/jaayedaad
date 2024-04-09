@@ -100,7 +100,7 @@ function CreateCategoryButton() {
             />
             <div className="col-span-1 self-center">Category icon</div>
             <div className="col-span-2 flex items-center gap-4">
-              <Popover open={open} onOpenChange={setOpen}>
+              <Popover>
                 <PopoverTrigger asChild>
                   <Button
                     variant="outline"

@@ -24,7 +24,7 @@ interface AssetTableProps {
   isPublic?: boolean;
   timelineInterval?: TInterval;
   intervalChangeData?: {
-    type: string;
+    category: string;
     symbol: string;
     compareValue: string;
     currentValue: string;
@@ -52,7 +52,7 @@ function AssetTable({
   const [assetToView, setAssetToView] = useState<TAsset>();
   const [groupedAsset, setGroupedAsset] = useState<
     {
-      type: string;
+      category: string;
       currentValue: number;
       compareValue: number;
     }[]
@@ -68,13 +68,13 @@ function AssetTable({
   };
 
   const filters: Record<string, (asset: TAsset) => boolean> = {
-    "common stock": (asset) => asset.type === "Common Stock",
-    "digital currency": (asset) => asset.type === "Digital Currency",
-    "mutual fund": (asset) => asset.type === "Mutual Fund",
-    property: (asset) => asset.type === "Property",
-    jewellery: (asset) => asset.type === "Jewellery",
-    deposits: (asset) => asset.type === "Deposits",
-    others: (asset) => asset.type === "Others",
+    "common stock": (asset) => asset.category === "Common Stock",
+    "digital currency": (asset) => asset.category === "Digital Currency",
+    "mutual fund": (asset) => asset.category === "Mutual Fund",
+    property: (asset) => asset.category === "Property",
+    jewellery: (asset) => asset.category === "Jewellery",
+    deposits: (asset) => asset.category === "Deposits",
+    others: (asset) => asset.category === "Others",
   };
 
   useEffect(() => {
@@ -86,13 +86,13 @@ function AssetTable({
           const param = decodeURIComponent(view);
           setFilteredAsset(
             data?.filter(
-              (asset) => asset.type.toUpperCase() === param.toUpperCase()
+              (asset) => asset.category.toUpperCase() === param.toUpperCase()
             )
           );
         }
       } else {
         let groupedAssets: {
-          type: string;
+          category: string;
           currentValue: number;
           compareValue: number;
         }[] = [];
@@ -102,14 +102,14 @@ function AssetTable({
         );
 
         const currentValueSumByType = intervalData?.reduce((acc: any, data) => {
-          const { type, currentValue } = data;
-          acc[type] = (acc[type] || 0) + parseFloat(currentValue);
+          const { category, currentValue } = data;
+          acc[category] = (acc[category] || 0) + parseFloat(currentValue);
           return acc;
         }, {});
 
         const compareValueSumByType = intervalData?.reduce((acc: any, data) => {
-          const { type, compareValue } = data;
-          acc[type] = (acc[type] || 0) + parseFloat(compareValue);
+          const { category, compareValue } = data;
+          acc[category] = (acc[category] || 0) + parseFloat(compareValue);
           return acc;
         }, {});
 
@@ -119,7 +119,7 @@ function AssetTable({
             const currencyConversion = conversionRates[assetCurrency];
             const multiplier = 1 / currencyConversion;
             const existingType = groupedAssets.find(
-              (data) => data.type === asset.type
+              (data) => data.category === asset.category
             );
 
             if (existingType) {
@@ -127,7 +127,7 @@ function AssetTable({
               existingType.compareValue += asset.compareValue * multiplier;
             } else {
               groupedAssets.push({
-                type: asset.type,
+                category: asset.category,
                 currentValue: asset.symbol
                   ? asset.currentValue * multiplier
                   : asset.currentValue * multiplier,
@@ -140,12 +140,12 @@ function AssetTable({
           groupedAssets = groupedAssets.map((asset) => ({
             ...asset,
             currentValue:
-              currentValueSumByType[asset.type] !== undefined
-                ? currentValueSumByType[asset.type]
+              currentValueSumByType[asset.category] !== undefined
+                ? currentValueSumByType[asset.category]
                 : asset.currentValue,
             compareValue:
-              compareValueSumByType[asset.type] !== undefined
-                ? compareValueSumByType[asset.type]
+              compareValueSumByType[asset.category] !== undefined
+                ? compareValueSumByType[asset.category]
                 : asset.compareValue,
           }));
         }
@@ -224,7 +224,7 @@ function AssetTable({
       <>
         <Table>
           {!isPublic && <AssetTableCaption preferences={preferences} />}
-          <ScrollArea className="w-full xl:h-[33vh] lg:h-[30vh]">
+          <ScrollArea className="w-full lg:h-[30vh]">
             <TableHeader className="bg-secondary sticky top-0">
               {view ? (
                 <TableRow>
@@ -237,7 +237,9 @@ function AssetTable({
                         handleSort("Quantity");
                       }}
                     >
-                      {filteredAsset.find((asset) => asset.type === "DEPOSITS")
+                      {filteredAsset.find(
+                        (asset) => asset.category === "DEPOSITS"
+                      )
                         ? "Interest rate (%)"
                         : "Quantity"}
                       <ArrowUpDown className="ml-2 h-4 w-4" />
@@ -448,13 +450,13 @@ function AssetTable({
                         onClick={() =>
                           !isPublic &&
                           handleGroupRowClick(
-                            assetTypeMappings[asset.type] || asset.type
+                            assetTypeMappings[asset.category] || asset.category
                           )
                         }
                         key={index}
                       >
                         <TableCell>
-                          {assetTypeMappings[asset.type] || asset.type}
+                          {assetTypeMappings[asset.category] || asset.category}
                         </TableCell>
                         <TableCell className="text-right px-8">
                           {preferences.dashboardAmountVisibility

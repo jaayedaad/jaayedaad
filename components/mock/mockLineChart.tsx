@@ -34,18 +34,8 @@ const dataToShow = [
 
 function MockLineChart() {
   return (
-    <div>
-      <AreaChart
-        width={720}
-        height={200}
-        data={dataToShow}
-        margin={{
-          top: 20,
-          right: 30,
-          left: 0,
-          bottom: 0,
-        }}
-      >
+    <div className="mt-12">
+      <AreaChart width={720} height={200} data={dataToShow}>
         <defs>
           <linearGradient id="colorUv" x1="0" y1="0" x2="0" y2="1">
             <stop
@@ -68,24 +58,7 @@ function MockLineChart() {
             />
           </linearGradient>
         </defs>
-        <XAxis
-          tick={false}
-          dataKey="name"
-          tickLine={false}
-          axisLine={false}
-          angle={-30}
-          minTickGap={10}
-          padding={{ left: 30 }}
-        />
-        <YAxis
-          tick={false}
-          domain={[
-            (dataMin: any) => Math.max(0, dataMin - dataMin / 20),
-            (dataMax: any) => dataMax + dataMax / 20,
-          ]}
-          tickLine={false}
-          axisLine={false}
-        />
+
         <Area
           type="monotone"
           dataKey="amt"

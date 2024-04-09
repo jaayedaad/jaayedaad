@@ -7,8 +7,8 @@ import XLogo from "@/public/branding/XLogo";
 
 function Footer() {
   return (
-    <div className="text-center mt-16 md:mt-36 mb-10">
-      <div className="flex flex-wrap gap-6 justify-center my-8">
+    <div className="text-center mt-16 md:mt-16 mb-20 md:mb-10">
+      <div className="flex flex-wrap-reverse md:flex-wrap gap-6 justify-center my-8">
         <Button
           variant="outline"
           className="h-12 text-base px-6 rounded-full"
@@ -18,7 +18,7 @@ function Footer() {
             <Github className="mr-2 h-4 w-4 stroke-[#6039B5]" /> GitHub
           </Link>
         </Button>
-        <Button className="h-12 text-base px-6 bg-gradient-to-r from-violet-950 to-primary rounded-full">
+        <Button className="order-last md:order-[0] h-12 text-base px-6 bg-gradient-to-r from-violet-950 to-primary rounded-full">
           Sign Up
         </Button>
         <Button

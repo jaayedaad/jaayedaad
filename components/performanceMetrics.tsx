@@ -19,7 +19,7 @@ function PerformanceMetrics({
   assets: TAsset[];
   realisedProfitLoss: string | undefined;
   unrealisedProfitLossArray?: {
-    type: string;
+    category: string;
     symbol: string;
     compareValue: string;
     currentValue: string;

@@ -14,33 +14,47 @@ import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
 
 interface transactionFormPropsType {
+  previousClose?: string;
   selectedAsset: {
+    prevClose?: string;
     instrument_name: string;
     symbol: string;
-    prevClose?: string;
     instrument_type: string;
     exchange: string;
+    currency: string;
+    mic_code?: string;
+    country?: string;
+    exchange_timezone?: string;
   };
   modalOpen: React.Dispatch<React.SetStateAction<boolean>>;
   defaultCurrency: string;
 }
 
+const instrumentNameMappings: Record<string, string> = {
+  "Common Stock": "Stocks",
+  "Digital Currency": "Crypto",
+  // Add other mappings here
+};
+
 function TransactionForm({
+  previousClose,
   selectedAsset,
   modalOpen,
   defaultCurrency,
 }: transactionFormPropsType) {
   const [buying, setBuying] = useState(false);
   const [selling, setSelling] = useState(false);
-  const [assetQuantity, setAssetQuantity] = useState<string>("");
-  const [assetPrice, setAssetPrice] = useState(selectedAsset?.prevClose);
+  const [assetQuantity, setAssetQuantity] = useState<string>("0");
+  const [assetPrice, setAssetPrice] = useState(previousClose);
   const [date, setDate] = useState<string>("");
-  const [currency, setCurrency] = useState(defaultCurrency.toUpperCase());
+  const [currency, setCurrency] = useState(
+    selectedAsset.currency.toUpperCase()
+  );
   // Add assets handler
   const handleAddAssets = async (
     name: string,
     symbol: string,
-    type: string,
+    category: string,
     exchange: string
   ) => {
     setBuying(true);
@@ -50,7 +64,7 @@ function TransactionForm({
       quantity: assetQuantity,
       buyPrice: assetPrice,
       buyDate: date,
-      type: type,
+      category: category,
       exchange: exchange,
       buyCurrency: currency,
     };
@@ -87,17 +101,12 @@ function TransactionForm({
       .then((data) => {
         if (data.error) {
           setSelling(false);
-          modalOpen(false);
           toast.error(data.error);
-          setAssetQuantity("");
-          setAssetPrice("");
-          setDate("");
-          setCurrency(defaultCurrency.toUpperCase());
         }
         if (data.success) {
           setSelling(false);
-          modalOpen(false);
           toast.success(data.success);
+          modalOpen(false);
           setAssetQuantity("");
           setAssetPrice("");
           setDate("");
@@ -120,6 +129,33 @@ function TransactionForm({
     <>
       <div>
         <div className="grid grid-cols-4 pt-4 gap-4">
+          <div className="text-base col-span-1">Category</div>
+          <Input
+            className="col-span-3 no-spinner"
+            value={
+              instrumentNameMappings[selectedAsset.instrument_type] ||
+              selectedAsset.instrument_type
+            }
+            disabled
+          />
+          <div className="text-base col-span-1">Name</div>
+          <Input
+            className="col-span-3 no-spinner"
+            value={selectedAsset.instrument_name}
+            disabled
+          />
+          <div className="text-base col-span-1">Symbol</div>
+          <Input
+            className="col-span-3 no-spinner"
+            value={selectedAsset.symbol}
+            disabled
+          />
+          <div className="text-base col-span-1">Exchange</div>
+          <Input
+            className="col-span-3 no-spinner"
+            value={selectedAsset.exchange}
+            disabled
+          />
           <div className="text-base col-span-1 after:content-['*'] after:ml-0.5 after:text-red-500">
             Quantity
           </div>
@@ -155,7 +191,7 @@ function TransactionForm({
               onValueChange={(value) => {
                 setCurrency(value);
               }}
-              defaultValue={defaultCurrency.toUpperCase()}
+              defaultValue={selectedAsset.currency.toUpperCase()}
             >
               <SelectTrigger className="w-full">
                 <SelectValue placeholder="" />

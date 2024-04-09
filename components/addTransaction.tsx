@@ -5,7 +5,7 @@ import SearchField from "@/components/searchField";
 import LoadingSpinner from "@/components/ui/loading-spinner";
 import ManualTransactionForm from "./manualTransactionForm";
 import { Button } from "./ui/button";
-import { TUserManualCategory } from "@/lib/types";
+import { TTwelveDataResult, TUserManualCategory } from "@/lib/types";
 import { searchAssetsFromApi } from "@/services/thirdParty/twelveData";
 
 interface AddTransactionPropsType {
@@ -20,7 +20,7 @@ export default function AddTransaction({
   defaultCurrency,
 }: AddTransactionPropsType) {
   const [searchQuery, setSearchQuery] = useState("");
-  const [results, setResults] = useState<Array<any>>([]);
+  const [results, setResults] = useState<TTwelveDataResult[]>([]);
   const [loadingAsset, setLoadingAsset] = useState(false);
   const [showManualTransactionForm, setShowManualTransactionForm] =
     useState(false);
@@ -91,17 +91,17 @@ export default function AddTransaction({
 
   return (
     <div className="flex w-full flex-col">
-      <div className="flex md:gap-6 items-center">
+      <div className="grid grid-cols-2 md:gap-6 items-center">
         {/* Search Field */}
         <SearchField
           searchQuery={searchQuery}
           handleSearchChange={handleSearchChange}
         />
-        OR
-        <div className="text-center">
+        <div className="flex gap-6 items-center">
+          <p>or</p>
           <Button
             onClick={() => handleManualTransaction()}
-            className="text-muted-foreground text-center"
+            className="w-full text-muted-foreground text-center"
             variant="outline"
           >
             + add manually

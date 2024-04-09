@@ -18,10 +18,11 @@ export default async function Settings() {
   }
 
   return (
-    <div className="pb-6 pt-12 px-6 w-full h-screen overflow-auto ">
+    <div className="mb-20 md:mb-24 lg:mb-0 py-6 px-6 w-full h-screen overflow-auto">
       <div>
-        <div className="text-muted-foreground flex gap-1 mb-4">
-          <div className="flex flex-col w-full gap-6">
+        <div className="text-muted-foreground flex gap-1">
+          <div className="flex flex-col w-full gap-2">
+            <div className="text-3xl text-foreground font-bold">Settings</div>
             <PublicProfileSettings preference={preference} />
             <PreferenceComponent preference={preference} />
             <AccountSettings username={session.user.username} />

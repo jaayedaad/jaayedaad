@@ -13,6 +13,7 @@ import React, { useEffect, useState } from "react";
 import jaayedaad_logo from "@/public/jaayedaad_logo.svg";
 import Image from "next/image";
 import AssetMarqueeBar from "@/components/assetMarqueeBar";
+import { TextRevealCard } from "@/components/ui/text-reveal-card";
 
 function Page({
   username,
@@ -36,13 +37,13 @@ function Page({
   );
 
   const categoryExist = filteredAssets?.some(
-    (asset) => asset.type.toLowerCase() === reverseMappedName
+    (asset) => asset.category.toLowerCase() === reverseMappedName
   );
 
   let manualCategoryAsset: TAsset[] | undefined;
   if (categoryExist) {
     manualCategoryAsset = filteredAssets?.filter(
-      (asset) => asset.type.toLowerCase() === reverseMappedName
+      (asset) => asset.category.toLowerCase() === reverseMappedName
     );
   }
 
@@ -52,7 +53,7 @@ function Page({
   const [timeInterval, setTimeInterval] = useState<TInterval>("1d");
   const [unrealisedProfitLossArray, setUnrealisedProfitLossArray] = useState<
     {
-      type: string;
+      category: string;
       symbol: string;
       compareValue: string;
       currentValue: string;
@@ -85,7 +86,7 @@ function Page({
         } else {
           if (
             !filteredAssets.filter(
-              (asset) => asset.type.toLowerCase() === reverseMappedName
+              (asset) => asset.category.toLowerCase() === reverseMappedName
             ).length
           ) {
             redirect("/dashboard");
@@ -147,28 +148,28 @@ function Page({
             <p>Your {assetCategory}</p>
           </div>
           <div className="flex items-center col-span-2">
-            <div className="w-[77%]">
+            <div className="w-[77%] hidden lg:block">
               {assetsToView && (
                 <AssetMarqueeBar
                   data={assetsToView}
                   timeInterval={timeInterval}
-                  performanceBarOrder={preferences.performanceBarOrder}
+                  preferences={preferences}
                 />
               )}
             </div>
             <Image
               src={jaayedaad_logo}
               alt="Jaayedaad logo"
-              className="h-10 lg:hidden"
+              className="h-8 lg:hidden"
             />
-            <div className="w-fit">
+            <div className="ml-2 w-fit">
               <ChangeInterval onChange={onChange} />
             </div>
           </div>
         </div>
         <div className="min-h-[85vh] h-full mt-4">
           <div className="flex flex-col gap-4 sm:gap-6 md:gap-6 lg:gap-4 lg:grid lg:grid-rows-7 lg:grid-cols-3 lg:h-full text-foreground">
-            <div className="row-span-3 col-span-1 border rounded-xl p-4">
+            <div className="row-span-3 col-span-1 bg-[#171326]/70 backdrop-blur shadow-2xl border rounded-xl p-4">
               <AssetPieChart
                 view={reverseMappedName}
                 assets={filteredAssets}
@@ -180,7 +181,7 @@ function Page({
                 conversionRates={conversionRates}
               />
             </div>
-            <div className="row-span-3 col-span-2 border rounded-xl p-4">
+            <div className="row-span-3 col-span-2 bg-[#171326]/70 backdrop-blur shadow-2xl border rounded-xl p-4">
               {historicalData ? (
                 defaultCategories.includes(reverseMappedName) ? (
                   <PortfolioLineChart
@@ -218,12 +219,12 @@ function Page({
                 </div>
               )}
             </div>
-            <div className="row-span-4 flex flex-col col-span-3 border rounded-xl p-4">
+            <div className="row-span-4 flex flex-col col-span-3 bg-[#171326]/70 backdrop-blur shadow-2xl border rounded-xl p-4">
               <div className="flex justify-between">
-                <div className="xl:flex xl:items-center xl:gap-1">
+                <div className="flex flex-col">
                   <h3 className="font-semibold">Asset Overview</h3>
                   <p className="text-muted-foreground text-xs xl:text-sm">
-                    Collection of your {reverseMappedName}
+                    Collection of your {assetCategory}
                   </p>
                 </div>
                 <div>
@@ -254,7 +255,11 @@ function Page({
       </div>
     ) : (
       <div className="px-6 sm:px-8 pt-6 pb-24 lg:py-6 w-full h-screen flex flex-col items-center justify-center">
-        <div className="text-lg">You don&apos;t own any {assetCategory}</div>
+        <TextRevealCard
+          className="h-full w-full bg-background"
+          text="Hover over me"
+          revealText={`↙︎ You haven't added any ${assetCategory} yet.`}
+        />
       </div>
     )
   ) : (

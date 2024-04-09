@@ -46,12 +46,7 @@ function Sidebar({
     <div className="hidden lg:block py-6 px-4 border-r lg:h-screen w-fit">
       <div className="flex flex-col justify-between lg:h-full xl:h-full">
         <div className="flex flex-col gap-1 text-muted-foreground">
-          {/* <Image
-            src={jaayedaad_logo}
-            alt="Jaayedaad logo"
-            className="h-10 mb-2"
-          /> */}
-          <div className="h-8 mb-4">
+          <div className="h-8 mb-6 flex justify-center">
             <JaayedaadLogo />
           </div>
           <Button
@@ -59,7 +54,7 @@ function Sidebar({
             className={cn(
               `w-full justify-start pr-8 bg-background hover:bg-primary/10`,
               currentTab === "/dashboard" &&
-                "bg-primary/20 text-foreground hover:bg-primary/30"
+                "bg-[#171326]/70 border text-foreground hover:bg-primary/30"
             )}
           >
             <Link href="/dashboard">
@@ -72,7 +67,7 @@ function Sidebar({
             className={cn(
               `w-full justify-start pr-8 bg-background hover:bg-primary/10`,
               currentTab === "/dashboard/stocks" &&
-                "bg-primary/20 text-foreground hover:bg-primary/30"
+                "bg-[#171326]/70 border text-foreground hover:bg-primary/30"
             )}
           >
             <Link href="/dashboard/stocks">
@@ -85,7 +80,7 @@ function Sidebar({
             className={cn(
               `w-full justify-start pr-8 bg-background hover:bg-primary/10`,
               currentTab === "/dashboard/crypto" &&
-                "bg-primary/20 text-foreground hover:bg-primary/30"
+                "bg-[#171326]/70 border text-foreground hover:bg-primary/30"
             )}
           >
             <Link href="/dashboard/crypto">
@@ -98,7 +93,7 @@ function Sidebar({
             className={cn(
               `w-full justify-start pr-8 bg-background hover:bg-primary/10`,
               currentTab === "/dashboard/mutual fund" &&
-                "bg-primary/20 text-foreground hover:bg-primary/30"
+                "bg-[#171326]/70 border text-foreground hover:bg-primary/30"
             )}
           >
             <Link href="/dashboard/mutual fund">
@@ -114,7 +109,7 @@ function Sidebar({
                 className={cn(
                   `w-full justify-start pr-8 bg-background hover:bg-primary/10`,
                   currentTab === `/dashboard/${category.name.toLowerCase()}` &&
-                    "bg-primary/20 text-foreground hover:bg-primary/30"
+                    "bg-[#171326]/70 border text-foreground hover:bg-primary/30"
                 )}
               >
                 <Link href={`/dashboard/${category.name.toLowerCase()}`}>
@@ -138,7 +133,7 @@ function Sidebar({
               className={cn(
                 `w-full justify-start pr-8 bg-background hover:bg-primary/10`,
                 currentTab === "/dashboard/settings" &&
-                  "bg-primary/20 text-foreground hover:bg-primary/30"
+                  "bg-[#171326]/70 border text-foreground hover:bg-primary/30"
               )}
             >
               <Link href={"/dashboard/settings"}>

@@ -8,7 +8,7 @@ function Navbar() {
       {/* Brand Logo */}
       <div>
         <svg
-          className="h-10 md-h-12"
+          className="h-10 md:h-12"
           viewBox="0 0 216 64"
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
@@ -60,6 +60,8 @@ function Navbar() {
       </div>
       <div className="xl:w-[162px] flex justify-center">
         <FlashyButton
+          className="h-[47px] px-6"
+          containerClassName="md:h-[49px]"
           onClick={() =>
             signIn("google", {
               callbackUrl: "/dashboard",

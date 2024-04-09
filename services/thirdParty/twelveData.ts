@@ -4,8 +4,25 @@ import { TWELVEDATA_API_KEY } from "@/constants/env";
 import { prepareHistoricalDataForManualCategory } from "@/helper/manualAssetsHistoryMaker";
 import { calculateCurrentValue } from "@/lib/assetCalculation";
 import { areDatesEqual } from "@/lib/helper";
-import { TAsset } from "@/lib/types";
+import { TAsset, TTwelveDataInstrumentQuote } from "@/lib/types";
 import { getConversionRate } from "@/services/thirdParty/currency";
+
+export const getAssetQuoteFromApiBySymbol = async (
+  symbol: string
+): Promise<TTwelveDataInstrumentQuote> => {
+  const url = `https://api.twelvedata.com/quote?symbol=${symbol}`;
+  const options = {
+    method: "GET",
+    headers: {
+      Authorization: `apikey ${TWELVEDATA_API_KEY}`,
+    },
+  };
+
+  const res = await fetch(url, options);
+  const data: TTwelveDataInstrumentQuote = await res.json();
+
+  return data;
+};
 
 export const fetchQuoteFromApi = async (asset: TAsset): Promise<TAsset> => {
   if (!asset.isManualEntry && asset.symbol) {
@@ -126,7 +143,7 @@ export const getHistoricalData = async (userId: string, assets: TAsset[]) => {
         // Calculate total value of asset and add it to the data object
         data.values.forEach((dayData: any) => {
           dayData.date = new Date(dayData.datetime).getTime() / 1000;
-          data.assetType = asset.type;
+          data.assetType = asset.category;
           data.assetSymbol = asset.symbol;
           const assetCurrency = asset.buyCurrency.toLowerCase();
           const currencyConversion = conversionRate[assetCurrency];
@@ -145,7 +162,7 @@ export const getHistoricalData = async (userId: string, assets: TAsset[]) => {
       ])[0];
       const manualAssetHistoryWithAssetType = {
         ...manualAssetHistory,
-        assetType: asset.type,
+        assetType: asset.category,
       };
 
       historicalData.push(manualAssetHistoryWithAssetType);

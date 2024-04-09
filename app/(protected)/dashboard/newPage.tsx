@@ -21,7 +21,6 @@ import {
 import WhitelistingModal from "@/components/whitelistingModal";
 import MockLineChart from "@/components/mock/mockLineChart";
 import MockAssetTable from "@/components/mock/mockAssetTable";
-import MockPieChart from "@/components/mock/mockPieChart";
 
 export function Dashboard({
   username,
@@ -42,7 +41,7 @@ export function Dashboard({
   const [timeInterval, setTimeInterval] = useState<TInterval>("All");
   const [unrealisedProfitLossArray, setUnrealisedProfitLossArray] = useState<
     {
-      type: string;
+      category: string;
       symbol: string;
       compareValue: string;
       currentValue: string;
@@ -134,28 +133,28 @@ export function Dashboard({
     <>
       <div className="px-6 sm:px-8 pt-6 pb-20 md:pb-24 lg:py-6 w-full lg:h-screen xl:h-screen flex flex-col">
         <div className="inline-flex lg:grid lg:grid-cols-3 justify-between items-center lg:gap-6">
-          <div className="col-span-1">
+          <div className="col-span-1 hidden md:block">
             <h3 className="text-lg">
               Good {timeOfDay}, {username}
             </h3>
             <p>Your dashboard</p>
           </div>
           <div className="flex items-center col-span-2">
-            <div className="w-[77%]">
+            <div className="w-[77%] hidden lg:block">
               {marqueeBarAssets && (
                 <AssetMarqueeBar
                   data={marqueeBarAssets}
                   timeInterval={timeInterval}
-                  performanceBarOrder={preferences.performanceBarOrder}
+                  preferences={preferences}
                 />
               )}
             </div>
             <Image
               src={jaayedaad_logo}
               alt="Jaayedaad logo"
-              className="h-10 lg:hidden"
+              className="h-8 lg:hidden"
             />
-            <div className="w-fit">
+            <div className="ml-2 w-fit">
               <ChangeInterval onChange={onChange} />
             </div>
           </div>
@@ -215,7 +214,7 @@ export function Dashboard({
             {/* Asset Table */}
             <div className="col-span-2 row-span-4 bg-[#171326]/70 backdrop-blur shadow-2xl border rounded-xl p-4">
               <div className="flex justify-between">
-                <div className="xl:flex xl:items-center xl:gap-1">
+                <div className="flex flex-col">
                   <h3 className="font-semibold">Asset Overview</h3>
                   <p className="text-muted-foreground text-xs xl:text-sm">
                     Collection of your assets

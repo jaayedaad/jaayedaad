@@ -59,7 +59,7 @@ export function getUnrealisedProfitLossArray(
   }
 ) {
   const results: {
-    type: string;
+    category: string;
     symbol: string;
     compareValue: string;
     currentValue: string;
@@ -112,7 +112,7 @@ export function getUnrealisedProfitLossArray(
       });
 
       const result = {
-        type: asset.type,
+        category: asset.category,
         symbol: asset.symbol,
         compareValue: (
           quantityTillInterval *
