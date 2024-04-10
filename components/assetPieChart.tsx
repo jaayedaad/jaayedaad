@@ -124,7 +124,7 @@ function AssetPieChart({
         const category: string = item.category;
         const value = item.symbol
           ? item.currentValue * multiplier
-          : +item.currentPrice;
+          : +item.currentPrice * +item.quantity * multiplier;
         sumByType[category] = (sumByType[category] || 0) + value;
       }
     });
@@ -140,7 +140,7 @@ function AssetPieChart({
         const type = item.name;
         const value = item.symbol
           ? item.currentValue * multiplier
-          : +item.currentPrice;
+          : +item.currentPrice * +item.quantity * multiplier;
         sumByType[type] = (sumByType[type] || 0) + value;
       }
     });
