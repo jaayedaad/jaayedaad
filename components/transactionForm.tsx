@@ -12,6 +12,7 @@ import { currencies } from "@/constants/currency";
 import { Button } from "./ui/button";
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
+import { cn } from "@/lib/helper";
 
 interface transactionFormPropsType {
   previousClose?: string;
@@ -46,6 +47,7 @@ function TransactionForm({
   const [selling, setSelling] = useState(false);
   const [assetQuantity, setAssetQuantity] = useState<string>("0");
   const [assetPrice, setAssetPrice] = useState(previousClose);
+  const [currentPrice, setCurrentPrice] = useState<string>();
   const [date, setDate] = useState<string>("");
   const [currency, setCurrency] = useState(
     selectedAsset.currency.toUpperCase()
@@ -60,12 +62,14 @@ function TransactionForm({
     setBuying(true);
     const asset = {
       name: name,
-      symbol: symbol,
+      symbol: (symbol.length && symbol) || null,
       quantity: assetQuantity,
       buyPrice: assetPrice,
+      currentPrice: (currentPrice && currentPrice) || null,
       buyDate: date,
       category: category,
-      exchange: exchange,
+      exchange: (exchange.length && exchange) || null,
+      isManualEntry: symbol.length ? false : true,
       buyCurrency: currency,
     };
 
@@ -147,13 +151,13 @@ function TransactionForm({
           <div className="text-base col-span-1">Symbol</div>
           <Input
             className="col-span-3 no-spinner"
-            value={selectedAsset.symbol}
+            value={selectedAsset.symbol.length ? selectedAsset.symbol : "-"}
             disabled
           />
           <div className="text-base col-span-1">Exchange</div>
           <Input
             className="col-span-3 no-spinner"
-            value={selectedAsset.exchange}
+            value={selectedAsset.exchange.length ? selectedAsset.exchange : "-"}
             disabled
           />
           <div className="text-base col-span-1 after:content-['*'] after:ml-0.5 after:text-red-500">
@@ -179,13 +183,32 @@ function TransactionForm({
           </div>
           <Input
             placeholder="Buy / Sell price"
-            className="no-spinner col-span-2"
+            className={cn(
+              "no-spinner col-span-2",
+              !selectedAsset.symbol && "col-span-3"
+            )}
             type="number"
             value={assetPrice}
             onChange={(e) => {
               handleAssetPrice(e.target.value);
             }}
           />
+          {!selectedAsset.symbol && (
+            <>
+              <div className="col-span-1 after:content-['*'] after:ml-0.5 after:text-red-500">
+                Current price
+              </div>
+              <Input
+                placeholder="Current unit price"
+                className="no-spinner col-span-2"
+                type="number"
+                value={currentPrice}
+                onChange={(e) => {
+                  setCurrentPrice(e.target.value);
+                }}
+              />
+            </>
+          )}
           <div className="col-span-1">
             <Select
               onValueChange={(value) => {
