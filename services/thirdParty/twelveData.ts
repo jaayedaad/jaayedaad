@@ -133,16 +133,17 @@ export const getHistoricalData = async (userId: string, assets: TAsset[]) => {
       }
 
       const data = await res.json();
+      if (data.code === 401) {
+        throw new Error("Twelve Data API key is invalid");
+      } else if (data.code === 429) {
+        throw new Error("Twelve Data API rate limit exceeded");
+      }
+
       // remove historical data for past dates for current day transactions
       if (
         areDatesEqual(new Date(formattedToday), new Date(formattedStartDate))
       ) {
         data.values = data.values.slice(0, 1);
-      }
-      if (data.code === 401) {
-        throw new Error("Twelve Data API key is invalid");
-      } else if (data.code === 429) {
-        throw new Error("Twelve Data API rate limit exceeded");
       }
 
       if (data.code === undefined) {
