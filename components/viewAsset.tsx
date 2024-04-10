@@ -292,166 +292,160 @@ function ViewAsset({
               <TabsTrigger value="priceUpdate">Update Price</TabsTrigger>
             )}
           </TabsList>
-          <ScrollArea className="md:h-[80vh]">
-            <TabsContent value="summary" className="mt-4">
-              <div className="text-sm text-muted-foreground">
-                <span className="text-foreground pr-1">
-                  {assetToView ? assetToView?.symbol : manualAsset?.name}
-                </span>
-                {assetToView?.exchange !== undefined && (
-                  <>({assetToView?.exchange})</>
-                )}
-              </div>
+          <TabsContent value="summary" className="mt-4">
+            <div className="text-sm text-muted-foreground">
+              <span className="text-foreground pr-1">
+                {assetToView ? assetToView?.symbol : manualAsset?.name}
+              </span>
+              {assetToView?.exchange !== undefined && (
+                <>({assetToView?.exchange})</>
+              )}
+            </div>
+            <div>
               <div>
-                <div>
-                  <div className="mb-2">
-                    <h3 className="text-3xl font-bold flex items-center">
-                      {new Intl.NumberFormat(
-                        numberSystem === "Indian" ? "en-IN" : "en-US",
-                        {
-                          style: "currency",
-                          currency:
-                            assetToView?.buyCurrency ||
-                            manualAsset?.buyCurrency,
-                          minimumFractionDigits: 2,
-                          maximumFractionDigits: 2,
-                        }
-                      ).format(+currentValue || +manualAsset?.currentValue!)}
-                    </h3>
-                    <div className="flex gap-1">
-                      <p
-                        className={cn(
-                          "ml-1 text-sm",
-                          compareLabel <= currentValue
-                            ? "text-green-400"
-                            : "text-red-400"
-                        )}
-                      >
-                        {currentValue > compareLabel && "+"}
-                        {(
-                          parseFloat(currentValue) - parseFloat(compareLabel)
-                        ).toLocaleString("en-IN")}
-                      </p>
-                      <p
-                        className={cn(
-                          "text-sm rounded-sm px-0.5",
-                          currentValue >= compareLabel
-                            ? "text-green-400 bg-green-400/30"
-                            : "text-red-400 bg-red-400/30"
-                        )}
-                      >
-                        {currentValue > compareLabel && "+"}
-                        {assetToView
-                          ? (
-                              ((+parseFloat(currentValue) -
-                                +parseFloat(compareLabel)) *
-                                100) /
-                              +compareLabel
-                            ).toFixed(2)
-                          : manualAsset &&
-                            (
-                              ((manualAsset.currentValue - +compareLabel) *
-                                100) /
-                              +compareLabel
-                            ).toFixed(2)}
-                        %
-                      </p>
-                    </div>
+                <div className="mb-2">
+                  <h3 className="text-3xl font-bold flex items-center">
+                    {new Intl.NumberFormat(
+                      numberSystem === "Indian" ? "en-IN" : "en-US",
+                      {
+                        style: "currency",
+                        currency:
+                          assetToView?.buyCurrency || manualAsset?.buyCurrency,
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2,
+                      }
+                    ).format(+currentValue || +manualAsset?.currentValue!)}
+                  </h3>
+                  <div className="flex gap-1">
+                    <p
+                      className={cn(
+                        "ml-1 text-sm",
+                        compareLabel <= currentValue
+                          ? "text-green-400"
+                          : "text-red-400"
+                      )}
+                    >
+                      {currentValue > compareLabel && "+"}
+                      {(
+                        parseFloat(currentValue) - parseFloat(compareLabel)
+                      ).toLocaleString("en-IN")}
+                    </p>
+                    <p
+                      className={cn(
+                        "text-sm rounded-sm px-0.5",
+                        currentValue >= compareLabel
+                          ? "text-green-400 bg-green-400/30"
+                          : "text-red-400 bg-red-400/30"
+                      )}
+                    >
+                      {currentValue > compareLabel && "+"}
+                      {assetToView
+                        ? (
+                            ((+parseFloat(currentValue) -
+                              +parseFloat(compareLabel)) *
+                              100) /
+                            +compareLabel
+                          ).toFixed(2)
+                        : manualAsset &&
+                          (
+                            ((manualAsset.currentValue - +compareLabel) * 100) /
+                            +compareLabel
+                          ).toFixed(2)}
+                      %
+                    </p>
                   </div>
-                  <ChangeInterval onChange={onChange} />
+                </div>
+                <ChangeInterval onChange={onChange} />
+              </div>
+            </div>
+            {dataToShow && (
+              <AssetLineChart
+                dataToShow={dataToShow}
+                numberSystem={numberSystem}
+                defaultCurrency={defaultCurrency}
+              />
+            )}
+            {assetSummary && assetToView ? (
+              <div className="mt-8 grid grid-cols-2 grid-rows-4 lg:grid-cols-4 lg:grid-rows-2 gap-4">
+                <div>
+                  <p className="text-muted-foreground text-sm">
+                    Avg. buying price
+                  </p>
+                  {(+assetToView.buyPrice).toLocaleString(
+                    numberSystem === "Indian" ? "en-IN" : "en-US"
+                  )}
+                </div>
+                <div>
+                  <p className="text-muted-foreground text-sm">Quantity</p>
+                  {(+assetToView.quantity).toLocaleString(
+                    numberSystem === "Indian" ? "en-IN" : "en-US"
+                  )}
+                </div>
+                <div>
+                  <p className="text-muted-foreground text-sm">
+                    Previous close
+                  </p>
+                  {(+assetToView.prevClose).toLocaleString(
+                    numberSystem === "Indian" ? "en-IN" : "en-US"
+                  )}
+                </div>
+                <div>
+                  <p className="text-muted-foreground text-sm">
+                    Buying currency
+                  </p>
+                  {assetToView.buyCurrency}
+                </div>
+                <div>
+                  <p className="text-muted-foreground text-sm">
+                    Invested value
+                  </p>
+                  {formatter.format(+assetSummary.compareValue)}
+                </div>
+                <div>
+                  <p className="text-muted-foreground text-sm">Current value</p>
+                  {formatter.format(+assetSummary.currentValue)}
+                </div>
+                <div>
+                  <p className="text-muted-foreground text-sm">
+                    Realised profit/loss
+                  </p>
+                  {formatter.format(+assetSummary.realisedProfitLoss)}
+                </div>
+                <div>
+                  <p className="text-muted-foreground text-sm">
+                    Unrealised profit/loss
+                  </p>
+                  {formatter.format(+assetSummary.unrealisedProfitLoss)}
                 </div>
               </div>
-              {dataToShow && (
-                <AssetLineChart
-                  dataToShow={dataToShow}
-                  numberSystem={numberSystem}
-                  defaultCurrency={defaultCurrency}
-                />
-              )}
-              {assetSummary && assetToView ? (
-                <div className="mt-8 grid grid-cols-2 grid-rows-4 lg:grid-cols-4 lg:grid-rows-2 gap-4">
-                  <div>
-                    <p className="text-muted-foreground text-sm">
-                      Avg. buying price
-                    </p>
-                    {(+assetToView.buyPrice).toLocaleString(
-                      numberSystem === "Indian" ? "en-IN" : "en-US"
-                    )}
-                  </div>
-                  <div>
-                    <p className="text-muted-foreground text-sm">Quantity</p>
-                    {(+assetToView.quantity).toLocaleString(
-                      numberSystem === "Indian" ? "en-IN" : "en-US"
-                    )}
-                  </div>
-                  <div>
-                    <p className="text-muted-foreground text-sm">
-                      Previous close
-                    </p>
-                    {(+assetToView.prevClose).toLocaleString(
-                      numberSystem === "Indian" ? "en-IN" : "en-US"
-                    )}
-                  </div>
-                  <div>
-                    <p className="text-muted-foreground text-sm">
-                      Buying currency
-                    </p>
-                    {assetToView.buyCurrency}
-                  </div>
-                  <div>
-                    <p className="text-muted-foreground text-sm">
-                      Invested value
-                    </p>
-                    {formatter.format(+assetSummary.compareValue)}
-                  </div>
-                  <div>
-                    <p className="text-muted-foreground text-sm">
-                      Current value
-                    </p>
-                    {formatter.format(+assetSummary.currentValue)}
-                  </div>
-                  <div>
-                    <p className="text-muted-foreground text-sm">
-                      Realised profit/loss
-                    </p>
-                    {formatter.format(+assetSummary.realisedProfitLoss)}
-                  </div>
-                  <div>
-                    <p className="text-muted-foreground text-sm">
-                      Unrealised profit/loss
-                    </p>
-                    {formatter.format(+assetSummary.unrealisedProfitLoss)}
-                  </div>
+            ) : (
+              !manualAsset && (
+                <div className="mt-12">
+                  <LoadingSpinner />
                 </div>
-              ) : (
-                !manualAsset && (
-                  <div className="mt-12">
-                    <LoadingSpinner />
-                  </div>
-                )
-              )}
-            </TabsContent>
-            <TabsContent value="transactions">
-              {assetToView
-                ? assetToView && (
-                    <TransactionHistory
-                      assetToView={assetToView}
-                      defaultCurrency={defaultCurrency}
-                    />
-                  )
-                : manualAsset && (
-                    <TransactionHistory
-                      assetToView={manualAsset}
-                      defaultCurrency={defaultCurrency}
-                    />
-                  )}
-            </TabsContent>
-            {manualAsset !== undefined && (
-              <TabsContent value="priceUpdate">
-                <AssetPriceUpdates assetToView={manualAsset} />
-              </TabsContent>
+              )
             )}
-          </ScrollArea>
+          </TabsContent>
+          <TabsContent value="transactions">
+            {assetToView
+              ? assetToView && (
+                  <TransactionHistory
+                    assetToView={assetToView}
+                    defaultCurrency={defaultCurrency}
+                  />
+                )
+              : manualAsset && (
+                  <TransactionHistory
+                    assetToView={manualAsset}
+                    defaultCurrency={defaultCurrency}
+                  />
+                )}
+          </TabsContent>
+          {manualAsset !== undefined && (
+            <TabsContent value="priceUpdate">
+              <AssetPriceUpdates assetToView={manualAsset} />
+            </TabsContent>
+          )}
         </Tabs>
       </DialogContent>
     </Dialog>

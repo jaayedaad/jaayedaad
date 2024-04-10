@@ -86,6 +86,15 @@ function AssetPriceUpdates({ assetToView }: AssetPriceUpdatesProps) {
                     new Date(b.date).getTime() - new Date(a.date).getTime()
                 )
                 .map((priceUpdate) => {
+                  const priceUpdateDate = new Date(priceUpdate.date.toString());
+                  const formattedDate = `${priceUpdateDate
+                    .getDate()
+                    .toString()
+                    .padStart(2, "0")}-${(priceUpdateDate.getMonth() + 1)
+                    .toString()
+                    .padStart(2, "0")}-${priceUpdateDate
+                    .getFullYear()
+                    .toString()}`;
                   return (
                     <TableRow
                       className="cursor-pointer"
@@ -96,7 +105,7 @@ function AssetPriceUpdates({ assetToView }: AssetPriceUpdatesProps) {
                       //   }}
                     >
                       <TableCell className="font-medium">
-                        {priceUpdate.date.toString().split("T")[0]}
+                        {formattedDate}
                       </TableCell>
                       <TableCell className="text-right">
                         {parseFloat(priceUpdate.price).toLocaleString("en-IN")}

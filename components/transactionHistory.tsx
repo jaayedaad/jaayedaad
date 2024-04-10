@@ -52,6 +52,17 @@ function TransactionHistory({
                       new Date(b.date).getTime() - new Date(a.date).getTime()
                   )
                   .map((transaction) => {
+                    const transactionDate = new Date(
+                      transaction.date.toString()
+                    );
+                    const formattedDate = `${transactionDate
+                      .getDate()
+                      .toString()
+                      .padStart(2, "0")}-${(transactionDate.getMonth() + 1)
+                      .toString()
+                      .padStart(2, "0")}-${transactionDate
+                      .getFullYear()
+                      .toString()}`;
                     return (
                       <TableRow
                         className="cursor-pointer"
@@ -62,7 +73,7 @@ function TransactionHistory({
                         }}
                       >
                         <TableCell className="font-medium">
-                          {transaction.date.toString().split("T")[0]}
+                          {formattedDate}
                         </TableCell>
                         <TableCell>{transaction.type.toUpperCase()}</TableCell>
                         <TableCell className="text-right">
