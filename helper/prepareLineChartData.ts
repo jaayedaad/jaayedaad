@@ -20,13 +20,12 @@ export function prepareLineChartData(
   const today = new Date(data[0].name);
 
   let startDate: Date, endDate: Date;
-  // if (timeRange === "1d") {
-  //   startDate = new Date(data[1].name);
-  //   startDate.setDate(startDate.getDate());
-  //   endDate = today;
-  // } else
   if (data.length === 1) {
     startDate = new Date(data[0].name);
+    startDate.setDate(startDate.getDate());
+    endDate = today;
+  } else if (timeRange === "1d") {
+    startDate = new Date(data[1].name);
     startDate.setDate(startDate.getDate());
     endDate = today;
   } else if (timeRange === "1w") {
