@@ -37,6 +37,7 @@ function CreateCategoryButton() {
   const [categoryName, setCategoryName] = useState("");
   const [icon, setIcon] = useState<keyof typeof dynamicIconImports>("shapes");
   const [open, setOpen] = useState(false);
+  const [iconSelectPopoverOpen, setIconSelectPopoverOpen] = useState(false);
   const [disabled, setDisabled] = useState(true);
   const [loading, setLoading] = useState(false);
 
@@ -100,12 +101,15 @@ function CreateCategoryButton() {
             />
             <div className="col-span-1 self-center">Category icon</div>
             <div className="col-span-2 flex items-center gap-4">
-              <Popover>
+              <Popover
+                open={iconSelectPopoverOpen}
+                onOpenChange={setIconSelectPopoverOpen}
+              >
                 <PopoverTrigger asChild>
                   <Button
                     variant="outline"
                     role="combobox"
-                    aria-expanded={open}
+                    aria-expanded={iconSelectPopoverOpen}
                     className="w-full justify-between"
                   >
                     {icon
@@ -126,7 +130,7 @@ function CreateCategoryButton() {
                           value={iconName.value}
                           onSelect={() => {
                             setIcon(iconName.value);
-                            setOpen(false);
+                            setIconSelectPopoverOpen(false);
                           }}
                         >
                           <Check
