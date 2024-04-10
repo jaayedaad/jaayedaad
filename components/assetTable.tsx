@@ -373,8 +373,11 @@ function AssetTable({
                                     asset.buyCurrency.toLowerCase()
                                   ]
                                 ).toLocaleString("en-IN")
-                              : parseFloat(
-                                  filteredAsset[0].currentPrice
+                              : (
+                                  parseFloat(filteredAsset[0].currentPrice) /
+                                  conversionRates[
+                                    asset.buyCurrency.toLowerCase()
+                                  ]
                                 ).toLocaleString("en-IN")}
                           </TableCell>
                           <TableCell className="text-right px-8">

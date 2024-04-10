@@ -410,8 +410,8 @@ export async function POST(req: Request) {
       );
       const assetType = body.category;
       // encrypt the body data
-      body = encryptObjectValues(body, encryptionKey);
       if (!existingAsset) {
+        body = encryptObjectValues(body, encryptionKey);
         let asset: Asset;
         if (manualEntry) {
           if (!belongsToDefaultCategory) {
@@ -486,7 +486,7 @@ export async function POST(req: Request) {
         });
       } else {
         const updatedQuantity = +existingAsset.quantity + +body.quantity;
-
+        body = encryptObjectValues(body, encryptionKey);
         const newTransaction = await prisma.transaction.create({
           data: {
             id: transactionId,
@@ -499,7 +499,9 @@ export async function POST(req: Request) {
         });
 
         // Calculate avg buy price after new transaction
-        existingAsset.transactions.push(newTransaction);
+        existingAsset.transactions.push(
+          decryptObjectValues(newTransaction, encryptionKey)
+        );
         const avgBuyPrice = calculateAvgBuyPrice(existingAsset.transactions);
 
         if (!manualEntry) {

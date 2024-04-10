@@ -37,6 +37,9 @@ const SearchResults = ({
     const assetPreviousClose = Number(assetQuote.previous_close);
     setAssetPreviousClose(assetPreviousClose.toFixed(2));
     setShowForm(true);
+    if (result.currency === "") {
+      result.currency = defaultCurrency;
+    }
     setSelectedAsset(result);
   };
 

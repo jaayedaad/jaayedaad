@@ -44,6 +44,10 @@ function transformToResultFormat(
     symbol: asset.symbol || "", // If symbol is null, set it to an empty string
     instrument_type: asset.category,
     exchange: asset.exchange || "", // If exchange is null, set it to an empty string
+    mic_code: "", // Not available in the database
+    currency: asset.buyCurrency,
+    country: "", // Not available in the database
+    exchange_timezone: "", // Not available in the database
   }));
 }
 

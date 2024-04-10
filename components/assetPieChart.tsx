@@ -124,27 +124,13 @@ function AssetPieChart({
         const category: string = item.category;
         const value = item.symbol
           ? item.currentValue * multiplier
-          : +item.currentPrice;
+          : +item.currentPrice * +item.quantity * multiplier;
         sumByType[category] = (sumByType[category] || 0) + value;
       }
     });
   } else {
-    const filters: Record<string, (asset: TAsset) => boolean> = {
-      "common stock": (asset) => asset.category === "Common Stock",
-      "digital currency": (asset) => asset.category === "Digital Currency",
-      "mutual fund": (asset) => asset.category === "Mutual Fund",
-      property: (asset) => asset.category === "Property",
-      jewellery: (asset) => asset.category === "Jewellery",
-      deposits: (asset) => asset.category === "Deposits",
-      others: (asset) => asset.category === "Others",
-    };
-
     const param = decodeURIComponent(view);
-    if (param && filters.hasOwnProperty(param)) {
-      data = data?.filter(filters[param]);
-    } else {
-      data = data?.filter((asset) => asset.category === param.toUpperCase());
-    }
+    data = data?.filter((asset) => asset.category.toLowerCase() === param);
 
     data?.forEach((item) => {
       if (conversionRates) {
@@ -154,7 +140,7 @@ function AssetPieChart({
         const type = item.name;
         const value = item.symbol
           ? item.currentValue * multiplier
-          : +item.currentPrice;
+          : +item.currentPrice * +item.quantity * multiplier;
         sumByType[type] = (sumByType[type] || 0) + value;
       }
     });

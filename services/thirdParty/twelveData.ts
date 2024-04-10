@@ -112,7 +112,7 @@ export const getHistoricalData = async (userId: string, assets: TAsset[]) => {
         areDatesEqual(new Date(formattedToday), new Date(formattedStartDate))
       ) {
         res = await fetch(
-          `https://api.twelvedata.com/time_series?symbol=${symbol}&interval=1day&dp=2&previous_close=true&end_date=${formattedToday}`,
+          `https://api.twelvedata.com/time_series?symbol=${symbol}&interval=1day&dp=2&previous_close=true`,
           {
             method: "GET",
             headers: {
@@ -133,6 +133,12 @@ export const getHistoricalData = async (userId: string, assets: TAsset[]) => {
       }
 
       const data = await res.json();
+      // remove historical data for past dates for current day transactions
+      if (
+        areDatesEqual(new Date(formattedToday), new Date(formattedStartDate))
+      ) {
+        data.values = data.values.slice(0, 1);
+      }
       if (data.code === 401) {
         throw new Error("Twelve Data API key is invalid");
       } else if (data.code === 429) {

@@ -120,26 +120,14 @@ export function getUnrealisedProfitLossArray(
           multiplier
         ).toFixed(2),
         currentValue: (
-          parseFloat(
-            transactions.length > 0
-              ? valueOfInterval[0].close
-              : valueOfInterval[valueOfInterval.length - 2].close
-          ) *
+          parseFloat(valueOfInterval[0].close) *
           quantityTillInterval *
           multiplier
         ).toFixed(2),
-        prevClose:
-          transactions.length > 0
-            ? valueOfInterval[0].close
-            : valueOfInterval[valueOfInterval.length - 2].close,
+        prevClose: valueOfInterval[0].close,
         interval: label,
         unrealisedProfitLoss: (
-          (parseFloat(
-            transactions.length > 0
-              ? valueOfInterval[0].close
-              : valueOfInterval[valueOfInterval.length - 2].close
-          ) -
-            parseFloat(asset.buyPrice)) *
+          (parseFloat(valueOfInterval[0].close) - parseFloat(asset.buyPrice)) *
           quantityTillInterval *
           multiplier
         ).toFixed(2),
