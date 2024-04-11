@@ -1,9 +1,11 @@
+"use client";
 import React from "react";
 import { Button } from "../ui/button";
-import { Github, X } from "lucide-react";
+import { Github } from "lucide-react";
 import Link from "next/link";
 import JaayedaadLogo from "@/public/branding/jaayedaadLogo";
 import XLogo from "@/public/branding/XLogo";
+import { signIn } from "next-auth/react";
 
 function Footer() {
   return (
@@ -18,7 +20,10 @@ function Footer() {
             <Github className="mr-2 h-4 w-4 stroke-[#6039B5]" /> GitHub
           </Link>
         </Button>
-        <Button className="order-last md:order-[0] h-12 text-base px-6 bg-gradient-to-r from-violet-950 to-primary rounded-full">
+        <Button
+          onClick={() => signIn("google")}
+          className="order-last md:order-[0] h-12 text-base px-6 bg-gradient-to-r from-violet-950 to-primary rounded-full"
+        >
           Sign Up
         </Button>
         <Button

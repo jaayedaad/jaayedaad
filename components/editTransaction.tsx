@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import {
   Dialog,
-  DialogClose,
   DialogContent,
   DialogFooter,
   DialogHeader,
@@ -13,6 +12,7 @@ import { Button } from "./ui/button";
 import { Transaction } from "@prisma/client";
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 interface EditTransactionProps {
   open: boolean;
@@ -31,6 +31,7 @@ function EditTransaction({
   const [editedPrice, setEditedPrice] = useState(transaction.price);
   const [editedDate, setEditedDate] = useState(transaction.date);
   const [loading, setLoading] = useState(false);
+  const router = useRouter();
 
   // Handle Edit Transaction
   const handleEditTransaction = async (transactionToEdit: Transaction) => {
@@ -44,12 +45,12 @@ function EditTransaction({
       .then((data) => {
         if (data.error) {
           setLoading(false);
-          setOpen(false);
           toast.error(data.error);
         } else {
           setLoading(false);
           setOpen(false);
           toast.success(data.success);
+          router.refresh();
         }
       });
   };
@@ -98,7 +99,7 @@ function EditTransaction({
                 }
               >
                 {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                Edit
+                Save
               </Button>
             </DialogFooter>
           </div>

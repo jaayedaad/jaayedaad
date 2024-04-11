@@ -30,7 +30,7 @@ export function prepareLineChartData(
     endDate = today;
   } else if (timeRange === "1w") {
     startDate = new Date(today);
-    startDate.setDate(today.getDate() - 7);
+    startDate.setDate(today.getDate() - 6);
     endDate = today;
   } else if (timeRange === "1m") {
     startDate = new Date(today);
@@ -42,7 +42,6 @@ export function prepareLineChartData(
     endDate = today;
   } else if (timeRange === "All") {
     startDate = new Date(data[data.length - 1].name);
-    startDate.setFullYear(today.getFullYear() - 1);
     endDate = today;
   }
   // Fetch data based on the calculated start and end dates

@@ -10,6 +10,7 @@ import { getPreferenceFromUserId } from "@/services/preference";
 const reverseAssetTypeMappings: Record<string, string> = {
   stocks: "common stock",
   crypto: "digital currency",
+  "mutual funds": "mutual fund",
 };
 
 export default async function AssetPage({
@@ -19,7 +20,7 @@ export default async function AssetPage({
 }) {
   const session = await getServerSession(authOptions);
   if (!session || !session?.user) {
-    redirect("/auth/signin");
+    redirect("/");
   }
 
   const pageParams = decodeURIComponent(params.asset);
@@ -50,6 +51,7 @@ export default async function AssetPage({
   return (
     <Page
       username={session.user.username}
+      user={session.user}
       assetCategory={pageParams.toLowerCase()}
       reverseMappedName={reverseMappedName}
       filteredAssets={filteredAssets}

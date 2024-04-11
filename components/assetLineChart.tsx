@@ -100,6 +100,7 @@ function AssetLineChart({
                     <span className="font-bold text-muted-foreground flex items-center">
                       {formatter.format(parseFloat(value!))}
                     </span>
+                    <span>{payload[0].payload.name}</span>
                   </div>
                 </div>
               );
@@ -112,10 +113,6 @@ function AssetLineChart({
           type="monotone"
           dataKey="amt"
           strokeWidth={2}
-          dot={{
-            r: 4,
-            style: { fill: "#ffffff" },
-          }}
           stroke={`${
             dataToShow[0].amt > dataToShow[dataToShow.length - 1].amt
               ? "#ef4444"

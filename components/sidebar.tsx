@@ -92,11 +92,11 @@ function Sidebar({
             asChild
             className={cn(
               `w-full justify-start pr-8 bg-background hover:bg-primary/10`,
-              currentTab === "/dashboard/mutual fund" &&
+              currentTab === "/dashboard/mutual funds" &&
                 "bg-[#171326]/70 border text-foreground hover:bg-primary/30"
             )}
           >
-            <Link href="/dashboard/mutual fund">
+            <Link href="/dashboard/mutual funds">
               <SquareStack className="mr-2" size={20} />
               Mutual Funds
             </Link>

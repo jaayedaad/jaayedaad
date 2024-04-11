@@ -143,6 +143,7 @@ function ManualTransactionChart({
                             ? formatter.format(parseFloat(value!))
                             : "* ".repeat(5)}
                         </span>
+                        <span>{payload[0].payload.name}</span>
                       </div>
                     </div>
                   );
@@ -155,10 +156,6 @@ function ManualTransactionChart({
               type="monotone"
               dataKey="amt"
               strokeWidth={2}
-              dot={{
-                r: 4,
-                style: { fill: "#ffffff" },
-              }}
               stroke={`${
                 dataToShow[0].amt > dataToShow[dataToShow.length - 1].amt
                   ? "#ef4444"

@@ -1,5 +1,11 @@
 "use client";
-import { TAsset, TConversionRates, TInterval, TPreference } from "@/lib/types";
+import {
+  TAsset,
+  TConversionRates,
+  TInterval,
+  TPreference,
+  TUser,
+} from "@/lib/types";
 import AssetPieChart from "@/components/assetPieChart";
 import AssetTable from "@/components/assetTable";
 import ChangeInterval from "@/components/changeInterval";
@@ -16,6 +22,7 @@ import AssetMarqueeBar from "@/components/assetMarqueeBar";
 import { TextRevealCard } from "@/components/ui/text-reveal-card";
 
 function Page({
+  user,
   username,
   assetCategory,
   reverseMappedName,
@@ -24,6 +31,7 @@ function Page({
   conversionRates,
   preferences,
 }: {
+  user: TUser;
   username: string;
   assetCategory: string;
   reverseMappedName: string;
@@ -133,6 +141,8 @@ function Page({
       });
       setAssetsToView(updatedAssetsToView);
     } else {
+      console.log(filteredAssets);
+
       setAssetsToView(filteredAssets);
     }
   };
@@ -141,11 +151,20 @@ function Page({
     filteredAssets.length ? (
       <div className="px-6 sm:px-8 pt-6 pb-24 md:pb-32 lg:py-6 w-full lg:h-screen xl:h-screen flex flex-col">
         <div className="inline-flex lg:grid lg:grid-cols-3 justify-between items-center lg:gap-6">
-          <div className="col-span-1">
-            <h3 className="text-lg">
-              Good {timeOfDay}, {username}
-            </h3>
-            <p>Your {assetCategory}</p>
+          <div className="col-span-1 hidden lg:block">
+            <div className="flex gap-2">
+              <Image
+                className="rounded-full"
+                width={52}
+                height={52}
+                src={user.image}
+                alt="user avatar"
+              />
+              <div>
+                <h3>Good {timeOfDay},</h3>
+                <p className="text-lg">{username}</p>
+              </div>
+            </div>
           </div>
           <div className="flex items-center col-span-2">
             <div className="w-[77%] hidden lg:block">

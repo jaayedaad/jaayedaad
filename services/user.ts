@@ -3,13 +3,7 @@
 import { prisma } from "@/lib/prisma";
 import { Session } from "next-auth";
 import { decryptObjectValues } from "@/lib/dataSecurity";
-import {
-  DATABASE_URL,
-  SIA_API_URL,
-  ENCRYPTION_KEY,
-  USE_SIA,
-} from "@/constants/env";
-import { TUser } from "@/lib/types";
+import { DATABASE_URL, ENCRYPTION_KEY, USE_SIA } from "@/constants/env";
 import { deleteUserInSia } from "./thirdParty/sia";
 
 export const getUser = async (session: Session) => {

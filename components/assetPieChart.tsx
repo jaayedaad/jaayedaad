@@ -172,8 +172,8 @@ function AssetPieChart({
                 labelLine={false}
                 startAngle={90}
                 endAngle={-360}
-                innerRadius={60}
-                outerRadius={80}
+                innerRadius={55}
+                outerRadius={75}
                 paddingAngle={chartData.length > 1 ? 5 : 0}
                 stroke="none"
                 dataKey="value"

@@ -116,11 +116,11 @@ function BottomBar({
               variant="ghost"
               className={cn(
                 "w-full justify-start gap-1",
-                currentTab === "/dashboard/mutual fund" &&
+                currentTab === "/dashboard/mutual funds" &&
                   "bg-secondary text-foreground hover:bg-primary/20"
               )}
             >
-              <Link href="/dashboard/mutual fund">
+              <Link href="/dashboard/mutual funds">
                 <SquareStack size={20} />
                 Mutual Funds
               </Link>

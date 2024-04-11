@@ -9,7 +9,7 @@ import React from "react";
 async function DashboardLayout({ children }: { children: React.ReactNode }) {
   const session = await getServerSession(authOptions);
   if (!session || !session?.user) {
-    redirect("/auth/signin");
+    redirect("/");
   }
 
   const preference = await getPreferenceFromUserId(session.user.id);

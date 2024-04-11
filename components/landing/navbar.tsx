@@ -60,7 +60,7 @@ function Navbar() {
       </div>
       <div className="xl:w-[162px] flex justify-center">
         <FlashyButton
-          className="h-[47px] px-6"
+          className="md:h-[47px] md:px-6"
           containerClassName="md:h-[49px]"
           onClick={() =>
             signIn("google", {

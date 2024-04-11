@@ -17,10 +17,7 @@ import { Input } from "./ui/input";
 import { signOut } from "next-auth/react";
 import { cn } from "@/lib/helper";
 
-import {
-  updateUsernameAction,
-  verifyUsernameAction,
-} from "@/app/(protected)/auth/onboarding/actions";
+import { updateUsernameAction, verifyUsernameAction } from "@/app/actions";
 import { deleteUserAction } from "@/app/(protected)/dashboard/settings/actions";
 
 interface AccountSettingsProps {
@@ -116,7 +113,6 @@ function AccountSettings({ username }: AccountSettingsProps) {
             <div className="flex gap-4">
               <Input
                 value={newUsername !== null ? newUsername : ""}
-                defaultValue={username}
                 className="w-[30vw]"
                 placeholder="username"
                 onChange={(e) => handleUsernameChange(e.target.value)}
