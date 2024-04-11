@@ -69,7 +69,8 @@ function TransactionForm({
       buyDate: date,
       category: category,
       exchange: (exchange.length && exchange) || null,
-      isManualEntry: symbol.length ? false : true,
+      isManualEntry:
+        previousClose === "NaN" || !selectedAsset.symbol.length ? true : false,
       buyCurrency: currency,
     };
 
@@ -185,7 +186,7 @@ function TransactionForm({
             placeholder="Buy / Sell price"
             className={cn(
               "no-spinner col-span-2",
-              !selectedAsset.symbol && "col-span-3"
+              (!selectedAsset.symbol || previousClose === "NaN") && "col-span-3"
             )}
             type="number"
             value={assetPrice}
@@ -193,7 +194,7 @@ function TransactionForm({
               handleAssetPrice(e.target.value);
             }}
           />
-          {!selectedAsset.symbol && (
+          {(!selectedAsset.symbol || previousClose === "NaN") && (
             <>
               <div className="col-span-1 after:content-['*'] after:ml-0.5 after:text-red-500">
                 Current price
