@@ -3,9 +3,10 @@ import { Switch } from "@/components/ui/switch";
 import { Separator } from "@/components/ui/separator";
 import { useState } from "react";
 import { toast } from "sonner";
-import LoadingSpinner from "./ui/loading-spinner";
 import { TPreference } from "@/lib/types";
 import { updatePreferenceAction } from "@/app/(protected)/dashboard/settings/actions";
+import { Button } from "./ui/button";
+import { signOut } from "next-auth/react";
 
 interface ProfileSettingsProps {
   preference: TPreference;
@@ -42,6 +43,10 @@ function PublicProfileSettings({
   };
   return (
     <>
+      <div className="text-3xl flex justify-between items-center text-foreground font-bold">
+        <h2>Settings</h2>
+        <Button onClick={() => signOut()}>Sign out</Button>
+      </div>
       <div className="flex justify-between mt-4">
         <div>
           <h2 className="text-xl text-foreground font-bold">Profile</h2>

@@ -22,7 +22,6 @@ export default async function Settings() {
       <div>
         <div className="text-muted-foreground flex gap-1">
           <div className="flex flex-col w-full gap-2">
-            <div className="text-3xl text-foreground font-bold">Settings</div>
             <PublicProfileSettings preference={preference} />
             <PreferenceComponent preference={preference} />
             <AccountSettings username={session.user.username} />
