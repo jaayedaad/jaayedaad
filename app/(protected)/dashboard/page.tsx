@@ -10,11 +10,10 @@ import { getPreferenceFromUserId } from "@/services/preference";
 const DashboardPage = async () => {
   const session = await getServerSession(authOptions);
   if (!session || !session?.user) {
-    redirect("/auth/signin");
+    redirect("/");
   }
-  if (!session.user.username) {
-    redirect("/auth/onboarding");
-  }
+
+  const usernameSet = !session.user.username;
   const assets = await getAssetsQuoteFromApi(
     await getAssetsByUser(session.user.email)
   );
@@ -32,6 +31,7 @@ const DashboardPage = async () => {
 
   return (
     <Dashboard
+      usernameSet={usernameSet}
       username={session.user.username}
       whitelisted={session.user.whitelisted}
       assets={assets}

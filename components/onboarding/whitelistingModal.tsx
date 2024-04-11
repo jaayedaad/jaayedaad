@@ -1,8 +1,8 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import { Dialog, DialogContent, DialogOverlay } from "@/components/ui/dialog";
-import { Input } from "./ui/input";
-import { Button } from "./ui/button";
+import { Input } from "../ui/input";
+import { Button } from "../ui/button";
 import { checkInviteCode, validateInviteCode } from "@/services/inviteCode";
 import Link from "next/link";
 import { Loader2, MoveLeftIcon } from "lucide-react";
@@ -23,6 +23,7 @@ function WhitelistingModal({ whitelisted }: { whitelisted: boolean }) {
   const verifyInviteCode = async (inviteCode: string) => {
     const validatedInviteCode = await checkInviteCode(inviteCode);
     if (validatedInviteCode) {
+      setErrorMessage(" ");
       setDisabled(false);
     } else {
       setTitle("Invalid invite code");
@@ -80,7 +81,7 @@ function WhitelistingModal({ whitelisted }: { whitelisted: boolean }) {
             Back to landing page
           </Link>
           <div className="mt-10 w-full">
-            <div className="flex gap-8 ml-8">
+            <div className="flex justify-center gap-4 -ml-8">
               <MailIcon />
               <div>
                 <p className="text-lg">{title}</p>
@@ -96,7 +97,9 @@ function WhitelistingModal({ whitelisted }: { whitelisted: boolean }) {
                       className="w-full"
                       placeholder="Enter invite code"
                       onChange={(e) =>
-                        handleInviteCodeValueChange(e.target.value)
+                        handleInviteCodeValueChange(
+                          e.target.value.toUpperCase()
+                        )
                       }
                     />
                     <p className="text-red-500 text-xs mt-1 inline-flex justify-end">
@@ -108,20 +111,26 @@ function WhitelistingModal({ whitelisted }: { whitelisted: boolean }) {
                   </Button>
                 </div>
               ) : (
-                <div className="flex justify-center w-full">
+                <div className="flex justify-center mx-24 w-full">
                   <Button
-                    className="disabled:pointer-events-auto disabled:hover:cursor-not-allowed"
+                    className="w-full disabled:pointer-events-auto disabled:hover:cursor-not-allowed"
                     onClick={handleVerifyInviteCode}
                     disabled={disabled}
                   >
-                    {loading && <Loader2 className="h-4 w-4 animate-spin" />}
-                    Welcome to your Jaayedaad Dashboard
+                    {loading ? (
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                    ) : (
+                      "Welcome to your Jaayedaad Dashboard"
+                    )}
                   </Button>
                 </div>
               )}
             </div>
             <p className="flex w-fit mx-auto mt-6 text-xs">
-              Don&apos;t have an invite, DM us on <XLogo className="mr-0.5" />{" "}
+              Don&apos;t have an invite, DM us on{" "}
+              <Link href="https://x.com/jaayedaad" target="_blank">
+                <XLogo className="mr-0.5" />
+              </Link>{" "}
               to get one.
             </p>
             <p className="w-fit mx-auto mt-1 text-muted-foreground text-xs">

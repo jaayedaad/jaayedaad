@@ -1,6 +1,6 @@
 "use client";
 
-import { updateUsernameAction, verifyUsernameAction } from "../actions";
+import { updateUsernameAction, verifyUsernameAction } from "@/app/actions";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -22,7 +22,7 @@ export const UsernameInputComponent = () => {
     if (isUsernameValid) {
       await updateUsernameAction(username);
       posthog.capture("username_claimed", { username });
-      router.push("/dashboard");
+      router.refresh();
     } else {
       setSubmitting(false);
     }
@@ -73,8 +73,9 @@ export const UsernameInputComponent = () => {
           errorMessage
         )}
       </p>
-      <div className="pt-4 flex flex-col">
+      <div className="pt-4 flex flex-col mb-6">
         <Button
+          className="disabled:bg-muted disabled:pointer-events-auto disabled:hover:cursor-not-allowed"
           onClick={handleSubmit}
           disabled={submitting || username.length === 0}
         >

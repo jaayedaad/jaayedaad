@@ -18,11 +18,13 @@ import {
   TConversionRates,
   TPreference,
 } from "@/lib/types";
-import WhitelistingModal from "@/components/whitelistingModal";
+import WhitelistingModal from "@/components/onboarding/whitelistingModal";
 import MockLineChart from "@/components/mock/mockLineChart";
 import MockAssetTable from "@/components/mock/mockAssetTable";
+import OnboardingModal from "@/components/onboarding/onboardingModal";
 
 export function Dashboard({
+  usernameSet,
   username,
   whitelisted,
   assets,
@@ -30,6 +32,7 @@ export function Dashboard({
   historicalData,
   preferences,
 }: {
+  usernameSet: boolean;
   username: string;
   whitelisted: boolean;
   assets: TAsset[];
@@ -264,6 +267,7 @@ export function Dashboard({
         </div>
       </div>
       <WhitelistingModal whitelisted={whitelisted} />
+      <OnboardingModal usernameSet={usernameSet} />
     </>
   ) : (
     <div className="flex flex-col justify-center items-center gap-2 w-full h-auto">
