@@ -5,21 +5,13 @@ import { Asset } from "@prisma/client";
 import { getServerSession } from "next-auth";
 import { ENCRYPTION_KEY } from "@/constants/env";
 
-// Function to calculate similarity between two strings
-function similarityScore(str1: string, str2: string) {
-  const cleanStr1 = str1.toLowerCase().trim();
-  const cleanStr2 = str2.toLowerCase().trim();
-  const maxLength = Math.max(cleanStr1.length, cleanStr2.length);
-  let matchingChars = 0;
+// Function to calculate similarity between search query and asset name
+function similarityScore(assetName: string, searchString: string) {
+  const cleanAssetName = assetName.toLowerCase().trim();
+  const cleanSearchString = searchString.toLowerCase().trim();
 
-  for (let i = 0; i < maxLength; i++) {
-    if (cleanStr1[i] && cleanStr2[i] && cleanStr1[i] === cleanStr2[i]) {
-      matchingChars++;
-    }
-  }
-
-  // Calculate similarity as percentage
-  return (matchingChars / maxLength) * 100;
+  // Check if the asset name includes the search query
+  return cleanAssetName.includes(cleanSearchString) ? 100 : 0;
 }
 
 function findTopMatchingAssets(assets: Asset[], searchString: string) {
@@ -29,11 +21,14 @@ function findTopMatchingAssets(assets: Asset[], searchString: string) {
     return { ...asset, similarity };
   });
 
-  // Sort assets based on similarity score
-  matchingAssets.sort((a, b) => b.similarity - a.similarity);
+  // Filter out assets with 0 similarity
+  const filteredAssets = matchingAssets.filter((asset) => asset.similarity > 0);
 
-  // Return top 3 matching assets
-  return matchingAssets.slice(0, 1);
+  // Sort assets based on similarity score
+  filteredAssets.sort((a, b) => b.similarity - a.similarity);
+
+  // Return top matching asset if any
+  return filteredAssets.slice(0, 1);
 }
 
 function transformToResultFormat(
@@ -70,6 +65,14 @@ export async function POST(req: Request) {
       encryptionKey
     ) as typeof user.assets;
     const topMatchingAssets = findTopMatchingAssets(assets, body.searchQuery);
+
+    // If there are no matching assets, return an empty array
+    if (topMatchingAssets.length === 0) {
+      return new Response(JSON.stringify([]), {
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+
     const results = transformToResultFormat(topMatchingAssets);
 
     return Response.json(results);
