@@ -16,7 +16,6 @@ import {
 } from "@/helper/unrealisedValueCalculator";
 import { calculateRealisedProfitLoss } from "@/helper/realisedValueCalculator";
 import LoadingSpinner from "./ui/loading-spinner";
-import { ScrollArea } from "./ui/scroll-area";
 
 interface ViewAssetProps {
   open: boolean;
@@ -96,8 +95,14 @@ function ViewAsset({
         );
         setRealisedProfitLossArray(realisedProfitLossResults);
         setAssetSummary({
-          compareValue: assetToView.compareValue.toFixed(2),
-          currentValue: assetToView.currentValue.toFixed(2),
+          compareValue: (
+            assetToView.compareValue /
+            conversionRates[assetToView.buyCurrency.toLowerCase()]
+          ).toFixed(2),
+          currentValue: (
+            assetToView.currentValue /
+            conversionRates[assetToView.buyCurrency.toLowerCase()]
+          ).toFixed(2),
           unrealisedProfitLoss: calculateUnrealisedProfitLoss(
             [assetToView],
             conversionRates
@@ -120,10 +125,17 @@ function ViewAsset({
     }
     prepareLineChartData(value, lineChartData, setDataToShow);
     setCurrentValue(
-      assetToView?.symbol !== null
-        ? assetHistory[0].values[assetHistory[0].values.length - 1].close
-        : assetHistory[0].values[assetHistory[0].values.length - 1].value
+      assetToView
+        ? (
+            +assetHistory[0].values[assetHistory[0].values.length - 1].close /
+            conversionRates[assetToView.buyCurrency.toLowerCase()]
+          ).toFixed(2)
+        : (
+            +manualAsset?.currentPrice! /
+            conversionRates[manualAsset!.buyCurrency.toLowerCase()]
+          ).toFixed(2)
     );
+
     switch (value) {
       case "1d":
         setCompareLabel(
@@ -281,6 +293,8 @@ function ViewAsset({
       maximumFractionDigits: 2,
     }
   );
+  console.log(compareLabel, currentValue);
+
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogContent className="w-[90vw] lg:min-w-[50vw]">
@@ -293,36 +307,42 @@ function ViewAsset({
             )}
           </TabsList>
           <TabsContent value="summary" className="mt-4">
-            <div className="text-sm text-muted-foreground">
-              <span className="text-foreground pr-1">
-                {assetToView ? assetToView?.symbol : manualAsset?.name}
-              </span>
-              {assetToView?.exchange !== undefined && (
-                <>({assetToView?.exchange})</>
-              )}
-            </div>
-            <div>
+            <div className="flex justify-between text-sm text-muted-foreground">
               <div>
-                <div className="mb-2">
-                  <h3 className="text-3xl font-bold flex items-center">
-                    {new Intl.NumberFormat(
-                      numberSystem === "Indian" ? "en-IN" : "en-US",
-                      {
-                        style: "currency",
-                        currency:
-                          assetToView?.buyCurrency || manualAsset?.buyCurrency,
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 2,
-                      }
-                    ).format(+currentValue || +manualAsset?.currentValue!)}
-                  </h3>
+                {assetToView && (
+                  <span className="text-foreground pr-1">
+                    {assetToView.symbol}
+                  </span>
+                )}
+                {assetToView?.exchange !== undefined && (
+                  <>({assetToView?.exchange})</>
+                )}
+                <div className="text-white text-3xl font-bold">
+                  {assetToView?.name || manualAsset?.name}
+                </div>
+              </div>
+              <div className="mb-2 text-white">
+                <h3 className="text-3xl font-bold flex items-center">
+                  {new Intl.NumberFormat(
+                    numberSystem === "Indian" ? "en-IN" : "en-US",
+                    {
+                      style: "currency",
+                      currency: defaultCurrency,
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2,
+                    }
+                  ).format(+currentValue)}
+                </h3>
+                {assetToView && (
                   <div className="flex gap-1">
                     <p
                       className={cn(
                         "ml-1 text-sm",
-                        compareLabel <= currentValue
+                        parseFloat(currentValue) > parseFloat(compareLabel)
                           ? "text-green-400"
-                          : "text-red-400"
+                          : parseFloat(currentValue) < parseFloat(compareLabel)
+                          ? "text-red-400"
+                          : "text-white"
                       )}
                     >
                       {currentValue > compareLabel && "+"}
@@ -333,9 +353,11 @@ function ViewAsset({
                     <p
                       className={cn(
                         "text-sm rounded-sm px-0.5",
-                        currentValue >= compareLabel
+                        parseFloat(currentValue) > parseFloat(compareLabel)
                           ? "text-green-400 bg-green-400/30"
-                          : "text-red-400 bg-red-400/30"
+                          : parseFloat(currentValue) < parseFloat(compareLabel)
+                          ? "text-red-400 bg-red-400/30"
+                          : "text-white bg-white/30"
                       )}
                     >
                       {currentValue > compareLabel && "+"}
@@ -354,9 +376,11 @@ function ViewAsset({
                       %
                     </p>
                   </div>
-                </div>
-                <ChangeInterval onChange={onChange} />
+                )}
               </div>
+            </div>
+            <div>
+              <ChangeInterval onChange={onChange} />
             </div>
             {dataToShow && (
               <AssetLineChart
@@ -371,21 +395,23 @@ function ViewAsset({
                   <p className="text-muted-foreground text-sm">
                     Avg. buying price
                   </p>
-                  {(+assetToView.buyPrice).toLocaleString(
-                    numberSystem === "Indian" ? "en-IN" : "en-US"
-                  )}
-                </div>
-                <div>
-                  <p className="text-muted-foreground text-sm">Quantity</p>
-                  {(+assetToView.quantity).toLocaleString(
-                    numberSystem === "Indian" ? "en-IN" : "en-US"
+                  {formatter.format(
+                    +assetToView.buyPrice /
+                      conversionRates[assetToView.buyCurrency.toLowerCase()]
                   )}
                 </div>
                 <div>
                   <p className="text-muted-foreground text-sm">
                     Previous close
                   </p>
-                  {(+assetToView.prevClose).toLocaleString(
+                  {formatter.format(
+                    +assetToView.prevClose /
+                      conversionRates[assetToView.buyCurrency.toLowerCase()]
+                  )}
+                </div>
+                <div>
+                  <p className="text-muted-foreground text-sm">Quantity</p>
+                  {(+assetToView.quantity).toLocaleString(
                     numberSystem === "Indian" ? "en-IN" : "en-US"
                   )}
                 </div>
@@ -407,15 +433,35 @@ function ViewAsset({
                 </div>
                 <div>
                   <p className="text-muted-foreground text-sm">
-                    Realised profit/loss
+                    Unrealised profit/loss
                   </p>
-                  {formatter.format(+assetSummary.realisedProfitLoss)}
+                  <p
+                    className={cn(
+                      +assetSummary.unrealisedProfitLoss > 0
+                        ? "text-green-400"
+                        : +assetSummary.unrealisedProfitLoss < 0
+                        ? "text-red-400"
+                        : "text-white"
+                    )}
+                  >
+                    {formatter.format(+assetSummary.unrealisedProfitLoss)}
+                  </p>
                 </div>
                 <div>
                   <p className="text-muted-foreground text-sm">
-                    Unrealised profit/loss
+                    Realised profit/loss
                   </p>
-                  {formatter.format(+assetSummary.unrealisedProfitLoss)}
+                  <p
+                    className={cn(
+                      +assetSummary.realisedProfitLoss > 0
+                        ? "text-green-400"
+                        : +assetSummary.realisedProfitLoss < 0
+                        ? "text-red-400"
+                        : "text-white"
+                    )}
+                  >
+                    {formatter.format(+assetSummary.realisedProfitLoss)}
+                  </p>
                 </div>
               </div>
             ) : (
