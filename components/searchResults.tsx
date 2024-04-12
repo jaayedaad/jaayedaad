@@ -53,10 +53,10 @@ const SearchResults = ({
           <TableRow>
             <TableHead>Name</TableHead>
             <TableHead className="lg:w-[100px] text-right">Exchange</TableHead>
-            <TableHead className="hidden lg:block lg:w-[100px] text-right">
+            <TableHead className="hidden lg:table-cell lg:w-[100px] text-right">
               Symbol
             </TableHead>
-            <TableHead className="hidden lg:block lg:w-[100px] w-auto"></TableHead>
+            <TableHead className="hidden lg:table-cell lg:w-[100px] w-auto"></TableHead>
           </TableRow>
         </TableHeader>
         <TableBody className="overflow-y-hidden">
@@ -64,16 +64,20 @@ const SearchResults = ({
             return (
               result.instrument_name && (
                 <TableRow key={index}>
-                  <TableCell>
+                  <TableCell className="lg:hidden">
                     {result.instrument_name}
                     <br />({result.symbol})
+                  </TableCell>
+                  <TableCell className="hidden lg:table-cell">
+                    {result.instrument_name}
                   </TableCell>
                   <TableCell className="text-right">
                     {result.exchange}
                   </TableCell>
-                  <TableCell className="hidden lg:block text-right">
+                  <TableCell className="hidden lg:table-cell text-right">
                     {result.symbol}
                   </TableCell>
+
                   <TableCell>
                     <Button
                       onClick={() => handleAddClick(result)}
