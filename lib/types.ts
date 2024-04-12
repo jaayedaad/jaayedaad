@@ -99,11 +99,11 @@ export type TUser = {
 };
 
 export type TPreference = {
-  id: String;
+  id: string;
   publicVisibility: boolean;
-  userId: String;
-  defaultCurrency: String;
-  numberSystem: String;
+  userId: string;
+  defaultCurrency: string;
+  numberSystem: string;
   showHoldingsInPublic: boolean;
   showMetricsInPublic: boolean;
   performanceBarOrder: string;

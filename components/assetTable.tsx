@@ -217,14 +217,9 @@ function AssetTable({
     }
   };
 
-  console.log(
-    "filteredAsset[0]?.currentValue",
-    filteredAsset?.[0]?.currentValue!
-  );
-  console.log(
-    "filteredAsset[0]?.compareValue",
-    filteredAsset?.[0]?.compareValue!
-  );
+  const handleGroupRowClick = (assetType: string) => {
+    router.push(`/dashboard/${assetType.toLowerCase()}`);
+  };
 
   return (
     filteredAsset &&
