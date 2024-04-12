@@ -168,8 +168,8 @@ function ViewAsset({
         setCompareLabel(
           assetHistory[0].values.length > 6
             ? assetToView?.symbol !== null
-              ? assetHistory[0].values[7].close
-              : assetHistory[0].values[assetHistory[0].values.length - 8].value
+              ? assetHistory[0].values[assetHistory[0].values.length - 7].close
+              : assetHistory[0].values[assetHistory[0].values.length - 7].value
             : assetToView?.symbol !== null
             ? assetHistory[0].values[0].close
             : assetHistory[0].values[0].value
@@ -195,7 +195,7 @@ function ViewAsset({
         setCompareLabel(
           assetHistory[0].values.length > 29
             ? assetToView?.symbol !== null
-              ? assetHistory[0].values[30].close
+              ? assetHistory[0].values[assetHistory[0].values.length - 30].close
               : assetHistory[0].values[assetHistory[0].values.length - 30].value
             : assetToView?.symbol !== null
             ? assetHistory[0].values[0].close
@@ -222,8 +222,9 @@ function ViewAsset({
         setCompareLabel(
           assetHistory[0].values.length > 365
             ? assetToView?.symbol !== null
-              ? assetHistory[0].values[365].close
-              : assetHistory[0].values[assetHistory[0].values.length - 366]
+              ? assetHistory[0].values[assetHistory[0].values.length - 365]
+                  .close
+              : assetHistory[0].values[assetHistory[0].values.length - 365]
                   .value
             : assetToView?.symbol !== null
             ? assetHistory[0].values[0].close
