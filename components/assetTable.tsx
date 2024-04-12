@@ -103,6 +103,8 @@ function AssetTable({
 
         const currentValueSumByType = intervalData?.reduce((acc: any, data) => {
           const { category, currentValue } = data;
+          console.log("currentValue", currentValue);
+
           acc[category] = (acc[category] || 0) + parseFloat(currentValue);
           return acc;
         }, {});
@@ -215,9 +217,15 @@ function AssetTable({
     }
   };
 
-  const handleGroupRowClick = (assetType: string) => {
-    router.push(`/dashboard/${assetType.toLowerCase()}`);
-  };
+  console.log(
+    "filteredAsset[0]?.currentValue",
+    filteredAsset?.[0]?.currentValue!
+  );
+  console.log(
+    "filteredAsset[0]?.compareValue",
+    filteredAsset?.[0]?.compareValue!
+  );
+
   return (
     filteredAsset &&
     filteredAsset.length > 0 && (
@@ -406,7 +414,17 @@ function AssetTable({
                               {preferences.dashboardAmountVisibility
                                 ? conversionRates &&
                                   (
-                                    asset.currentValue /
+                                    parseFloat(
+                                      !asset.isManualEntry
+                                        ? (
+                                            parseFloat(asset.prevClose) *
+                                            parseFloat(asset.quantity)
+                                          ).toString()
+                                        : (
+                                            parseFloat(asset.currentPrice) *
+                                            parseFloat(asset.quantity)
+                                          ).toString()
+                                    ) /
                                     conversionRates[
                                       asset.buyCurrency.toLowerCase()
                                     ]

@@ -20,6 +20,7 @@ import Image from "next/image";
 import AssetMarqueeBar from "@/components/assetMarqueeBar";
 import { TextRevealCard } from "@/components/ui/text-reveal-card";
 import JaayedaadLogo from "@/public/branding/jaayedaadLogo";
+import { capitalize } from "@/lib/helper";
 
 function Page({
   user,
@@ -113,7 +114,13 @@ function Page({
     }
 
     getPageData();
-  }, [filteredAssets, reverseMappedName]);
+  }, [
+    categoryExist,
+    conversionRates,
+    filteredAssets,
+    historicalData,
+    reverseMappedName,
+  ]);
 
   // Get today's date
   const today = new Date();
@@ -238,7 +245,9 @@ function Page({
             <div className="row-span-4 flex flex-col col-span-3 bg-[#171326]/70 backdrop-blur shadow-2xl border rounded-xl p-4">
               <div className="flex justify-between">
                 <div className="flex flex-col">
-                  <h3 className="font-semibold">{assetCategory} Overview</h3>
+                  <h3 className="font-semibold">
+                    {capitalize(assetCategory)} Overview
+                  </h3>
                   <p className="text-muted-foreground text-xs xl:text-sm">
                     Collection of your {assetCategory}
                   </p>

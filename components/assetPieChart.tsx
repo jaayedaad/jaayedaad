@@ -12,6 +12,7 @@ import {
 import LoadingSpinner from "./ui/loading-spinner";
 import colors from "@/constants/colors";
 import MockPieChart from "./mock/mockPieChart";
+import { capitalize } from "@/lib/helper";
 
 const COLORS = colors;
 
@@ -163,7 +164,9 @@ function AssetPieChart({
 
   return (
     <>
-      <h3 className="font-semibold">{assetCategoryName} Distribution</h3>
+      <h3 className="font-semibold">
+        {capitalize(assetCategoryName)} Distribution
+      </h3>
       <p className="text-muted-foreground text-xs xl:text-sm">
         Breakdown of your investments
       </p>
