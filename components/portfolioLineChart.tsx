@@ -67,7 +67,7 @@ function PortfolioLineChart({
       accumulateLineChartData(
         data.filter((item) => item.assetType === "Digital Currency")
       ),
-    "mutual fund": () =>
+    "mutual funds": () =>
       accumulateLineChartData(
         data.filter((item) => item.assetType === "Mutual Fund")
       ),
@@ -92,9 +92,9 @@ function PortfolioLineChart({
           </p>
         </div>
       </div>
-      <div className="flex justify-center mt-2">
+      <div className="flex justify-center mt-2 h-full">
         {dataToShow && (
-          <ResponsiveContainer width="100%" height={200}>
+          <ResponsiveContainer width="100%" height="75%">
             <AreaChart
               data={dataToShow}
               margin={{

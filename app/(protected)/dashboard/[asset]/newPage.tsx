@@ -141,8 +141,6 @@ function Page({
       });
       setAssetsToView(updatedAssetsToView);
     } else {
-      console.log(filteredAssets);
-
       setAssetsToView(filteredAssets);
     }
   };

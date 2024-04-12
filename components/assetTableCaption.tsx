@@ -49,7 +49,7 @@ function AssetTableCaption({ preferences }: { preferences: TPreference }) {
   };
   return (
     defaultCurrency && (
-      <TableCaption className="text-right xl:text-sm lg:text-xs">
+      <TableCaption className="mt-0 text-right xl:text-sm lg:text-xs">
         *All values are in
         <Dialog open={open} onOpenChange={setOpen}>
           <DialogTrigger>

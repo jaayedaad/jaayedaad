@@ -293,7 +293,6 @@ function ViewAsset({
       maximumFractionDigits: 2,
     }
   );
-  console.log(compareLabel, currentValue);
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>

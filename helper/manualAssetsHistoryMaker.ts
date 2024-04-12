@@ -3,7 +3,10 @@ import { TAsset } from "@/lib/types";
 export function prepareHistoricalDataForManualCategory(
   manualCategoryAssets: TAsset[]
 ) {
-  const historicalData: { values: { date: number; value: number }[] }[] = [];
+  const historicalData: {
+    assetSymbol: string;
+    values: { date: number; value: number }[];
+  }[] = [];
   manualCategoryAssets.forEach((asset) => {
     const aggregatedAssetData: { date: number; value: number }[] = [];
     // sort assetPriceUpdates in ascending order
@@ -137,7 +140,10 @@ export function prepareHistoricalDataForManualCategory(
       }
     });
     aggregatedAssetData.shift();
-    historicalData.push({ values: aggregatedAssetData });
+    historicalData.push({
+      values: aggregatedAssetData,
+      assetSymbol: asset.symbol,
+    });
   });
 
   return historicalData;

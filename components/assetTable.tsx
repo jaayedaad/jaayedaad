@@ -224,7 +224,7 @@ function AssetTable({
       <>
         <Table>
           {!isPublic && <AssetTableCaption preferences={preferences} />}
-          <ScrollArea className="w-full lg:h-[30vh]">
+          <ScrollArea className="w-full lg:h-[30dvh]">
             <TableHeader className="bg-secondary sticky top-0">
               {view ? (
                 <TableRow>
@@ -335,7 +335,7 @@ function AssetTable({
                           className="cursor-pointer"
                           onClick={() => {
                             setOpen(true);
-                            asset.symbol !== null
+                            !asset.isManualEntry
                               ? setAssetToView(asset)
                               : setManualAsset(asset);
                           }}
@@ -365,7 +365,7 @@ function AssetTable({
                             </TableCell>
                           )}
                           <TableCell className="text-right">
-                            {filteredAsset[0].symbol !== null
+                            {!asset.isManualEntry
                               ? conversionRates &&
                                 (
                                   parseFloat(asset.prevClose) /
@@ -374,7 +374,7 @@ function AssetTable({
                                   ]
                                 ).toLocaleString("en-IN")
                               : (
-                                  parseFloat(filteredAsset[0].currentPrice) /
+                                  parseFloat(asset.currentPrice) /
                                   conversionRates[
                                     asset.buyCurrency.toLowerCase()
                                   ]

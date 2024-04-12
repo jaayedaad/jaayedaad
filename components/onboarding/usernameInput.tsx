@@ -29,12 +29,16 @@ export const UsernameInputComponent = () => {
   }, [username, router]);
 
   useEffect(() => {
-    const claimedUsername = localStorage.getItem("claimedUsername");
-    if (claimedUsername) {
-      setUsername(claimedUsername);
-      handleSubmit();
-      localStorage.removeItem("claimedUsername");
+    async function getClaimedUsername() {
+      const claimedUsername = localStorage.getItem("claimedUsername");
+      if (claimedUsername) {
+        setUsername(claimedUsername);
+        await handleSubmit();
+        localStorage.removeItem("claimedUsername");
+      }
     }
+
+    getClaimedUsername();
   }, [handleSubmit]);
 
   useEffect(() => {
@@ -56,6 +60,7 @@ export const UsernameInputComponent = () => {
     <div className="w-96">
       <Label htmlFor="username">Username</Label>
       <Input
+        className="mt-2"
         type="text"
         id="username"
         placeholder="username..."
@@ -75,7 +80,7 @@ export const UsernameInputComponent = () => {
       </p>
       <div className="pt-4 flex flex-col mb-6">
         <Button
-          className="disabled:bg-muted disabled:pointer-events-auto disabled:hover:cursor-not-allowed"
+          className="disabled:bg-[#292929] disabled:pointer-events-auto disabled:hover:cursor-not-allowed"
           onClick={handleSubmit}
           disabled={submitting || username.length === 0}
         >
