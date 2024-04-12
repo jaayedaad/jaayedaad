@@ -1,7 +1,6 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-@import url("https://fonts.cdnfonts.com/css/mona-sans");
 
 @font-face {
   font-family: "Mona Sans";
@@ -10,6 +9,11 @@
     url("../public/fonts/Mona-Sans.woff2") format("woff2-variations");
   font-weight: 200 900;
   font-stretch: 75% 125%;
+}
+
+@font-face {
+  font-family: "Samarkan";
+  src: url("../public/fonts/SAMARN__.TTF") format("truetype");
 }
 
 @layer base {
@@ -73,6 +77,10 @@
   .font-mona-sans {
     font-family: "Mona-Sans", sans-serif;
     font-family: "Mona Sans", sans-serif;
+  }
+
+  .font-samarkan {
+    font-family: "Samarkan", sans-serif;
   }
 
   .no-spinner {
