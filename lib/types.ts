@@ -97,7 +97,19 @@ export type TUser = {
   image: string;
   whitelisted: boolean;
 };
-export type TPreference = Preference;
+
+export type TPreference = {
+  id: String;
+  publicVisibility: boolean;
+  userId: String;
+  defaultCurrency: String;
+  numberSystem: String;
+  showHoldingsInPublic: boolean;
+  showMetricsInPublic: boolean;
+  performanceBarOrder: string;
+  performanceBarParameter: string;
+  dashboardAmountVisibility: boolean;
+};
 
 export type TUserManualCategory = {
   id: string;
