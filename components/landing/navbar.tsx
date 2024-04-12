@@ -1,8 +1,11 @@
 "use client";
 import { signIn } from "next-auth/react";
 import FlashyButton from "../ui/flashy-button";
+import { TUser } from "@/lib/types";
+import { useRouter } from "next/navigation";
 
-function Navbar() {
+function Navbar({ userSignedIn }: { userSignedIn: TUser | null }) {
+  const router = useRouter();
   return (
     <div className="z-10 flex w-full items-center justify-between px-6 pt-6 md:pt-8 xl:px-44">
       {/* Brand Logo */}
@@ -63,12 +66,14 @@ function Navbar() {
           className="md:h-[47px] md:px-6"
           containerClassName="md:h-[49px]"
           onClick={() =>
-            signIn("google", {
-              callbackUrl: "/dashboard",
-            })
+            userSignedIn
+              ? router.push("/dashboard")
+              : signIn("google", {
+                  callbackUrl: "/dashboard",
+                })
           }
         >
-          Sign Up
+          {userSignedIn ? "Dashboard" : "Sign Up"}
         </FlashyButton>
       </div>
     </div>
