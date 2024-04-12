@@ -40,6 +40,9 @@ function BottomBar({
   usersManualCategories: TUserManualCategory[];
   defaultCurrency: string;
 }) {
+  const [amountVisibility, setAmountVisibility] = useState(
+    dashboardAmountVisibility
+  );
   const currentTab = decodeURIComponent(usePathname());
   const [open, setOpen] = useState(false);
 
@@ -167,7 +170,7 @@ function BottomBar({
             {/* Add transaction */}
           </Button>
         </DialogTrigger>
-        <DialogContent className="w-[90vw] md:max-w-[50vw] md:max-h-[80vh]">
+        <DialogContent className="p-4 md:p-6 w-[90vw] md:max-w-[50vw]">
           <div className="md:flex md:gap-2">
             <DialogTitle>Make transactions</DialogTitle>
             <p className="text-muted-foreground text-sm">
@@ -185,17 +188,14 @@ function BottomBar({
       <Button
         className="w-full h-full"
         variant="ghost"
-        onClick={async () =>
+        onClick={async () => {
+          setAmountVisibility(!amountVisibility);
           await updatePreferenceAction({
-            dashboardAmountVisibility: !dashboardAmountVisibility,
-          })
-        }
+            dashboardAmountVisibility: !amountVisibility,
+          });
+        }}
       >
-        {dashboardAmountVisibility ? (
-          <EyeIcon size={20} />
-        ) : (
-          <EyeOffIcon size={20} />
-        )}
+        {amountVisibility ? <EyeIcon size={20} /> : <EyeOffIcon size={20} />}
       </Button>
       <Button
         asChild

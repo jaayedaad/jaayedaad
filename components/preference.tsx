@@ -27,6 +27,9 @@ interface PreferenceProps {
 }
 
 function PreferenceComponent({ preference: preferences }: PreferenceProps) {
+  const [dashboardAmountVisibility, setDashboardAmountVisibility] = useState(
+    preferences.dashboardAmountVisibility
+  );
   const [defaultCurrency, setDefaultCurrency] = useState(
     preferences.defaultCurrency
   );
@@ -58,7 +61,7 @@ function PreferenceComponent({ preference: preferences }: PreferenceProps) {
           </p>
         </div>
       </div>
-      <Separator />
+      <Separator className="h-[2px]" />
 
       <div className="flex flex-col gap-4">
         <div className="py-5 px-4 flex items-center justify-between border rounded-lg w-full">
@@ -70,14 +73,14 @@ function PreferenceComponent({ preference: preferences }: PreferenceProps) {
           </div>
           <div>
             <Toggle
-              onPressedChange={async () =>
+              onPressedChange={async () => {
+                setDashboardAmountVisibility(!dashboardAmountVisibility);
                 await updatePreferenceAction({
-                  dashboardAmountVisibility:
-                    !preferences.dashboardAmountVisibility,
-                })
-              }
+                  dashboardAmountVisibility: !dashboardAmountVisibility,
+                });
+              }}
             >
-              {preferences.dashboardAmountVisibility ? (
+              {dashboardAmountVisibility ? (
                 <EyeIcon className="h-4 w-4" />
               ) : (
                 <EyeOffIcon className="h-4 w-4" />
