@@ -58,8 +58,9 @@ function AssetPriceUpdates({ assetToView }: AssetPriceUpdatesProps) {
           } else {
             setLoading(false);
             setShowUpdatePriceForm(false);
-            setUpdatePrice("0");
+            setUpdatePrice(assetUpdatePrice.price);
             toast.success(data.success);
+            window.location.reload();
           }
         });
     } else {
