@@ -21,12 +21,6 @@ export default function RootLayout({
   return (
     <html lang="en" className="dark">
       <CSPostHogProvider>
-        <Head>
-          <link
-            href="https://fonts.cdnfonts.com/css/mona-sans"
-            rel="stylesheet"
-          />
-        </Head>
         <AuthProvider>
           <body className={inter.className}>
             {children}
