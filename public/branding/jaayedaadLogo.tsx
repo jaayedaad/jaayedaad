@@ -1,9 +1,10 @@
+import { cn } from "@/lib/helper";
 import React from "react";
 
-function JaayedaadLogo() {
+function JaayedaadLogo({ className }: { className?: string }) {
   return (
     <svg
-      className="h-12"
+      className={cn("h-12", className)}
       viewBox="0 0 216 64"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"

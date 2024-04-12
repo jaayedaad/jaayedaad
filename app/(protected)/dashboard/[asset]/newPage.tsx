@@ -16,10 +16,10 @@ import { defaultCategories } from "@/constants/category";
 import { getUnrealisedProfitLossArray } from "@/helper/unrealisedValueCalculator";
 import { redirect } from "next/navigation";
 import React, { useEffect, useState } from "react";
-import jaayedaad_logo from "@/public/jaayedaad_logo.svg";
 import Image from "next/image";
 import AssetMarqueeBar from "@/components/assetMarqueeBar";
 import { TextRevealCard } from "@/components/ui/text-reveal-card";
+import JaayedaadLogo from "@/public/branding/jaayedaadLogo";
 
 function Page({
   user,
@@ -161,12 +161,14 @@ function Page({
                 alt="user avatar"
               />
               <div>
-                <h3>Good {timeOfDay},</h3>
-                <p className="text-lg">{username}</p>
+                <p className="text-sm text-muted-foreground">
+                  Good {timeOfDay}
+                </p>
+                <h3 className="text-2xl font-samarkan">{username}</h3>
               </div>
             </div>
           </div>
-          <div className="flex items-center col-span-2">
+          <div className="flex justify-between w-full lg:w-auto lg:justify-normal items-center col-span-2">
             <div className="w-[77%] hidden lg:block">
               {assetsToView && (
                 <AssetMarqueeBar
@@ -176,20 +178,17 @@ function Page({
                 />
               )}
             </div>
-            <Image
-              src={jaayedaad_logo}
-              alt="Jaayedaad logo"
-              className="h-8 lg:hidden"
-            />
+            <JaayedaadLogo className="h-8 lg:hidden" />
             <div className="ml-2 w-fit">
               <ChangeInterval onChange={onChange} />
             </div>
           </div>
         </div>
         <div className="min-h-[85vh] h-full mt-4">
-          <div className="flex flex-col gap-4 sm:gap-6 md:gap-6 lg:gap-4 lg:grid lg:grid-rows-7 lg:grid-cols-3 lg:h-full text-foreground">
+          <div className="gap-4 sm:gap-6 md:gap-6 lg:gap-4 grid grid-rows-4 grid-cols-1 lg:grid-rows-7 lg:grid-cols-3 lg:h-full text-foreground">
             <div className="row-span-3 col-span-1 bg-[#171326]/70 backdrop-blur shadow-2xl border rounded-xl p-4">
               <AssetPieChart
+                assetCategoryName={assetCategory}
                 view={reverseMappedName}
                 assets={filteredAssets}
                 dashboardAmountVisibility={
@@ -241,7 +240,7 @@ function Page({
             <div className="row-span-4 flex flex-col col-span-3 bg-[#171326]/70 backdrop-blur shadow-2xl border rounded-xl p-4">
               <div className="flex justify-between">
                 <div className="flex flex-col">
-                  <h3 className="font-semibold">Asset Overview</h3>
+                  <h3 className="font-semibold">{assetCategory} Overview</h3>
                   <p className="text-muted-foreground text-xs xl:text-sm">
                     Collection of your {assetCategory}
                   </p>

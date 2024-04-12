@@ -88,7 +88,7 @@ function WhitelistingModal({ whitelisted }: { whitelisted: boolean }) {
                 <p className="text-sm text-muted-foreground">{subtitle}</p>
               </div>
             </div>
-            <div className="flex gap-3 mt-2 px-4 w-full">
+            <div className="mt-4 flex gap-3 px-4 w-full">
               {!codeValidated ? (
                 <div className="w-full flex gap-4 justify-center">
                   <div>
@@ -106,7 +106,11 @@ function WhitelistingModal({ whitelisted }: { whitelisted: boolean }) {
                       {errorMessage.includes("Invalid") && errorMessage}
                     </p>
                   </div>
-                  <Button onClick={handleContinueClick} disabled={disabled}>
+                  <Button
+                    className="disabled:bg-[#292929] active:border-2"
+                    onClick={handleContinueClick}
+                    disabled={disabled}
+                  >
                     Continue
                   </Button>
                 </div>

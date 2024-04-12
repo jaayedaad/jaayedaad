@@ -55,7 +55,7 @@ function PublicProfileSettings({
           </p>
         </div>
       </div>
-      <Separator />
+      <Separator className="h-[2px]" />
       <div className="flex flex-col gap-4">
         <div className="py-5 px-4 flex items-center justify-between border rounded-lg w-full">
           <div>

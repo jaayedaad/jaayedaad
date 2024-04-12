@@ -32,6 +32,7 @@ const DashboardPage = async () => {
   return (
     <Dashboard
       usernameSet={usernameSet}
+      user={session.user}
       username={session.user.username}
       whitelisted={session.user.whitelisted}
       assets={assets}

@@ -1,7 +1,14 @@
 "use client";
 import { TAsset, TConversionRates } from "@/lib/types";
 import { useState } from "react";
-import { PieChart, Pie, Sector, Cell, Tooltip } from "recharts";
+import {
+  PieChart,
+  Pie,
+  Sector,
+  Cell,
+  Tooltip,
+  ResponsiveContainer,
+} from "recharts";
 import LoadingSpinner from "./ui/loading-spinner";
 import colors from "@/constants/colors";
 import MockPieChart from "./mock/mockPieChart";
@@ -82,6 +89,7 @@ const renderActiveShape = (props: any) => {
 };
 
 interface PieChartProps {
+  assetCategoryName?: string;
   assets: TAsset[] | undefined;
   view: string; // "stocks" | "crypto" | "funds" | "dashboard"
   dashboardAmountVisibility: boolean;
@@ -91,6 +99,7 @@ interface PieChartProps {
 }
 
 function AssetPieChart({
+  assetCategoryName = "Asset",
   view,
   assets,
   dashboardAmountVisibility,
@@ -154,63 +163,65 @@ function AssetPieChart({
 
   return (
     <>
-      <h3 className="font-semibold">Asset Distribution</h3>
+      <h3 className="font-semibold">{assetCategoryName} Distribution</h3>
       <p className="text-muted-foreground text-xs xl:text-sm">
         Breakdown of your investments
       </p>
-      <div className="flex justify-center mt-2">
+      <div className="mt-2 h-full">
         {data ? (
           data.length ? (
-            <PieChart width={400} height={200}>
-              <Pie
-                data={chartData}
-                cx="50%"
-                cy="50%"
-                activeIndex={activeIndex}
-                activeShape={renderActiveShape}
-                label={label}
-                labelLine={false}
-                startAngle={90}
-                endAngle={-360}
-                innerRadius={55}
-                outerRadius={75}
-                paddingAngle={chartData.length > 1 ? 5 : 0}
-                stroke="none"
-                dataKey="value"
-                onMouseEnter={(_, index) => setActiveIndex(index)}
-              >
-                {data?.map((entry, index) => (
-                  <Cell
-                    key={`cell-${index}`}
-                    fill={COLORS[index % COLORS.length]}
-                  />
-                ))}
-              </Pie>
-              <Tooltip
-                content={({ active, payload }) => {
-                  if (active && payload && payload.length) {
-                    const value = payload[0].value?.toString();
-                    return (
-                      <div className="rounded-lg border bg-background p-2 shadow-sm">
-                        <div className="flex flex-col">
-                          <span className="font-bold flex items-center">
-                            {dashboardAmountVisibility
-                              ? formatter.format(parseFloat(value!))
-                              : "* ".repeat(5)}
-                          </span>
-                        </div>
-                      </div>
-                    );
-                  }
+            <div className="mt-2 h-full">
+              <ResponsiveContainer width="100%" height="75%">
+                <PieChart>
+                  <Pie
+                    data={chartData}
+                    cx="50%"
+                    cy="50%"
+                    activeIndex={activeIndex}
+                    activeShape={renderActiveShape}
+                    label={label}
+                    labelLine={false}
+                    startAngle={90}
+                    endAngle={-360}
+                    innerRadius={55}
+                    outerRadius={75}
+                    paddingAngle={chartData.length > 1 ? 5 : 0}
+                    stroke="none"
+                    dataKey="value"
+                    onMouseEnter={(_, index) => setActiveIndex(index)}
+                  >
+                    {data?.map((entry, index) => (
+                      <Cell
+                        key={`cell-${index}`}
+                        fill={COLORS[index % COLORS.length]}
+                      />
+                    ))}
+                  </Pie>
+                  <Tooltip
+                    content={({ active, payload }) => {
+                      if (active && payload && payload.length) {
+                        const value = payload[0].value?.toString();
+                        return (
+                          <div className="rounded-lg border bg-background p-2 shadow-sm">
+                            <div className="flex flex-col">
+                              <span className="font-bold flex items-center">
+                                {dashboardAmountVisibility
+                                  ? formatter.format(parseFloat(value!))
+                                  : "* ".repeat(5)}
+                              </span>
+                            </div>
+                          </div>
+                        );
+                      }
 
-                  return null;
-                }}
-              />
-            </PieChart>
-          ) : (
-            <div className="h-40 w-full flex justify-center items-center">
-              <MockPieChart />
+                      return null;
+                    }}
+                  />
+                </PieChart>
+              </ResponsiveContainer>
             </div>
+          ) : (
+            <MockPieChart />
           )
         ) : (
           <div className="h-40 w-full flex items-center">

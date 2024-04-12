@@ -91,7 +91,7 @@ export default function AddTransaction({
 
   return (
     <div className="flex w-full flex-col">
-      <div className="grid grid-cols-2 md:gap-6 items-center">
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-2 md:gap-6 items-center">
         {/* Search Field */}
         <SearchField
           searchQuery={searchQuery}
@@ -130,7 +130,7 @@ export default function AddTransaction({
               defaultCurrency={defaultCurrency}
             />
           ) : (
-            <div className="text-center my-12">Search for any assets!</div>
+            <div className="text-center my-12">Refine your assets!</div>
           )}
         </div>
       )}

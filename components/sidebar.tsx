@@ -147,7 +147,7 @@ function Sidebar({
                 <Plus className="mr-2" size={20} /> Add transaction
               </Button>
             </DialogTrigger>
-            <DialogContent className="w-[90vw] md:max-w-[50vw] md:max-h-[80vh]">
+            <DialogContent className="w-[90vw] ">
               <div className="md:flex md:gap-2">
                 <DialogTitle>Make transactions</DialogTitle>
                 <p className="text-muted-foreground text-sm">

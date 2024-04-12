@@ -38,7 +38,10 @@ const SearchResults = ({
     setAssetPreviousClose(assetPreviousClose.toFixed(2));
     setShowForm(true);
     if (result.currency === "") {
-      result.currency = defaultCurrency;
+      const currencyFromSymbol = result.symbol.includes("/")
+        ? result.symbol.split("/")[1]
+        : null;
+      result.currency = currencyFromSymbol || defaultCurrency;
     }
     setSelectedAsset(result);
   };
@@ -49,9 +52,11 @@ const SearchResults = ({
         <TableHeader className="bg-secondary">
           <TableRow>
             <TableHead>Name</TableHead>
-            <TableHead className="w-[100px] text-right">Exchange</TableHead>
-            <TableHead className="w-[100px] text-right">Symbol</TableHead>
-            <TableHead className="w-[100px]"></TableHead>
+            <TableHead className="lg:w-[100px] text-right">Exchange</TableHead>
+            <TableHead className="hidden lg:block lg:w-[100px] text-right">
+              Symbol
+            </TableHead>
+            <TableHead className="hidden lg:block lg:w-[100px] w-auto"></TableHead>
           </TableRow>
         </TableHeader>
         <TableBody className="overflow-y-hidden">
@@ -59,11 +64,16 @@ const SearchResults = ({
             return (
               result.instrument_name && (
                 <TableRow key={index}>
-                  <TableCell>{result?.instrument_name}</TableCell>
-                  <TableCell className="text-right">
-                    {result?.exchange}
+                  <TableCell>
+                    {result.instrument_name}
+                    <br />({result.symbol})
                   </TableCell>
-                  <TableCell className="text-right">{result?.symbol}</TableCell>
+                  <TableCell className="text-right">
+                    {result.exchange}
+                  </TableCell>
+                  <TableCell className="hidden lg:block text-right">
+                    {result.symbol}
+                  </TableCell>
                   <TableCell>
                     <Button
                       onClick={() => handleAddClick(result)}

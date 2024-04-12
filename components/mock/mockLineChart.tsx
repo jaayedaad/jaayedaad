@@ -1,5 +1,5 @@
 import React from "react";
-import { Area, AreaChart, XAxis, YAxis } from "recharts";
+import { Area, AreaChart, ResponsiveContainer } from "recharts";
 
 const dataToShow = [
   {
@@ -34,47 +34,49 @@ const dataToShow = [
 
 function MockLineChart() {
   return (
-    <div className="mt-12">
-      <AreaChart width={720} height={200} data={dataToShow}>
-        <defs>
-          <linearGradient id="colorUv" x1="0" y1="0" x2="0" y2="1">
-            <stop
-              offset="5%"
-              stopColor={`${
-                dataToShow[0].amt > dataToShow[dataToShow.length - 1].amt
-                  ? "#ef4444"
-                  : "#22c55e"
-              }`}
-              stopOpacity={0.8}
-            />
-            <stop
-              offset="95%"
-              stopColor={`${
-                dataToShow[0].amt > dataToShow[dataToShow.length - 1].amt
-                  ? "#ef4444"
-                  : "#22c55e"
-              }`}
-              stopOpacity={0}
-            />
-          </linearGradient>
-        </defs>
+    <div className="mt-4 h-full">
+      <ResponsiveContainer width="100%" height="75%">
+        <AreaChart data={dataToShow}>
+          <defs>
+            <linearGradient id="colorUv" x1="0" y1="0" x2="0" y2="1">
+              <stop
+                offset="5%"
+                stopColor={`${
+                  dataToShow[0].amt > dataToShow[dataToShow.length - 1].amt
+                    ? "#ef4444"
+                    : "#22c55e"
+                }`}
+                stopOpacity={0.8}
+              />
+              <stop
+                offset="95%"
+                stopColor={`${
+                  dataToShow[0].amt > dataToShow[dataToShow.length - 1].amt
+                    ? "#ef4444"
+                    : "#22c55e"
+                }`}
+                stopOpacity={0}
+              />
+            </linearGradient>
+          </defs>
 
-        <Area
-          type="monotone"
-          dataKey="amt"
-          strokeWidth={2}
-          dot={{
-            r: 4,
-            style: { fill: "#ffffff" },
-          }}
-          stroke={`${
-            dataToShow[0].amt > dataToShow[dataToShow.length - 1].amt
-              ? "#ef4444"
-              : "#22c55e"
-          }`}
-          fill="url(#colorUv)"
-        />
-      </AreaChart>
+          <Area
+            type="monotone"
+            dataKey="amt"
+            strokeWidth={2}
+            dot={{
+              r: 4,
+              style: { fill: "#ffffff" },
+            }}
+            stroke={`${
+              dataToShow[0].amt > dataToShow[dataToShow.length - 1].amt
+                ? "#ef4444"
+                : "#22c55e"
+            }`}
+            fill="url(#colorUv)"
+          />
+        </AreaChart>
+      </ResponsiveContainer>
     </div>
   );
 }

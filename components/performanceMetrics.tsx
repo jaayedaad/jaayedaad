@@ -66,11 +66,11 @@ function PerformanceMetrics({
 
   return (
     <div className="mt-4">
-      <div className="flex justify-between items-center mb-6">
+      <div className="flex justify-between items-center mb-3">
         <div>
           <p className="text-muted-foreground text-xs">Current Value</p>
           <div className="flex items-center gap-1">
-            <span className="text-2xl font-bold">
+            <span className="text-xl lg:text-2xl font-bold">
               {conversionRates && assets.length
                 ? dashboardAmountVisibility
                   ? formatter.format(
@@ -100,8 +100,8 @@ function PerformanceMetrics({
           </div>
         </div>
       </div>
-      <div className="flex flex-col gap-4">
-        <div className="p-3 rounded-md border w-full">
+      <div className="flex flex-col gap-2">
+        <div className="p-2 rounded-md border w-full">
           <p className="text-sm flex items-center justify-between mb-2">
             Unrealised Profit / Loss
             <span className="text-base">

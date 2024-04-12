@@ -8,7 +8,6 @@ import LoadingSpinner from "@/components/ui/loading-spinner";
 import { calculateRealisedProfitLoss } from "@/helper/realisedValueCalculator";
 import { getUnrealisedProfitLossArray } from "@/helper/unrealisedValueCalculator";
 import { useEffect, useState } from "react";
-import jaayedaad_logo from "@/public/jaayedaad_logo.svg";
 import Image from "next/image";
 import AssetMarqueeBar from "@/components/assetMarqueeBar";
 import {
@@ -17,13 +16,16 @@ import {
   TProfitLoss,
   TConversionRates,
   TPreference,
+  TUser,
 } from "@/lib/types";
 import WhitelistingModal from "@/components/onboarding/whitelistingModal";
 import MockLineChart from "@/components/mock/mockLineChart";
 import MockAssetTable from "@/components/mock/mockAssetTable";
 import OnboardingModal from "@/components/onboarding/onboardingModal";
+import JaayedaadLogo from "@/public/branding/jaayedaadLogo";
 
 export function Dashboard({
+  user,
   usernameSet,
   username,
   whitelisted,
@@ -32,6 +34,7 @@ export function Dashboard({
   historicalData,
   preferences,
 }: {
+  user: TUser;
   usernameSet: boolean;
   username: string;
   whitelisted: boolean;
@@ -136,13 +139,24 @@ export function Dashboard({
     <>
       <div className="px-6 sm:px-8 pt-6 pb-20 md:pb-24 lg:py-6 w-full lg:h-screen xl:h-screen flex flex-col">
         <div className="inline-flex lg:grid lg:grid-cols-3 justify-between items-center lg:gap-6">
-          <div className="col-span-1 hidden md:block">
-            <h3 className="text-lg">
-              Good {timeOfDay}, {username}
-            </h3>
-            <p>Your dashboard</p>
+          <div className="col-span-1 hidden lg:block">
+            <div className="flex gap-2">
+              <Image
+                className="rounded-full"
+                width={52}
+                height={52}
+                src={user.image}
+                alt="user avatar"
+              />
+              <div>
+                <p className="text-sm text-muted-foreground">
+                  Good {timeOfDay}
+                </p>
+                <h3 className="text-2xl font-samarkan">{username}</h3>
+              </div>
+            </div>
           </div>
-          <div className="flex items-center col-span-2">
+          <div className="flex justify-between w-full lg:w-auto lg:justify-normal items-center col-span-2">
             <div className="w-[77%] hidden lg:block">
               {marqueeBarAssets && (
                 <AssetMarqueeBar
@@ -152,20 +166,16 @@ export function Dashboard({
                 />
               )}
             </div>
-            <Image
-              src={jaayedaad_logo}
-              alt="Jaayedaad logo"
-              className="h-8 lg:hidden"
-            />
+            <JaayedaadLogo className="h-8 lg:hidden" />
             <div className="ml-2 w-fit">
               <ChangeInterval onChange={onChange} />
             </div>
           </div>
         </div>
         <div className="min-h-[85vh] h-full mt-4">
-          <div className="flex flex-col gap-4 sm:gap-6 md:gap-6 lg:gap-4 lg:grid lg:grid-rows-7 lg:grid-cols-3 lg:h-full text-foreground">
+          <div className="gap-4 sm:gap-6 md:gap-6 lg:gap-4 grid grid-rows-4 grid-cols-1 lg:grid-rows-7 lg:grid-cols-3 lg:h-full text-foreground">
             {/* Asset distribution pie chart */}
-            <div className="col-span-1 row-span-3 bg-[#171326]/70 backdrop-blur shadow-2xl border rounded-xl p-4">
+            <div className="lg:col-span-1 lg:row-span-3 bg-[#171326]/70 backdrop-blur shadow-2xl border rounded-xl p-4">
               <AssetPieChart
                 view="dashboard"
                 assets={assets}
@@ -178,7 +188,7 @@ export function Dashboard({
               />
             </div>
             {/* Portfolio line chart */}
-            <div className="col-span-2 row-span-3 bg-[#171326]/70 backdrop-blur shadow-2xl border rounded-xl p-4">
+            <div className="lg:col-span-2 lg:row-span-3 bg-[#171326]/70 backdrop-blur shadow-2xl border rounded-xl p-4">
               {historicalData ? (
                 historicalData.length ? (
                   <PortfolioLineChart
@@ -192,14 +202,12 @@ export function Dashboard({
                     defaultCurrency={preferences.defaultCurrency}
                   />
                 ) : (
-                  <div>
+                  <div className="h-full">
                     <h3 className="font-semibold">Portfolio Performance</h3>
                     <p className="text-muted-foreground text-xs xl:text-sm">
                       Insight into your portfolio&apos;s value dynamics
                     </p>
-                    <div className="h-40 flex items-center justify-center">
-                      <MockLineChart />
-                    </div>
+                    <MockLineChart />
                   </div>
                 )
               ) : (
@@ -215,7 +223,7 @@ export function Dashboard({
               )}
             </div>
             {/* Asset Table */}
-            <div className="col-span-2 row-span-4 bg-[#171326]/70 backdrop-blur shadow-2xl border rounded-xl p-4">
+            <div className="lg:col-span-2 lg:row-span-4 bg-[#171326]/70 backdrop-blur shadow-2xl border rounded-xl p-4">
               <div className="flex justify-between">
                 <div className="flex flex-col">
                   <h3 className="font-semibold">Asset Overview</h3>
@@ -229,7 +237,7 @@ export function Dashboard({
                   </p>
                 </div>
               </div>
-              <div className="mt-6">
+              <div className="mt-3">
                 {assets.length ? (
                   <AssetTable
                     data={assets}
@@ -245,7 +253,7 @@ export function Dashboard({
               </div>
             </div>
             {/* Performance metrics */}
-            <div className="col-span-1 row-span-4 bg-[#171326]/70 backdrop-blur shadow-2xl border rounded-xl p-4 mb-4 md:mb-6 lg:mb-0">
+            <div className="lg:col-span-1 lg:row-span-4 bg-[#171326]/70 backdrop-blur shadow-2xl border rounded-xl p-4 mb-4 md:mb-6 lg:mb-0">
               <h3 className="font-semibold">Performance Metrics</h3>
               <p className="text-muted-foreground text-xs xl:text-sm">
                 Analyze investment performance
