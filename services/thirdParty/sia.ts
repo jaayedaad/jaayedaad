@@ -12,7 +12,7 @@ import {
   SIA_API_URL,
 } from "@/constants/env";
 
-export async function getAllAssets() {
+export async function getDecryptedAssetsFromSia() {
   const session = await getServerSession(authOptions);
   const username = SIA_ADMIN_USERNAME;
   const password = SIA_ADMIN_PASSWORD;
@@ -109,4 +109,29 @@ export const deleteUserInSia = async (userId: string) => {
       Authorization: basicAuth,
     },
   });
+};
+
+export const deleteAssetForUserInSia = async (
+  assetId: string,
+  userId: string
+) => {
+  try {
+    const username = SIA_ADMIN_USERNAME;
+    const password = SIA_ADMIN_PASSWORD;
+    const basicAuth =
+      "Basic " + Buffer.from(username + ":" + password).toString("base64");
+    await fetch(
+      `${SIA_API_URL}/worker/objects/${userId}/assets/${assetId}?batch=true`,
+      {
+        method: "DELETE",
+        headers: {
+          Authorization: basicAuth,
+        },
+      }
+    );
+    return true;
+  } catch (err) {
+    console.error("Error deleting asset from Sia: ", err);
+    return false;
+  }
 };

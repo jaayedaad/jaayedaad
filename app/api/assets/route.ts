@@ -2,7 +2,7 @@ import { prisma } from "@/lib/prisma";
 import { authOptions } from "@/lib/authOptions";
 import { decryptObjectValues } from "@/lib/dataSecurity";
 import { getServerSession } from "next-auth";
-import { getAllAssets } from "@/services/thirdParty/sia";
+import { getDecryptedAssetsFromSia } from "@/services/thirdParty/sia";
 import { DATABASE_URL, ENCRYPTION_KEY, USE_SIA } from "@/constants/env";
 
 export async function GET() {
@@ -31,7 +31,7 @@ export async function GET() {
       assets = decryptObjectValues(assets, encryptionKey);
       return Response.json(assets);
     } else if (USE_SIA) {
-      const assets = await getAllAssets();
+      const assets = await getDecryptedAssetsFromSia();
       return Response.json(assets);
     } else {
       throw new Error("Neither DATABASE_URL nor USE_SIA is configured.");

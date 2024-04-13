@@ -6,7 +6,10 @@ import {
   USE_SIA,
   DATABASE_URL,
 } from "@/constants/env";
-import { getAllAssets } from "@/services/thirdParty/sia";
+import {
+  deleteAssetForUserInSia,
+  getDecryptedAssetsFromSia,
+} from "@/services/thirdParty/sia";
 import { TAsset } from "@/lib/types";
 import { fetchQuoteFromApi } from "@/services/thirdParty/twelveData";
 
@@ -38,7 +41,7 @@ export const getDeccryptedAssetsByUserId = async (id: string) => {
     assets = decryptObjectValues(assets, encryptionKey);
     return assets || [];
   } else if (USE_SIA) {
-    const assets = await getAllAssets();
+    const assets = await getDecryptedAssetsFromSia();
     return assets || [];
   } else {
     throw new Error("Neither DATABASE_URL nor USE_SIA is configured.");
@@ -47,4 +50,32 @@ export const getDeccryptedAssetsByUserId = async (id: string) => {
 
 export const getAssetsQuoteFromApi = async (assets: any): Promise<TAsset[]> => {
   return Promise.all(assets.map(fetchQuoteFromApi));
+};
+
+export const deleteAssetByIdAndUserId = async (
+  assetId: string,
+  userId: string
+): Promise<boolean> => {
+  const user = await prisma.user.findUnique({
+    where: {
+      id: userId,
+    },
+  });
+  if (!user) {
+    throw new Error("User not found");
+  }
+
+  try {
+    if (USE_SIA) {
+      await deleteAssetForUserInSia(assetId, userId);
+    }
+    if (DATABASE_URL) {
+      await prisma.asset.delete({
+        where: { id: assetId, userId },
+      });
+    }
+    return true;
+  } catch {
+    return false;
+  }
 };

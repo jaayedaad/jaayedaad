@@ -2,7 +2,7 @@ import { getServerSession } from "next-auth";
 import { prisma } from "@/lib/prisma";
 import { authOptions } from "@/lib/authOptions";
 import { canSellAssets } from "@/helper/canSellAssets";
-import { getAllAssets } from "@/services/thirdParty/sia";
+import { getDecryptedAssetsFromSia } from "@/services/thirdParty/sia";
 import {
   Asset as PrismaAsset,
   AssetPriceUpdate,
@@ -66,7 +66,7 @@ export async function PUT(req: Request) {
         (asset) => asset.name === sellRequest.name
       );
     } else if (USE_SIA) {
-      const userAssets = await getAllAssets();
+      const userAssets = await getDecryptedAssetsFromSia();
       ownedAsset = userAssets?.filter(
         (asset) => asset.name === sellRequest.name
       );

@@ -11,6 +11,7 @@ import {
 
 import { Trash } from "lucide-react";
 import { toast } from "sonner";
+import { deleteAssetByIdAndUserIdAction } from "@/app/(protected)/dashboard/actions";
 
 interface RemoveAssetButtonProps {
   assetId: string;
@@ -19,21 +20,19 @@ interface RemoveAssetButtonProps {
 function RemoveAssetButton({ assetId }: RemoveAssetButtonProps) {
   const [openDeleteWarning, setOpenDeleteWarning] = useState(false);
   const handleRemoveAsset = async (assetId: string) => {
-    fetch("/api/assets/remove", {
-      method: "POST",
-      body: JSON.stringify({ assetId }),
-    })
-      .then((res) => res.json())
-      .then((res) => {
-        if (res.success) {
-          toast.success("Asset removed successfully!");
-          setOpenDeleteWarning(false);
-          window.location.reload();
-        } else {
-          toast.error("Error removing asset!");
-          setOpenDeleteWarning(false);
-        }
-      });
+    try {
+      const deleted = await deleteAssetByIdAndUserIdAction(assetId);
+      if (deleted) {
+        toast.success("Asset removed successfully!");
+        setOpenDeleteWarning(false);
+        window.location.reload();
+      } else {
+        throw new Error("Error removing asset!");
+      }
+    } catch (error) {
+      toast.error("Error removing asset!");
+      setOpenDeleteWarning(false);
+    }
   };
   return (
     <Dialog open={openDeleteWarning} onOpenChange={setOpenDeleteWarning}>
