@@ -85,7 +85,9 @@ export function getAssetTableColumns(
         </div>
       ),
       cell: ({ row }) => {
-        const prevClose = +row.original.prevClose;
+        const prevClose = row.original.isManualEntry
+          ? +row.original.currentPrice
+          : +row.original.prevClose;
         const buyCurrency = row.original.buyCurrency.toLowerCase();
         const conversionRate = conversionRates[buyCurrency];
         const previousClose = (prevClose / conversionRate).toFixed(2);

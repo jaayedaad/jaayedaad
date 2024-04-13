@@ -227,6 +227,7 @@ function Page({
                       }
                       numberSystem={preferences.numberSystem}
                       defaultCurrency={preferences.defaultCurrency}
+                      conversionRates={conversionRates}
                     />
                   )
                 )

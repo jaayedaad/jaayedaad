@@ -1,5 +1,5 @@
 "use client";
-import { TAsset, TInterval } from "@/lib/types";
+import { TAsset, TConversionRates, TInterval } from "@/lib/types";
 import {
   formatIndianNumber,
   formatInternationalNumber,
@@ -23,6 +23,7 @@ interface ManualTransactionChartProps {
   dashboardAmountVisibility: boolean;
   numberSystem: string;
   defaultCurrency: string;
+  conversionRates: TConversionRates;
 }
 
 function ManualTransactionChart({
@@ -31,6 +32,7 @@ function ManualTransactionChart({
   dashboardAmountVisibility,
   numberSystem,
   defaultCurrency,
+  conversionRates,
 }: ManualTransactionChartProps) {
   const formatter = new Intl.NumberFormat(
     numberSystem === "Indian" ? "en-IN" : "en-US",
@@ -47,8 +49,10 @@ function ManualTransactionChart({
       amt: number;
     }[]
   >();
-  const historicalData =
-    prepareHistoricalDataForManualCategory(manualCategoryAssets);
+  const historicalData = prepareHistoricalDataForManualCategory(
+    manualCategoryAssets,
+    conversionRates
+  );
 
   const lineChartData = accumulateLineChartData(historicalData);
 

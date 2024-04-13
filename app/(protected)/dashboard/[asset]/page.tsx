@@ -1,4 +1,7 @@
-import { getDeccryptedAssetsByUserId, getAssetsQuoteFromApi } from "@/services/asset";
+import {
+  getDeccryptedAssetsByUserId,
+  getAssetsQuoteFromApi,
+} from "@/services/asset";
 import Page from "./newPage";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/authOptions";
