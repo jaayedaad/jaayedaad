@@ -254,11 +254,11 @@ function Page({
                 </div>
                 <div>
                   <p className="text-muted-foreground text-right text-xs xl:text-sm">
-                    Last update on ({yesterday.toLocaleDateString("en-GB")})
+                    As on ({yesterday.toLocaleDateString("en-GB")})
                   </p>
                 </div>
               </div>
-              <div className="mt-6">
+              <div className="mt-6 overflow-auto">
                 {assetsToView ? (
                   <AssetTable
                     data={assetsToView}
