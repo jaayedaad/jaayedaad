@@ -223,7 +223,7 @@ export function Dashboard({
               )}
             </div>
             {/* Asset Table */}
-            <div className="lg:col-span-2 lg:row-span-4 bg-[#171326]/70 backdrop-blur shadow-2xl border rounded-xl p-4">
+            <div className="flex flex-col lg:col-span-2 lg:row-span-4 bg-[#171326]/70 backdrop-blur shadow-2xl border rounded-xl p-4">
               <div className="flex justify-between">
                 <div className="flex flex-col">
                   <h3 className="font-semibold">Asset Overview</h3>
@@ -237,7 +237,7 @@ export function Dashboard({
                   </p>
                 </div>
               </div>
-              <div className="mt-3">
+              <div className="mt-6 overflow-auto">
                 {assets.length ? (
                   <AssetTable
                     data={assets}
