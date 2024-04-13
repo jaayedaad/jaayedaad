@@ -75,7 +75,10 @@ function ViewAsset({
     );
   }
   if (manualAsset) {
-    const manualHistory = prepareHistoricalDataForManualCategory([manualAsset]);
+    const manualHistory = prepareHistoricalDataForManualCategory(
+      [manualAsset],
+      conversionRates
+    );
     assetHistory.splice(0, assetHistory.length, ...manualHistory);
   }
   const lineChartData = accumulateLineChartData(assetHistory);

@@ -1,13 +1,16 @@
-import { TAsset } from "@/lib/types";
+import { TAsset, TConversionRates } from "@/lib/types";
 
 export function prepareHistoricalDataForManualCategory(
-  manualCategoryAssets: TAsset[]
+  manualCategoryAssets: TAsset[],
+  conversionRate: TConversionRates
 ) {
   const historicalData: {
     assetSymbol: string;
     values: { date: number; value: number }[];
   }[] = [];
   manualCategoryAssets.forEach((asset) => {
+    const conversionRateMultiplier =
+      1 / conversionRate[asset.buyCurrency.toLowerCase()];
     const aggregatedAssetData: { date: number; value: number }[] = [];
     // sort assetPriceUpdates in ascending order
     const priceUpdates = asset.assetPriceUpdates.sort((a, b) => {
@@ -71,7 +74,7 @@ export function prepareHistoricalDataForManualCategory(
           for (const assetUpdate of priceUpdates) {
             const updateDate = new Date(assetUpdate.date);
             if (updateDate >= transactionDate) {
-              priceAtDate = +assetUpdate.price;
+              priceAtDate = +assetUpdate.price * conversionRateMultiplier;
               break; // set priceAtDate & exit the loop once a newer date is found
             }
           }
@@ -116,7 +119,7 @@ export function prepareHistoricalDataForManualCategory(
               new Date(updateDate.toDateString()) >=
               new Date(transactionDate.toDateString())
             ) {
-              priceAtDate = +assetUpdate.price;
+              priceAtDate = +assetUpdate.price * conversionRateMultiplier;
               break; // set priceAtDate & exit the loop once a newer date is found
             }
           }

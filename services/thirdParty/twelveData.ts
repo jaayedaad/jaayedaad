@@ -173,9 +173,10 @@ export const getHistoricalData = async (userId: string, assets: TAsset[]) => {
           historicalData.push(data);
         }
       } else {
-        const manualAssetHistory = prepareHistoricalDataForManualCategory([
-          asset,
-        ])[0];
+        const manualAssetHistory = prepareHistoricalDataForManualCategory(
+          [asset],
+          conversionRate
+        )[0];
         const manualAssetHistoryWithAssetType = {
           ...manualAssetHistory,
           assetType: asset.category,

@@ -67,7 +67,7 @@ function PortfolioLineChart({
       accumulateLineChartData(
         data.filter((item) => item.assetType === "Digital Currency")
       ),
-    "mutual funds": () =>
+    "mutual fund": () =>
       accumulateLineChartData(
         data.filter((item) => item.assetType === "Mutual Fund")
       ),
