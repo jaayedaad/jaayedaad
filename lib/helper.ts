@@ -65,3 +65,7 @@ export function transformToResultFormat(
     exchange_timezone: "", // Not available in the database
   }));
 }
+
+export const formatToLocaleString = (value: string | number) => {
+  return Number(value).toLocaleString("en-IN");
+};
