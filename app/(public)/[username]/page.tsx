@@ -2,7 +2,7 @@ import { getConversionRate } from "@/services/thirdParty/currency";
 import { getPreferenceFromUserId } from "@/services/preference";
 import { Separator } from "@/components/ui/separator";
 import { getUserByUsername } from "@/services/user";
-import { getAssetsByUser, getAssetsQuoteFromApi } from "@/services/asset";
+import { getDeccryptedAssetsByUserId, getAssetsQuoteFromApi } from "@/services/asset";
 import { getHistoricalData } from "@/services/thirdParty/twelveData";
 import { getUnrealisedProfitLossArray } from "@/helper/unrealisedValueCalculator";
 import { calculateRealisedProfitLoss } from "@/helper/realisedValueCalculator";
@@ -32,7 +32,7 @@ export default async function PublicProfile({
     throw new Error("Conversion rates not found");
   }
 
-  const assets = await getAssetsQuoteFromApi(await getAssetsByUser(user.email));
+  const assets = await getAssetsQuoteFromApi(await getDeccryptedAssetsByUserId(user.id));
   const historicalData = await getHistoricalData(user.id, assets);
 
   const unrealisedProfitLossArray = getUnrealisedProfitLossArray(

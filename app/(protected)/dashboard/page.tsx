@@ -1,4 +1,4 @@
-import { getAssetsByUser, getAssetsQuoteFromApi } from "@/services/asset";
+import { getDeccryptedAssetsByUserId, getAssetsQuoteFromApi } from "@/services/asset";
 import Dashboard from "./newPage";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/authOptions";
@@ -15,7 +15,7 @@ const DashboardPage = async () => {
 
   const usernameSet = !session.user.username;
   const assets = await getAssetsQuoteFromApi(
-    await getAssetsByUser(session.user.email)
+    await getDeccryptedAssetsByUserId(session.user.id)
   );
 
   const currencyConversionRates = await getConversionRate(session.user.id);

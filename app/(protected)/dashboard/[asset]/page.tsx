@@ -1,4 +1,4 @@
-import { getAssetsByUser, getAssetsQuoteFromApi } from "@/services/asset";
+import { getDeccryptedAssetsByUserId, getAssetsQuoteFromApi } from "@/services/asset";
 import Page from "./newPage";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/authOptions";
@@ -27,7 +27,7 @@ export default async function AssetPage({
   const reverseMappedName = reverseAssetTypeMappings[pageParams] || pageParams;
 
   const assets = await getAssetsQuoteFromApi(
-    await getAssetsByUser(session.user.email)
+    await getDeccryptedAssetsByUserId(session.user.id)
   );
 
   const filteredAssets = assets?.filter(

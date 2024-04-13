@@ -7,6 +7,7 @@ import ManualTransactionForm from "./manualTransactionForm";
 import { Button } from "./ui/button";
 import { TTwelveDataResult, TUserManualCategory } from "@/lib/types";
 import { searchAssetsFromApi } from "@/services/thirdParty/twelveData";
+import { searchResultsFromExistingAssetsInDatabaseAction } from "@/app/(protected)/dashboard/actions";
 
 interface AddTransactionPropsType {
   usersManualCategories: TUserManualCategory[];
@@ -34,11 +35,9 @@ export default function AddTransaction({
   // Function to handle search
   const handleSearch = async () => {
     setShowManualTransactionForm(false);
-    const response = await fetch("/api/assets/search", {
-      method: "POST",
-      body: JSON.stringify({ searchQuery: searchQuery }),
-    });
-    const resultsFromDB = await response.json();
+    const resultsFromDB = await searchResultsFromExistingAssetsInDatabaseAction(
+      searchQuery
+    );
     // Set the state with the initial results from the database
     setResults(resultsFromDB);
     setLoadingAsset(false);

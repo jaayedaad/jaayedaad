@@ -11,10 +11,10 @@ import { TAsset } from "@/lib/types";
 import { fetchQuoteFromApi } from "@/services/thirdParty/twelveData";
 
 // wrap this in try catcch
-export const getAssetsByUser = async (email: string) => {
+export const getDeccryptedAssetsByUserId = async (id: string) => {
   const user = await prisma.user.findUnique({
     where: {
-      email,
+      id,
     },
   });
   if (!user) {
