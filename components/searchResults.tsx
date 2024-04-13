@@ -34,6 +34,7 @@ const SearchResults = ({
 
   const handleAddClick = async (result: TTwelveDataResult) => {
     const assetQuote = await getAssetQuoteFromApiBySymbol(result.symbol);
+    if (!assetQuote) return;
     const assetPreviousClose = Number(assetQuote.previous_close);
     setAssetPreviousClose(assetPreviousClose.toFixed(2));
     setShowForm(true);

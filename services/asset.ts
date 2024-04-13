@@ -13,59 +13,68 @@ import {
 import { TAsset } from "@/lib/types";
 import { fetchQuoteFromApi } from "@/services/thirdParty/twelveData";
 
-// wrap this in try catcch
 export const getDeccryptedAssetsByUserId = async (id: string) => {
-  const user = await prisma.user.findUnique({
-    where: {
-      id,
-    },
-  });
-  if (!user) {
-    throw new Error("User not found");
-  }
-
-  const encryptionKey =
-    user?.id.slice(0, 4) + ENCRYPTION_KEY + user?.id.slice(-4);
-
-  if (DATABASE_URL) {
-    let assets = await prisma.asset.findMany({
+  try {
+    const user = await prisma.user.findUnique({
       where: {
-        userId: user.id,
-      },
-      include: {
-        transactions: true,
-        assetPriceUpdates: true,
+        id,
       },
     });
+    if (!user) {
+      throw new Error("User not found");
+    }
 
-    assets = decryptObjectValues(assets, encryptionKey);
-    return assets || [];
-  } else if (USE_SIA) {
-    const assets = await getDecryptedAssetsFromSia();
-    return assets || [];
-  } else {
-    throw new Error("Neither DATABASE_URL nor USE_SIA is configured.");
+    const encryptionKey =
+      user?.id.slice(0, 4) + ENCRYPTION_KEY + user?.id.slice(-4);
+
+    if (DATABASE_URL) {
+      let assets = await prisma.asset.findMany({
+        where: {
+          userId: user.id,
+        },
+        include: {
+          transactions: true,
+          assetPriceUpdates: true,
+        },
+      });
+
+      assets = decryptObjectValues(assets, encryptionKey);
+      return assets || [];
+    } else if (USE_SIA) {
+      const assets = await getDecryptedAssetsFromSia();
+      return assets || [];
+    } else {
+      throw new Error("Neither DATABASE_URL nor USE_SIA is configured.");
+    }
+  } catch (err) {
+    console.error("Error in getDecryptedAssetsByUserId: " + id + err);
+    return null;
   }
 };
 
 export const getAssetsQuoteFromApi = async (assets: any): Promise<TAsset[]> => {
-  return Promise.all(assets.map(fetchQuoteFromApi));
+  try {
+    return Promise.all(assets.map(fetchQuoteFromApi));
+  } catch (err) {
+    console.error("Error in getAssetsQuoteFromApi: " + err);
+    return [];
+  }
 };
 
 export const deleteAssetByIdAndUserId = async (
   assetId: string,
   userId: string
 ): Promise<boolean> => {
-  const user = await prisma.user.findUnique({
-    where: {
-      id: userId,
-    },
-  });
-  if (!user) {
-    throw new Error("User not found");
-  }
-
   try {
+    const user = await prisma.user.findUnique({
+      where: {
+        id: userId,
+      },
+    });
+    if (!user) {
+      throw new Error("User not found");
+    }
+
     if (USE_SIA) {
       await deleteAssetForUserInSia(assetId, userId);
     }
@@ -75,7 +84,8 @@ export const deleteAssetByIdAndUserId = async (
       });
     }
     return true;
-  } catch {
+  } catch (err) {
+    console.error("Error in deleteAssetByIdAndUserId: " + userId + err);
     return false;
   }
 };

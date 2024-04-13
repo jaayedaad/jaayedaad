@@ -3,37 +3,52 @@
 import { prisma } from "@/lib/prisma";
 import { TPreference } from "@/lib/types";
 
-export const createPreference = async (
+export const createDefaultPreference = async (
   userId: string
 ): Promise<TPreference> => {
-  const preference = await prisma.preference.create({
-    data: {
-      userId,
-    },
-  });
-  return preference;
+  try {
+    const preference = await prisma.preference.create({
+      data: {
+        userId,
+      },
+    });
+    return preference;
+  } catch (err) {
+    console.error("Error in createPreference: " + userId + err);
+    throw new Error("Error in createPreference: " + userId + err);
+  }
 };
 
 export const getPreferenceFromUserId = async (
   userId: string
 ): Promise<TPreference | null> => {
-  const preference = await prisma.preference.findUnique({
-    where: {
-      userId,
-    },
-  });
-  return preference;
+  try {
+    const preference = await prisma.preference.findUnique({
+      where: {
+        userId,
+      },
+    });
+    return preference;
+  } catch (err) {
+    console.error("Error in getPreferenceFromUserId: " + userId + err);
+    return null;
+  }
 };
 
 export const updatePreference = async (
   userId: string,
   preference: any
 ): Promise<TPreference> => {
-  const updatedPreference = await prisma.preference.update({
-    where: {
-      userId,
-    },
-    data: preference,
-  });
-  return updatedPreference;
+  try {
+    const updatedPreference = await prisma.preference.update({
+      where: {
+        userId,
+      },
+      data: preference,
+    });
+    return updatedPreference;
+  } catch (err) {
+    console.error("Error in updatePreference: " + userId + err);
+    throw new Error("Error in updatePreference: " + userId + err);
+  }
 };

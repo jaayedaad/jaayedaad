@@ -1,72 +1,41 @@
 "use server";
 
 import { prisma } from "@/lib/prisma";
-import { Session } from "next-auth";
 import { decryptObjectValues } from "@/lib/dataSecurity";
 import { DATABASE_URL, ENCRYPTION_KEY, USE_SIA } from "@/constants/env";
 import { deleteUserInSia } from "./thirdParty/sia";
 
-export const getUser = async (session: Session) => {
-  if (!session.user || !session.user.email) {
-    throw new Error("User not authenticated");
-  }
-  const user = await prisma.user.findUnique({
-    where: {
-      email: session.user.email,
-    },
-    include: {
-      usersManualCategories: {
-        include: {
-          assets: true,
-        },
-      },
-    },
-  });
-  if (!user) {
-    throw new Error("User not found");
-  }
-
-  const encryptionKey =
-    user.id.slice(0, 4) + ENCRYPTION_KEY + user.id.slice(-4);
-
-  return {
-    id: user.id,
-    name: user.name,
-    username: user.username,
-    email: user.email,
-    emailVerified: user.emailVerified,
-    image: user.image,
-    whitelisted: user.whitelisted,
-    usersManualCategories: decryptObjectValues(
-      user.usersManualCategories,
-      encryptionKey
-    ) as typeof user.usersManualCategories,
-  };
-};
-
 export const isUsernameTaken = async (username: string): Promise<boolean> => {
-  const user = await prisma.user.findUnique({
-    where: {
-      username,
-    },
-  });
-  return user ? true : false;
+  try {
+    const user = await prisma.user.findUnique({
+      where: {
+        username,
+      },
+    });
+    return user ? true : false;
+  } catch (err) {
+    console.error("Error in isUsernameTaken: " + username + err);
+    return true;
+  }
 };
 
 export const getUserByEmail = async (email: string) => {
-  const user = await prisma.user.findUnique({
-    where: {
-      email,
-    },
-    include: {
-      usersManualCategories: {
-        include: {
-          assets: true,
+  try {
+    const user = await prisma.user.findUnique({
+      where: {
+        email,
+      },
+      include: {
+        usersManualCategories: {
+          include: {
+            assets: true,
+          },
         },
       },
-    },
-  });
-  if (user) {
+    });
+    if (!user) {
+      throw new Error("User not found with email: " + email);
+    }
     const encryptionKey =
       user.id.slice(0, 4) + ENCRYPTION_KEY + user.id.slice(-4);
 
@@ -83,20 +52,28 @@ export const getUserByEmail = async (email: string) => {
       whitelisted: user.whitelisted,
       image: user?.image,
     };
+  } catch (err) {
+    console.error("Error in getUserByEmail: " + email + err);
+    return null;
   }
 };
 
 export const getUserByUsername = async (username: string) => {
-  const user = await prisma.user.findUnique({
-    where: {
-      username,
-    },
-  });
-  if (!user) {
-    throw new Error("User not found");
-  }
+  try {
+    const user = await prisma.user.findUnique({
+      where: {
+        username,
+      },
+    });
+    if (!user) {
+      throw new Error("User not found by username" + username);
+    }
 
-  return user;
+    return user;
+  } catch (err) {
+    console.error("Error in getUserByUsername: " + username + err);
+    return null;
+  }
 };
 
 export const updateUser = async (
@@ -107,13 +84,18 @@ export const updateUser = async (
     image?: string;
   }
 ) => {
-  const user = await prisma.user.update({
-    where: {
-      email,
-    },
-    data,
-  });
-  return user;
+  try {
+    const user = await prisma.user.update({
+      where: {
+        email,
+      },
+      data,
+    });
+    return user;
+  } catch (err) {
+    console.error("Error in updateUser with email: " + email + err);
+    return null;
+  }
 };
 
 export const deleteUser = async (userId: string): Promise<boolean> => {
@@ -136,7 +118,8 @@ export const deleteUser = async (userId: string): Promise<boolean> => {
       });
     }
     return true;
-  } catch {
+  } catch (err) {
+    console.error("Error in deleteUser with Id: " + userId + err);
     return false;
   }
 };

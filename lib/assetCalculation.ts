@@ -24,20 +24,25 @@ export const calculateCurrentValue = (asset: TAsset): TAsset => {
     );
   };
 
-  if (asset.category === "Deposits") {
-    asset.currentValue = calculateCurrentValueForFD();
-    asset.currentPrice = asset.currentValue.toString();
-    asset.prevClose = asset.currentPrice;
-    asset.compareValue = +asset.buyPrice;
+  try {
+    if (asset.category === "Deposits") {
+      asset.currentValue = calculateCurrentValueForFD();
+      asset.currentPrice = asset.currentValue.toString();
+      asset.prevClose = asset.currentPrice;
+      asset.compareValue = +asset.buyPrice;
 
-    return asset;
-  } else {
-    asset.compareValue = calculateBaseValue();
-    asset.currentValue = asset.isManualEntry
-      ? (asset.currentPrice !== null ? +asset.currentPrice : 0) *
-        +asset.quantity
-      : (asset.prevClose !== undefined ? +asset.prevClose : 0) *
-        +asset.quantity;
+      return asset;
+    } else {
+      asset.compareValue = calculateBaseValue();
+      asset.currentValue = asset.isManualEntry
+        ? (asset.currentPrice !== null ? +asset.currentPrice : 0) *
+          +asset.quantity
+        : (asset.prevClose !== undefined ? +asset.prevClose : 0) *
+          +asset.quantity;
+      return asset;
+    }
+  } catch (err) {
+    console.error("Error in calculateCurrentValue: " + err);
     return asset;
   }
 };
