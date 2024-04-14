@@ -154,7 +154,7 @@ function Page({
 
   return filteredAssets ? (
     filteredAssets.length ? (
-      <div className="px-6 sm:px-8 pt-6 pb-24 md:pb-32 lg:py-6 w-full lg:h-screen xl:h-screen flex flex-col">
+      <div className="px-6 sm:px-8 pt-6 pb-24 md:pb-32 lg:py-4 w-full lg:h-screen xl:h-screen flex flex-col">
         <div className="inline-flex lg:grid lg:grid-cols-2 justify-between items-center lg:gap-6">
           <div className="col-span-1 hidden lg:block">
             <div className="flex gap-2">
@@ -173,7 +173,7 @@ function Page({
               </div>
             </div>
           </div>
-          <div className="flex justify-between w-full lg:w-auto lg:justify-normal items-center col-span-2">
+          <div className="flex justify-between lg:justify-end items-center w-full lg:w-auto">
             <JaayedaadLogo className="h-8 lg:hidden" />
             <div className="ml-2 w-fit">
               <ChangeInterval onChange={onChange} />
@@ -268,15 +268,15 @@ function Page({
               </div>
             </div>
           </div>
-          <div className="hidden px-1 pt-2 lg:block">
-            {assetsToView && (
-              <AssetMarqueeBar
-                assets={assetsToView}
-                timeInterval={timeInterval}
-                preferences={preferences}
-              />
-            )}
-          </div>
+        </div>
+        <div className="hidden px-1 pt-2 lg:block">
+          {assetsToView && (
+            <AssetMarqueeBar
+              assets={assetsToView}
+              timeInterval={timeInterval}
+              preferences={preferences}
+            />
+          )}
         </div>
       </div>
     ) : (
