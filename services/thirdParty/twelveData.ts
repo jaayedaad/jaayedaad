@@ -47,7 +47,7 @@ export const fetchQuoteFromApi = async (
       const quote = await response.json();
 
       if (!quote.code || quote.code !== 404) {
-        asset.prevClose = (+quote.previous_close).toFixed(2);
+        asset.prevClose = (+quote.close).toFixed(2);
       }
     }
 

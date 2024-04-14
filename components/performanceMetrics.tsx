@@ -23,6 +23,7 @@ function PerformanceMetrics({
     symbol: string;
     compareValue: string;
     currentValue: string;
+    valueAtInterval: number;
     prevClose: string;
     interval: string;
     unrealisedProfitLoss: string;
@@ -37,10 +38,7 @@ function PerformanceMetrics({
 
   useEffect(() => {
     if (timeInterval === "All" && assets && conversionRates) {
-      const unrealisedProfitsLosses = calculateUnrealisedProfitLoss(
-        assets,
-        conversionRates
-      );
+      const unrealisedProfitsLosses = calculateUnrealisedProfitLoss(assets);
       setUnrealisedProfitLoss(unrealisedProfitsLosses);
     } else {
       const filteredUnrealizedProfitsLosses = unrealisedProfitLossArray?.filter(
@@ -76,7 +74,7 @@ function PerformanceMetrics({
                   ? formatter.format(
                       parseFloat(
                         assets
-                          ?.reduce((acc, asset) => {
+                          .reduce((acc, asset) => {
                             const assetCurrency =
                               asset.buyCurrency.toLowerCase();
                             const currencyConversion =
@@ -85,9 +83,7 @@ function PerformanceMetrics({
                             return (
                               acc +
                               (asset.quantity > "0"
-                                ? asset.symbol
-                                  ? asset.currentValue * multiplier
-                                  : +asset.currentPrice * multiplier || 0
+                                ? asset.currentValue * multiplier
                                 : 0)
                             );
                           }, 0)
@@ -125,13 +121,31 @@ function PerformanceMetrics({
                 <div className="flex items-center">
                   {conversionRates &&
                     (
-                      (unrealisedProfitLoss * 100) /
-                      +assets.reduce((acc, asset) => {
+                      (assets.reduce((acc, asset) => {
                         const assetCurrency = asset.buyCurrency.toLowerCase();
                         const currencyConversion =
                           conversionRates[assetCurrency];
                         const multiplier = 1 / currencyConversion;
-                        return acc + (asset.compareValue * multiplier || 0);
+                        return (
+                          acc +
+                          (asset.quantity > "0"
+                            ? (asset.currentValue - asset.compareValue) *
+                              multiplier
+                            : 0)
+                        );
+                      }, 0) *
+                        100) /
+                      assets.reduce((acc, asset) => {
+                        const assetCurrency = asset.buyCurrency.toLowerCase();
+                        const currencyConversion =
+                          conversionRates[assetCurrency];
+                        const multiplier = 1 / currencyConversion;
+                        return (
+                          acc +
+                          (asset.quantity > "0"
+                            ? asset.compareValue * multiplier
+                            : 0)
+                        );
                       }, 0)
                     ).toFixed(2) + "%"}
                   {unrealisedProfitLoss > 0 ? <ArrowUp /> : <ArrowDown />}
@@ -142,7 +156,24 @@ function PerformanceMetrics({
               <div className="text-sm flex items-center">
                 {unrealisedProfitLoss
                   ? dashboardAmountVisibility
-                    ? formatter.format(unrealisedProfitLoss)
+                    ? formatter.format(
+                        +assets
+                          .reduce((acc, asset) => {
+                            const assetCurrency =
+                              asset.buyCurrency.toLowerCase();
+                            const currencyConversion =
+                              conversionRates[assetCurrency];
+                            const multiplier = 1 / currencyConversion;
+                            return (
+                              acc +
+                              (asset.quantity > "0"
+                                ? (asset.currentValue - asset.compareValue) *
+                                  multiplier
+                                : 0)
+                            );
+                          }, 0)
+                          .toFixed(2)
+                      )
                     : "* ".repeat(5)
                   : "- - -"}
               </div>

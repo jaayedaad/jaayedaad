@@ -62,6 +62,7 @@ function ViewAsset({
       symbol: string;
       compareValue: string;
       currentValue: string;
+      valueAtInterval: number;
       prevClose: string;
       interval: string;
       unrealisedProfitLoss: string;
@@ -86,11 +87,9 @@ function ViewAsset({
   useEffect(() => {
     async function fetchData() {
       if (assetToView) {
-        const unrealisedResults = getUnrealisedProfitLossArray(
-          historicalData,
-          [assetToView],
-          conversionRates
-        );
+        const unrealisedResults = getUnrealisedProfitLossArray(historicalData, [
+          assetToView,
+        ]);
         setUnrealisedProfitLossArray(unrealisedResults);
         const realisedProfitLossResults = calculateRealisedProfitLoss(
           [assetToView],
@@ -106,10 +105,9 @@ function ViewAsset({
             assetToView.currentValue /
             conversionRates[assetToView.buyCurrency.toLowerCase()]
           ).toFixed(2),
-          unrealisedProfitLoss: calculateUnrealisedProfitLoss(
-            [assetToView],
-            conversionRates
-          ).toString(),
+          unrealisedProfitLoss: calculateUnrealisedProfitLoss([
+            assetToView,
+          ]).toString(),
           realisedProfitLoss: realisedProfitLossResults.filter(
             (res) => res.interval === "All"
           )[0].realisedProfitLoss,
@@ -267,10 +265,9 @@ function ViewAsset({
               assetToView.currentValue /
               conversionRates[assetToView.buyCurrency.toLowerCase()]
             ).toFixed(2),
-            unrealisedProfitLoss: calculateUnrealisedProfitLoss(
-              [assetToView],
-              conversionRates
-            ).toString(),
+            unrealisedProfitLoss: calculateUnrealisedProfitLoss([
+              assetToView,
+            ]).toString(),
             realisedProfitLoss: realisedProfitLossArray.filter(
               (res) => res.interval === "All"
             )[0].realisedProfitLoss,

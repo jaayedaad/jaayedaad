@@ -1,5 +1,5 @@
 import { cn, formatToLocaleString } from "@/lib/helper";
-import { TAsset, TConversionRates } from "@/lib/types";
+import { TAsset, TConversionRates, TInterval } from "@/lib/types";
 import { ColumnDef } from "@tanstack/react-table";
 import { ArrowDown, ArrowUp, ArrowUpDown } from "lucide-react";
 
@@ -142,9 +142,12 @@ export function getAssetTableColumns(
         const currValue = row.original.currentValue;
         const buyCurrency = row.original.buyCurrency.toLowerCase();
         const conversionRate = conversionRates[buyCurrency];
-        const currentValue = (currValue / conversionRate).toFixed(2);
-        const profitLoss = currValue - row.original.compareValue;
-        const percentageChange = (profitLoss / row.original.compareValue) * 100;
+        const valueAtInterval = row.original.valueAtInterval;
+
+        const currentValue = currValue / conversionRate;
+        const profitLoss = currentValue - valueAtInterval;
+
+        const percentageChange = (profitLoss / valueAtInterval) * 100;
         return (
           <div
             className={cn(
@@ -153,7 +156,7 @@ export function getAssetTableColumns(
             )}
           >
             {dashboardAmountVisibility
-              ? formatToLocaleString(currentValue)
+              ? formatToLocaleString(currentValue.toFixed(2))
               : "* ".repeat(5)}
             <div className="flex items-center justify-end">
               ({percentageChange.toFixed(2)}%{" "}

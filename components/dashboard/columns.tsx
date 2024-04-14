@@ -15,6 +15,7 @@ export type TDashboardTableData = {
   category: string;
   compareValue: number;
   currentValue: number;
+  valueAtInterval: number;
 };
 
 export function getDashboardTableColumns(dashboardAmountVisibility: boolean) {
@@ -113,9 +114,9 @@ export function getDashboardTableColumns(dashboardAmountVisibility: boolean) {
         </div>
       ),
       cell: ({ row }) => {
-        const { compareValue, currentValue } = row.original;
-        const profitLoss = currentValue - compareValue;
-        const profitLossPercentage = (profitLoss / compareValue) * 100;
+        const { valueAtInterval, currentValue } = row.original;
+        const profitLoss = currentValue - valueAtInterval;
+        const profitLossPercentage = (profitLoss / valueAtInterval) * 100;
         return (
           <div
             className={cn(
@@ -138,6 +139,16 @@ export function getDashboardTableColumns(dashboardAmountVisibility: boolean) {
           rowA.original;
         const { compareValue: compareValueB, currentValue: currentValueB } =
           rowB.original;
+        if (
+          !compareValueA ||
+          !compareValueB ||
+          isNaN(compareValueA) ||
+          isNaN(compareValueB) ||
+          isNaN(currentValueA) ||
+          isNaN(currentValueB)
+        ) {
+          return 0;
+        }
         const profitLossA = currentValueA - compareValueA;
         const profitLossB = currentValueB - compareValueB;
         const profitLossPercentageA = (profitLossA / compareValueA) * 100;

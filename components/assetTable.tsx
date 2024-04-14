@@ -8,6 +8,7 @@ import { getManualAssetTableColumns } from "./dashboard/manualAssets/columns";
 import { DashboardTable } from "./dashboard/dashboardTable";
 import { AssetDataTable } from "./dashboard/assets/assetsTable";
 import { ManualAssetDataTable } from "./dashboard/manualAssets/manualAssetsTable";
+import { log } from "console";
 
 interface AssetTableProps {
   data: TAsset[];
@@ -20,6 +21,7 @@ interface AssetTableProps {
     symbol: string;
     compareValue: string;
     currentValue: string;
+    valueAtInterval: number;
     prevClose: string;
     interval: string;
     unrealisedProfitLoss: string;
@@ -45,6 +47,7 @@ function AssetTable({
       category: string;
       currentValue: number;
       compareValue: number;
+      valueAtInterval: number;
     }[]
   >();
   const [manualAsset, setManualAsset] = useState<TAsset>();
@@ -74,27 +77,21 @@ function AssetTable({
           category: string;
           currentValue: number;
           compareValue: number;
+          valueAtInterval: number;
         }[] = [];
 
         const intervalData = intervalChangeData?.filter(
           (data) => data.interval === timelineInterval
         );
 
-        const currentValueSumByType = intervalData?.reduce((acc: any, data) => {
-          const { category, currentValue } = data;
-
-          acc[category] = (acc[category] || 0) + parseFloat(currentValue);
-          return acc;
-        }, {});
-
-        const compareValueSumByType = intervalData?.reduce((acc: any, data) => {
-          const { category, compareValue } = data;
-          acc[category] = (acc[category] || 0) + parseFloat(compareValue);
+        const intervalDataSumByType = intervalData?.reduce((acc: any, data) => {
+          const { category, valueAtInterval } = data;
+          acc[category] = (acc[category] || 0) + valueAtInterval;
           return acc;
         }, {});
 
         data.forEach((asset) => {
-          if (asset.quantity !== "0") {
+          if (asset.quantity !== "0" && intervalData) {
             const assetCurrency = asset.buyCurrency.toLowerCase();
             const currencyConversion = conversionRates[assetCurrency];
             const multiplier = 1 / currencyConversion;
@@ -105,13 +102,13 @@ function AssetTable({
             if (existingType) {
               existingType.currentValue += asset.currentValue * multiplier;
               existingType.compareValue += asset.compareValue * multiplier;
+              existingType.valueAtInterval += asset.valueAtInterval;
             } else {
               groupedAssets.push({
                 category: asset.category,
-                currentValue: asset.symbol
-                  ? asset.currentValue * multiplier
-                  : asset.currentValue * multiplier,
+                currentValue: asset.currentValue * multiplier,
                 compareValue: asset.compareValue * multiplier,
+                valueAtInterval: asset.valueAtInterval,
               });
             }
           }
@@ -119,14 +116,10 @@ function AssetTable({
         if (intervalData && intervalData.length > 0) {
           groupedAssets = groupedAssets.map((asset) => ({
             ...asset,
-            currentValue:
-              currentValueSumByType[asset.category] !== undefined
-                ? currentValueSumByType[asset.category]
-                : asset.currentValue,
-            compareValue:
-              compareValueSumByType[asset.category] !== undefined
-                ? compareValueSumByType[asset.category]
-                : asset.compareValue,
+            valueAtInterval:
+              intervalDataSumByType[asset.category] !== undefined
+                ? intervalDataSumByType[asset.category]
+                : asset.valueAtInterval,
           }));
         }
 
