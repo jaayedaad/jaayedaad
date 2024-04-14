@@ -160,7 +160,7 @@ export function Dashboard({
             <div className="w-[77%] hidden lg:block">
               {marqueeBarAssets && (
                 <AssetMarqueeBar
-                  data={marqueeBarAssets}
+                  assets={marqueeBarAssets}
                   timeInterval={timeInterval}
                   preferences={preferences}
                 />

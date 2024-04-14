@@ -5,20 +5,20 @@ import { cn } from "@/lib/helper";
 import { ArrowDownIcon, ArrowUpIcon } from "lucide-react";
 
 interface AssetMarqueeBarProps {
-  data: TAsset[];
+  assets: TAsset[];
   timeInterval: TInterval;
   preferences: TPreference;
 }
 
 function AssetMarqueeBar({
-  data,
+  assets: assets,
   timeInterval,
   preferences,
 }: AssetMarqueeBarProps) {
   useEffect(() => {}, [timeInterval]);
 
   // Sort data based on performanceBarOrder
-  const sortedData = [...data].sort((a, b) => {
+  const sortedData = [...assets].sort((a, b) => {
     let aValue: number, bValue: number;
 
     switch (preferences.performanceBarParameter) {
@@ -48,7 +48,8 @@ function AssetMarqueeBar({
     <div className="hidden lg:block w-full">
       <Marquee gradient gradientColor="hsl(--background)">
         <div className="flex gap-6">
-          {data.map((asset) => {
+          {assets.map((asset) => {
+            if (asset === null) return null;
             let value, isIncrease, isPercentage;
 
             switch (preferences.performanceBarParameter) {

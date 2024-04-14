@@ -177,7 +177,7 @@ function Page({
             <div className="w-[77%] hidden lg:block">
               {assetsToView && (
                 <AssetMarqueeBar
-                  data={assetsToView}
+                  assets={assetsToView}
                   timeInterval={timeInterval}
                   preferences={preferences}
                 />
