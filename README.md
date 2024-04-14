@@ -1,5 +1,5 @@
 <p align="center">
-    <a href="https://jaayedaad.com">
+    <a target="_blank" href="https://jaayedaad.com">
         <img alt="Effortlessly and Securely Track All Your Investments Logo" src="./public/jaayedaad_transparent.svg">
     </a>
 <p align="center">
@@ -7,8 +7,12 @@ Effortlessly and Securely, Track All Your Investments!
 <br/>
 From market stocks to vintage clocks, crypto coins to fine wines, track every asset while keeping your data confined!
 <br/>
-<a href="https://jaayedaad.com.com/">Check us out!</a>
+<a target="_blank" href="https://jaayedaad.com/">Check us out!</a>
 </p>
+</p>
+
+<p align="center">
+    We're currently in an <b>Invite Only Phase</b> to get early feedback from our users. If you're interested in trying out Jaayedaad, please DM us on <a target="_blank" href="https://x.com/jaayedaad">X</a>
 </p>
 
 ## Description
@@ -36,7 +40,7 @@ Jaayedaad (Hindi for _Wealth_) is an investment portfolio tracking web-app that 
 - **Prisma**: ORM for database.
 - **PostgreSQL**: SQL Database.
 - **Renterd**: Interface to access the Sia Network with REST.
-- **Sia**: Decentralized storage for assets.
+- [**Sia**](https://sia.tech/): Decentralized storage for assets.
 - **Tailwind CSS**: Utility-first CSS framework.
 
 ## Setup
