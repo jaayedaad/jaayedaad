@@ -122,6 +122,10 @@ function TransactionForm({
   };
 
   const handleAssetQuantiy = (value: string) => {
+    if(parseFloat(value) <= 0){
+      toast.error("Quantity should be greater than 0");
+      return;
+    }
     setAssetQuantity(value);
   };
   const handleAssetPrice = (value: string) => {

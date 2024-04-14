@@ -127,7 +127,7 @@ function AssetPieChart({
   // Iterate over each data object and sum the values for each type
   if (view === "dashboard") {
     data?.forEach((item) => {
-      if (item.quantity !== "0" && conversionRates) {
+      if (item && item.quantity !== "0" && conversionRates) {
         const currencyConversion =
           conversionRates[item.buyCurrency.toLowerCase()];
         const multiplier = 1 / currencyConversion;
@@ -143,7 +143,7 @@ function AssetPieChart({
     data = data?.filter((asset) => asset.category.toLowerCase() === param);
 
     data?.forEach((item) => {
-      if (conversionRates) {
+      if (item && conversionRates) {
         const currencyConversion =
           conversionRates[item.buyCurrency.toLowerCase()];
         const multiplier = 1 / currencyConversion;
