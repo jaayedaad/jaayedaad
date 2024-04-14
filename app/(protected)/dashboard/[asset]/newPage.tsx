@@ -66,6 +66,7 @@ function Page({
       symbol: string;
       compareValue: string;
       currentValue: string;
+      valueAtInterval: number;
       prevClose: string;
       interval: string;
       unrealisedProfitLoss: string;
@@ -103,8 +104,7 @@ function Page({
             if (historicalData) {
               const unrealisedResults = getUnrealisedProfitLossArray(
                 historicalData,
-                filteredAssets,
-                conversionRates
+                filteredAssets
               );
               setUnrealisedProfitLossArray(unrealisedResults);
             }
@@ -131,24 +131,22 @@ function Page({
 
   const onChange = (value: TInterval) => {
     setTimeInterval(value);
-    if (value !== "All" && filteredAssets) {
+    if (filteredAssets) {
       const updatedAssetsToView = filteredAssets.map((asset) => {
         const matchingIntervalData = unrealisedProfitLossArray?.find(
           (data) => data.symbol === asset.symbol && data.interval === value
         );
+
         if (matchingIntervalData) {
           return {
             ...asset,
+            valueAtInterval: +matchingIntervalData.valueAtInterval,
             compareValue: +matchingIntervalData.compareValue,
-            currentValue: +matchingIntervalData.currentValue,
-            prevClose: matchingIntervalData.prevClose,
           };
         }
         return asset;
       });
       setAssetsToView(updatedAssetsToView);
-    } else {
-      setAssetsToView(filteredAssets);
     }
   };
 

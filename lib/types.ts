@@ -17,6 +17,7 @@ export type TAsset = {
   isManualEntry: boolean;
   currentValue: number; // shubham: fix this bec its not in prisma schema so shouldnt be here as well
   compareValue: number; // shubham: fix this bec its not in prisma schema so shouldnt be here as well
+  valueAtInterval: number;
   transactions: Transaction[];
   assetPriceUpdates: AssetPriceUpdate[];
 };

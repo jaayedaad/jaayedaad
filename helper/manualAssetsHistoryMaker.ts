@@ -6,12 +6,32 @@ export function prepareHistoricalDataForManualCategory(
 ) {
   const historicalData: {
     assetSymbol: string;
-    values: { date: number; value: number }[];
+    values: {
+      datetime: string;
+      open: string;
+      high: string;
+      low: string;
+      close: string;
+      volume: string;
+      previous_close: string;
+      date: number;
+      value: number;
+    }[];
   }[] = [];
   manualCategoryAssets.forEach((asset) => {
     const conversionRateMultiplier =
       1 / conversionRate[asset.buyCurrency.toLowerCase()];
-    const aggregatedAssetData: { date: number; value: number }[] = [];
+    const aggregatedAssetData: {
+      datetime: string;
+      open: string;
+      high: string;
+      low: string;
+      close: string;
+      volume: string;
+      previous_close: string;
+      date: number;
+      value: number;
+    }[] = [];
     // sort assetPriceUpdates in ascending order
     const priceUpdates = asset.assetPriceUpdates.sort((a, b) => {
       // Convert the dates to actual Date objects for comparison
@@ -83,6 +103,13 @@ export function prepareHistoricalDataForManualCategory(
             new Date(lastUpdatedDates[index + 1].toDateString())
           ) {
             aggregatedAssetData.push({
+              datetime: transactionDate.toDateString(),
+              open: priceAtDate.toFixed(2),
+              high: priceAtDate.toFixed(2),
+              low: priceAtDate.toFixed(2),
+              close: priceAtDate.toFixed(2),
+              volume: "0",
+              previous_close: priceAtDate.toFixed(2),
               date: new Date(transactionDate).getTime() / 1000,
               value: quantityAtDate * priceAtDate,
             });
@@ -131,6 +158,13 @@ export function prepareHistoricalDataForManualCategory(
             new Date(lastUpdatedDates[index + 1].toDateString())
           ) {
             const data = {
+              datetime: transactionDate.toDateString(),
+              open: priceAtDate.toFixed(2),
+              high: priceAtDate.toFixed(2),
+              low: priceAtDate.toFixed(2),
+              close: priceAtDate.toFixed(2),
+              volume: "0",
+              previous_close: priceAtDate.toFixed(2),
               date: new Date(transactionDate).getTime() / 1000,
               value: quantityAtDate * priceAtDate,
             };

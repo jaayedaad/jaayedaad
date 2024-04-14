@@ -28,24 +28,15 @@ type AssetHistory = {
 };
 
 // Function to calculate unrealized profit/loss for each asset
-export function calculateUnrealisedProfitLoss(
-  assets: TAsset[],
-  conversionRates: {
-    [currency: string]: number;
-  }
-) {
+export function calculateUnrealisedProfitLoss(assets: TAsset[]) {
   const value = (
-    +assets?.reduce((acc, asset) => {
-      const assetCurrency = asset.buyCurrency.toLowerCase();
-      const currencyConversion = conversionRates[assetCurrency];
-      const multiplier = 1 / currencyConversion;
-      return acc + (asset.currentValue * multiplier || 0);
+    +assets.reduce((acc, asset) => {
+      // console.log("current value", asset.currentValue, asset.name);
+      return acc + (asset.currentValue || 0);
     }, 0) -
-    +assets?.reduce((acc, asset) => {
-      const assetCurrency = asset.buyCurrency.toLowerCase();
-      const currencyConversion = conversionRates[assetCurrency];
-      const multiplier = 1 / currencyConversion;
-      return acc + (asset.compareValue * multiplier || 0);
+    +assets.reduce((acc, asset) => {
+      // console.log("compare value", asset.compareValue, asset.name);
+      return acc + (asset.compareValue || 0);
     }, 0)
   ).toFixed(2);
   return parseFloat(value);
@@ -53,15 +44,13 @@ export function calculateUnrealisedProfitLoss(
 
 export function getUnrealisedProfitLossArray(
   historicalData: AssetHistory[],
-  assets: TAsset[],
-  conversionRate: {
-    [currency: string]: number;
-  }
+  assets: TAsset[]
 ) {
   const results: {
     category: string;
     symbol: string;
     compareValue: string;
+    valueAtInterval: number;
     currentValue: string;
     prevClose: string;
     interval: string;
@@ -70,9 +59,10 @@ export function getUnrealisedProfitLossArray(
 
   const intervals = [
     { label: "1d", days: 1 },
-    { label: "1w", days: 7 },
-    { label: "1m", days: 30 },
+    { label: "1w", days: 6 },
+    { label: "1m", days: 31 },
     { label: "1y", days: 365 },
+    { label: "All", days: Infinity },
   ];
 
   intervals.forEach(({ label, days }) => {
@@ -80,12 +70,13 @@ export function getUnrealisedProfitLossArray(
       historicalData[0].values[historicalData[0].values.length - 1].date * 1000
     );
     const pastDate = new Date(latestDate);
-    pastDate.setDate(latestDate.getDate() - days);
+    if (days !== Infinity) {
+      pastDate.setDate(latestDate.getDate() - days);
+    } else {
+      pastDate.setTime(0);
+    }
 
     assets.forEach((asset, index) => {
-      const assetCurrency = asset.buyCurrency.toLowerCase();
-      const currencyConversion = conversionRate[assetCurrency];
-      const multiplier = 1 / currencyConversion;
       const transactions = asset.transactions.filter(
         (transaction) => new Date(transaction.date) <= pastDate
       );
@@ -114,22 +105,14 @@ export function getUnrealisedProfitLossArray(
       const result = {
         category: asset.category,
         symbol: asset.symbol,
-        compareValue: (
-          quantityTillInterval *
-          +asset.buyPrice *
-          multiplier
-        ).toFixed(2),
-        currentValue: (
-          parseFloat(valueOfInterval[0].close) *
-          quantityTillInterval *
-          multiplier
-        ).toFixed(2),
+        compareValue: (quantityTillInterval * +asset.buyPrice).toFixed(2),
+        currentValue: assetHistory.values[0].value.toFixed(2),
+        valueAtInterval: valueOfInterval[0].value,
         prevClose: valueOfInterval[0].close,
         interval: label,
         unrealisedProfitLoss: (
           (parseFloat(valueOfInterval[0].close) - parseFloat(asset.buyPrice)) *
-          quantityTillInterval *
-          multiplier
+          quantityTillInterval
         ).toFixed(2),
       };
 

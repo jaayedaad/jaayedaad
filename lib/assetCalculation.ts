@@ -39,6 +39,7 @@ export const calculateCurrentValue = (asset: TAsset): TAsset => {
           +asset.quantity
         : (asset.prevClose !== undefined ? +asset.prevClose : 0) *
           +asset.quantity;
+      asset.valueAtInterval = asset.currentValue;
       return asset;
     }
   } catch (err) {

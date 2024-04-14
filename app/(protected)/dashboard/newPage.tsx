@@ -51,6 +51,7 @@ export function Dashboard({
       symbol: string;
       compareValue: string;
       currentValue: string;
+      valueAtInterval: number;
       prevClose: string;
       interval: string;
       unrealisedProfitLoss: string;
@@ -80,8 +81,7 @@ export function Dashboard({
       if (historicalData?.length) {
         const unrealisedResults = getUnrealisedProfitLossArray(
           historicalData,
-          assets,
-          conversionRates
+          assets
         );
         setUnrealisedProfitLossArray(unrealisedResults);
       }
