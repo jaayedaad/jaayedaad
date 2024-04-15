@@ -23,19 +23,14 @@ import { Button } from "./ui/button";
 import { Check, ChevronsUpDown, Loader2, Plus } from "lucide-react";
 import { Input } from "./ui/input";
 import DynamicIcon from "./dynamicIcon";
-import dynamicIconImports from "lucide-react/dynamicIconImports";
+import { manualCategoryIcons as iconsArray } from "@/constants/manualCategoryIcons";
 import { cn } from "@/lib/helper";
 import { toast } from "sonner";
-
-type IconLabel = keyof typeof dynamicIconImports;
-const iconsArray = Object.keys(dynamicIconImports).map((key) => ({
-  value: key as IconLabel,
-  label: key as IconLabel,
-}));
+import { TManualCategoryIcons } from "@/lib/types";
 
 function CreateCategoryButton() {
   const [categoryName, setCategoryName] = useState("");
-  const [icon, setIcon] = useState<keyof typeof dynamicIconImports>("shapes");
+  const [icon, setIcon] = useState<TManualCategoryIcons>("shapes");
   const [open, setOpen] = useState(false);
   const [iconSelectPopoverOpen, setIconSelectPopoverOpen] = useState(false);
   const [disabled, setDisabled] = useState(true);
@@ -113,8 +108,7 @@ function CreateCategoryButton() {
                     className="w-full justify-between"
                   >
                     {icon
-                      ? iconsArray.find((iconName) => iconName.value === icon)
-                          ?.label
+                      ? iconsArray.find((iconName) => iconName === icon)
                       : "Select icon..."}
                     <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                   </Button>
@@ -126,26 +120,24 @@ function CreateCategoryButton() {
                     <CommandGroup>
                       {iconsArray.map((iconName) => (
                         <CommandItem
-                          key={iconName.value}
-                          value={iconName.value}
+                          key={iconName}
+                          value={iconName}
                           onSelect={() => {
-                            setIcon(iconName.value);
+                            setIcon(iconName);
                             setIconSelectPopoverOpen(false);
                           }}
                         >
                           <Check
                             className={cn(
                               "mr-2 h-4 w-4",
-                              icon === iconName.value
-                                ? "opacity-100"
-                                : "opacity-0"
+                              icon === iconName ? "opacity-100" : "opacity-0"
                             )}
                           />
                           <DynamicIcon
                             className="h-4 w-4 mr-2"
-                            name={iconName.label}
+                            name={iconName}
                           />{" "}
-                          {iconName.label}
+                          {iconName}
                         </CommandItem>
                       ))}
                     </CommandGroup>

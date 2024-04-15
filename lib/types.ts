@@ -124,8 +124,11 @@ export type TUnrealisedProfitLoss = {
   category: string;
   symbol: string;
   compareValue: string;
+  valueAtInterval: number;
   currentValue: string;
   prevClose: string;
   interval: string;
   unrealisedProfitLoss: string;
 };
+
+export type TManualCategoryIcons = keyof typeof dynamicIconImports;

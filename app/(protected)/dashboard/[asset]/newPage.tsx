@@ -4,6 +4,7 @@ import {
   TConversionRates,
   TInterval,
   TPreference,
+  TUnrealisedProfitLoss,
   TUser,
 } from "@/lib/types";
 import AssetPieChart from "@/components/assetPieChart";
@@ -41,16 +42,7 @@ function Page({
   historicalData: any;
   conversionRates: TConversionRates;
   preferences: TPreference;
-  unrealisedResults: {
-    category: string;
-    symbol: string;
-    compareValue: string;
-    valueAtInterval: number;
-    currentValue: string;
-    prevClose: string;
-    interval: string;
-    unrealisedProfitLoss: string;
-  }[];
+  unrealisedResults: TUnrealisedProfitLoss[];
 }) {
   const [assetsToView, setAssetsToView] = useState<TAsset[] | undefined>(
     filteredAssets
@@ -71,18 +63,8 @@ function Page({
     TAsset[] | undefined
   >(manualCategoryAsset);
   const [timeInterval, setTimeInterval] = useState<TInterval>("1d");
-  const [unrealisedProfitLossArray, setUnrealisedProfitLossArray] = useState<
-    {
-      category: string;
-      symbol: string;
-      compareValue: string;
-      currentValue: string;
-      valueAtInterval: number;
-      prevClose: string;
-      interval: string;
-      unrealisedProfitLoss: string;
-    }[]
-  >(unrealisedResults);
+  const [unrealisedProfitLossArray, setUnrealisedProfitLossArray] =
+    useState<TUnrealisedProfitLoss[]>(unrealisedResults);
   const [timeOfDay, setTimeOfDay] = useState("");
 
   useEffect(() => {
@@ -191,8 +173,8 @@ function Page({
           </div>
         </div>
         <div className="min-h-[85vh] h-full mt-4">
-          <div className="gap-4 sm:gap-6 md:gap-6 lg:gap-4 grid grid-rows-4 grid-cols-1 lg:grid-rows-7 lg:grid-cols-3 lg:h-full text-foreground">
-            <div className="row-span-3 col-span-1 bg-[#171326]/70 backdrop-blur shadow-2xl border rounded-xl p-4">
+          <div className="gap-4 sm:gap-6 md:gap-6 lg:gap-4 grid grid-cols-1 lg:grid-rows-7 lg:grid-cols-3 lg:h-full text-foreground">
+            <div className="lg:row-span-3 lg:col-span-1 bg-[#171326]/70 backdrop-blur shadow-2xl border rounded-xl p-4">
               <AssetPieChart
                 assetCategoryName={assetCategory}
                 view={reverseMappedName}
@@ -205,7 +187,7 @@ function Page({
                 conversionRates={conversionRates}
               />
             </div>
-            <div className="row-span-3 col-span-2 bg-[#171326]/70 backdrop-blur shadow-2xl border rounded-xl p-4">
+            <div className="lg:row-span-3 lg:col-span-2 bg-[#171326]/70 backdrop-blur shadow-2xl border rounded-xl p-4">
               {historicalData ? (
                 defaultCategories.includes(reverseMappedName) ? (
                   <PortfolioLineChart
@@ -244,7 +226,7 @@ function Page({
                 </div>
               )}
             </div>
-            <div className="row-span-4 flex flex-col col-span-3 bg-[#171326]/70 backdrop-blur shadow-2xl border rounded-xl p-4">
+            <div className="lg:row-span-4 flex flex-col lg:col-span-3 bg-[#171326]/70 backdrop-blur shadow-2xl border rounded-xl p-4">
               <div className="flex justify-between">
                 <div className="flex flex-col">
                   <h3 className="font-semibold">

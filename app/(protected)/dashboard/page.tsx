@@ -11,6 +11,7 @@ import { getHistoricalData } from "@/services/thirdParty/twelveData";
 import { getPreferenceFromUserId } from "@/services/preference";
 import { getUnrealisedProfitLossArray } from "@/helper/unrealisedValueCalculator";
 import { calculateRealisedProfitLoss } from "@/helper/realisedValueCalculator";
+import { TUnrealisedProfitLoss } from "@/lib/types";
 
 const DashboardPage = async () => {
   const session = await getServerSession(authOptions);
@@ -34,11 +35,15 @@ const DashboardPage = async () => {
     throw new Error("Preference not found");
   }
 
-  const unrealisedResults = getUnrealisedProfitLossArray(
-    historicalData,
-    assets,
-    currencyConversionRates
-  );
+  let unrealisedResults: TUnrealisedProfitLoss[] = [];
+
+  if (historicalData.length) {
+    const unrealisedResults = getUnrealisedProfitLossArray(
+      historicalData,
+      assets,
+      currencyConversionRates
+    );
+  }
 
   const realisedResults = calculateRealisedProfitLoss(
     assets,

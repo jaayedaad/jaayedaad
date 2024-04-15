@@ -30,8 +30,8 @@ import {
 } from "@/components/ui/popover";
 import { Check, ChevronsUpDown, Loader2 } from "lucide-react";
 import DynamicIcon from "./dynamicIcon";
-import dynamicIconImports from "lucide-react/dynamicIconImports";
-import { TUserManualCategory } from "@/lib/types";
+import { manualCategoryIcons as iconsArray } from "@/constants/manualCategoryIcons";
+import { TManualCategoryIcons, TUserManualCategory } from "@/lib/types";
 
 interface ManualTransactionFormPropsType {
   usersManualCategories: TUserManualCategory[];
@@ -84,14 +84,7 @@ function ManualTransactionForm({
   const [value, setValue] = useState("common stock");
   const [commandSearch, setCommandSearch] = useState("");
   const [categories, setCategories] = useState(builtInCategories);
-  const [icon, setIcon] =
-    useState<keyof typeof dynamicIconImports>("candlestick-chart");
-
-  type IconLabel = keyof typeof dynamicIconImports;
-  const iconsArray = Object.keys(dynamicIconImports).map((key) => ({
-    value: key as IconLabel,
-    label: key as IconLabel,
-  }));
+  const [icon, setIcon] = useState<TManualCategoryIcons>("candlestick-chart");
 
   const handleDateSelect = (selectedDate: Date) => {
     setManualTransaction((prev) => ({
@@ -201,24 +194,21 @@ function ManualTransactionForm({
               <CommandGroup className="h-[55vh]">
                 {iconsArray.map((iconName) => (
                   <CommandItem
-                    key={iconName.value}
-                    value={iconName.value}
+                    key={iconName}
+                    value={iconName}
                     onSelect={() => {
-                      setIcon(iconName.value);
+                      setIcon(iconName);
                       setOpen(false);
                     }}
                   >
                     <Check
                       className={cn(
                         "mr-2 h-4 w-4",
-                        icon === iconName.value ? "opacity-100" : "opacity-0"
+                        icon === iconName ? "opacity-100" : "opacity-0"
                       )}
                     />
-                    <DynamicIcon
-                      className="h-4 w-4 mr-2"
-                      name={iconName.label}
-                    />
-                    {iconName.label}
+                    <DynamicIcon className="h-4 w-4 mr-2" name={iconName} />
+                    {iconName}
                   </CommandItem>
                 ))}
               </CommandGroup>

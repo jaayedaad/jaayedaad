@@ -8,7 +8,12 @@ import AssetLineChart from "./assetLineChart";
 import { prepareLineChartData } from "@/helper/prepareLineChartData";
 import TransactionHistory from "./transactionHistory";
 import { prepareHistoricalDataForManualCategory } from "@/helper/manualAssetsHistoryMaker";
-import { TAsset, TInterval, TProfitLoss } from "@/lib/types";
+import {
+  TAsset,
+  TInterval,
+  TProfitLoss,
+  TUnrealisedProfitLoss,
+} from "@/lib/types";
 import AssetPriceUpdates from "./assetPriceUpdates";
 import {
   calculateUnrealisedProfitLoss,
@@ -55,18 +60,8 @@ function ViewAsset({
   }>();
   const [realisedProfitLossArray, setRealisedProfitLossArray] =
     useState<TProfitLoss[]>();
-  const [unrealisedProfitLossArray, setUnrealisedProfitLossArray] = useState<
-    {
-      category: string;
-      symbol: string;
-      compareValue: string;
-      currentValue: string;
-      valueAtInterval: number;
-      prevClose: string;
-      interval: string;
-      unrealisedProfitLoss: string;
-    }[]
-  >();
+  const [unrealisedProfitLossArray, setUnrealisedProfitLossArray] =
+    useState<TUnrealisedProfitLoss[]>();
 
   const assetHistory: any[] = [];
   if (assetToView) {
@@ -176,7 +171,7 @@ function ViewAsset({
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogContent className="w-[90vw] lg:min-w-[50vw]">
+      <DialogContent className="p-4 lg:p-6 w-[90vw] max-h-[95vh] overflow-auto lg:min-w-[50vw]">
         <Tabs defaultValue="summary" className="w-full">
           <TabsList>
             <TabsTrigger value="summary">Summary</TabsTrigger>
@@ -186,7 +181,7 @@ function ViewAsset({
             )}
           </TabsList>
           <TabsContent value="summary" className="mt-4">
-            <div className="flex justify-between text-sm text-muted-foreground">
+            <div className="lg:flex justify-between text-sm text-muted-foreground">
               <div>
                 {assetToView && (
                   <span className="text-foreground pr-1">
@@ -196,12 +191,12 @@ function ViewAsset({
                 {assetToView?.exchange !== undefined && (
                   <>({assetToView?.exchange})</>
                 )}
-                <div className="text-white text-3xl font-bold">
+                <div className="text-white text-lg lg:text-3xl lg:font-bold">
                   {assetToView?.name || manualAsset?.name}
                 </div>
               </div>
-              <div className="mb-2 text-white">
-                <h3 className="text-3xl font-bold flex items-center">
+              <div className="mt-2 lg:mt-0 mb-2 text-white">
+                <h3 className="text-lg lg:text-3xl lg:font-bold flex items-center">
                   {new Intl.NumberFormat(
                     numberSystem === "Indian" ? "en-IN" : "en-US",
                     {
@@ -262,7 +257,7 @@ function ViewAsset({
               />
             )}
             {assetSummary && assetToView ? (
-              <div className="mt-8 grid grid-cols-2 grid-rows-4 lg:grid-cols-4 lg:grid-rows-2 gap-4">
+              <div className="mt-8 grid grid-cols-2 grid-rows-4 gap-y-2 lg:gap-y-0 lg:grid-cols-4 lg:grid-rows-2 lg:gap-4">
                 <div>
                   <p className="text-muted-foreground text-sm">
                     Avg. buying price
@@ -272,7 +267,7 @@ function ViewAsset({
                       conversionRates[assetToView.buyCurrency.toLowerCase()]
                   )}
                 </div>
-                <div>
+                <div className="text-right lg:text-left">
                   <p className="text-muted-foreground text-sm">
                     Previous close
                   </p>
@@ -287,7 +282,7 @@ function ViewAsset({
                     numberSystem === "Indian" ? "en-IN" : "en-US"
                   )}
                 </div>
-                <div>
+                <div className="text-right lg:text-left">
                   <p className="text-muted-foreground text-sm">
                     Buying currency
                   </p>
@@ -299,7 +294,7 @@ function ViewAsset({
                   </p>
                   {formatter.format(+investedValue)}
                 </div>
-                <div>
+                <div className="text-right lg:text-left">
                   <p className="text-muted-foreground text-sm">Current value</p>
                   {formatter.format(+currentValue)}
                 </div>
@@ -319,7 +314,7 @@ function ViewAsset({
                     {formatter.format(+assetSummary.unrealisedProfitLoss)}
                   </p>
                 </div>
-                <div>
+                <div className="text-right lg:text-left">
                   <p className="text-muted-foreground text-sm">
                     Realised profit/loss
                   </p>

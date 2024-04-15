@@ -10,6 +10,7 @@ import { getHistoricalData } from "@/services/thirdParty/twelveData";
 import { getConversionRate } from "@/services/thirdParty/currency";
 import { getPreferenceFromUserId } from "@/services/preference";
 import { getUnrealisedProfitLossArray } from "@/helper/unrealisedValueCalculator";
+import { TUnrealisedProfitLoss } from "@/lib/types";
 
 const reverseAssetTypeMappings: Record<string, string> = {
   stocks: "common stock",
@@ -52,11 +53,15 @@ export default async function AssetPage({
     throw new Error("Preference not found");
   }
 
-  const unrealisedResults = getUnrealisedProfitLossArray(
-    historicalData,
-    filteredAssets,
-    currencyConversionRates
-  );
+  let unrealisedResults: TUnrealisedProfitLoss[] = [];
+
+  if (historicalData.length) {
+    unrealisedResults = getUnrealisedProfitLossArray(
+      historicalData,
+      filteredAssets,
+      currencyConversionRates
+    );
+  }
 
   return (
     <Page

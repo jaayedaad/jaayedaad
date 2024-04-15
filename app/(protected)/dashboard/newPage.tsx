@@ -17,6 +17,7 @@ import {
   TConversionRates,
   TPreference,
   TUser,
+  TUnrealisedProfitLoss,
 } from "@/lib/types";
 import WhitelistingModal from "@/components/onboarding/whitelistingModal";
 import MockLineChart from "@/components/mock/mockLineChart";
@@ -44,32 +45,13 @@ export function Dashboard({
   conversionRates: TConversionRates;
   historicalData: any; // TODO: define type in return of this method from ssr
   preferences: TPreference;
-  unrealisedResults: {
-    category: string;
-    symbol: string;
-    compareValue: string;
-    valueAtInterval: number;
-    currentValue: string;
-    prevClose: string;
-    interval: string;
-    unrealisedProfitLoss: string;
-  }[];
+  unrealisedResults: TUnrealisedProfitLoss[];
   realisedResults: TProfitLoss[];
 }) {
   const [realisedProfitLoss, setRealisedProfitLoss] = useState<string>();
   const [timeInterval, setTimeInterval] = useState<TInterval>("All");
-  const [unrealisedProfitLossArray, setUnrealisedProfitLossArray] = useState<
-    {
-      category: string;
-      symbol: string;
-      compareValue: string;
-      currentValue: string;
-      valueAtInterval: number;
-      prevClose: string;
-      interval: string;
-      unrealisedProfitLoss: string;
-    }[]
-  >(unrealisedResults);
+  const [unrealisedProfitLossArray, setUnrealisedProfitLossArray] =
+    useState<TUnrealisedProfitLoss[]>(unrealisedResults);
   const [realisedProfitLossArray, setRealisedProfitLossArray] =
     useState<TProfitLoss[]>(realisedResults);
   const [marqueeBarAssets, setMarqueeBarAssets] = useState<
@@ -178,7 +160,7 @@ export function Dashboard({
           </div>
         </div>
         <div className="min-h-[85vh] h-full mt-4">
-          <div className="gap-4 sm:gap-6 md:gap-6 lg:gap-4 grid grid-rows-4 grid-cols-1 lg:grid-rows-7 lg:grid-cols-3 lg:h-full text-foreground">
+          <div className="gap-4 sm:gap-6 md:gap-6 lg:gap-4 grid grid-cols-1 lg:grid-rows-7 lg:grid-cols-3 lg:h-full text-foreground">
             {/* Asset distribution pie chart */}
             <div className="lg:col-span-1 lg:row-span-3 bg-[#171326]/70 backdrop-blur shadow-2xl border rounded-xl p-4">
               <AssetPieChart
@@ -276,6 +258,7 @@ export function Dashboard({
                 conversionRates={conversionRates}
               />
             </div>
+
             <div className="hidden px-1 col-span-3 lg:block">
               {marqueeBarAssets && (
                 <AssetMarqueeBar

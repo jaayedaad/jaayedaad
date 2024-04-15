@@ -150,6 +150,7 @@ function AssetTable({
               conversionRates
             )}
             data={filteredAsset}
+            conversionRates={conversionRates}
             setManualAsset={setManualAsset}
             setOpen={setOpen}
           />
@@ -160,6 +161,7 @@ function AssetTable({
               conversionRates
             )}
             data={filteredAsset}
+            conversionRates={conversionRates}
             setAssetToView={setAssetToView}
             setManualAsset={setManualAsset}
             setOpen={setOpen}
