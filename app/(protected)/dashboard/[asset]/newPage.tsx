@@ -277,16 +277,16 @@ function Page({
                 )}
               </div>
             </div>
+            <div className="hidden col-span-3 px-1 lg:block">
+              {assetsToView && (
+                <AssetMarqueeBar
+                  assets={assetsToView}
+                  timeInterval={timeInterval}
+                  preferences={preferences}
+                />
+              )}
+            </div>
           </div>
-        </div>
-        <div className="hidden px-1 pt-2 lg:block">
-          {assetsToView && (
-            <AssetMarqueeBar
-              assets={assetsToView}
-              timeInterval={timeInterval}
-              preferences={preferences}
-            />
-          )}
         </div>
       </div>
     ) : (

@@ -113,7 +113,7 @@ function PerformanceMetrics({
                 : "text-green-400"
             )}
           >
-            <div className="text-2xl font-bold">
+            <div className="text-xl lg:text-2xl font-bold">
               {unrealisedProfitLoss ? (
                 <div className="flex items-center">
                   {conversionRates &&
@@ -166,7 +166,7 @@ function PerformanceMetrics({
                 : "text-green-400"
             )}
           >
-            <span className="text-2xl font-bold">
+            <span className="text-xl lg:text-2xl font-bold">
               {assets.length && realisedProfitLoss
                 ? dashboardAmountVisibility
                   ? formatter.format(+realisedProfitLoss)

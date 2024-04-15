@@ -102,18 +102,17 @@ function AccountSettings({ username }: AccountSettingsProps) {
       <Separator className="h-[2px]" />
 
       <div className="flex flex-col gap-4">
-        <div className="py-5 px-4 flex gap-2 items-center justify-between border rounded-lg w-full">
+        <div className="py-5 px-4 lg:flex lg:gap-2 lg:items-center lg:justify-between border rounded-lg w-full">
           <div>
             <h2 className="text-foreground">Username</h2>
             <p className="text-muted-foreground text-sm">
               Your username which will be used across Jaayedaad.com
             </p>
           </div>
-          <div>
+          <div className="mt-2 lg:mt-0">
             <div className="flex gap-4">
               <Input
                 value={newUsername !== null ? newUsername : ""}
-                className="w-[30vw]"
                 placeholder="username"
                 onChange={(e) => handleUsernameChange(e.target.value)}
               />
@@ -136,44 +135,46 @@ function AccountSettings({ username }: AccountSettingsProps) {
             </p>
           </div>
         </div>
-        <div className="py-5 px-4 flex gap-2 items-center justify-between border rounded-lg w-full">
+        <div className="py-5 px-4 lg:flex lg:gap-2 lg:items-center lg:justify-between border rounded-lg w-full">
           <div>
             <h2 className="text-red-600">Danger Zone</h2>
             <p className="text-muted-foreground text-sm">
               Be Careful. Account deletion cannot be undone
             </p>
           </div>
-          <Dialog>
-            <DialogTrigger asChild>
-              <Button variant="destructive">
-                <Trash2 className="h-4 w-4 mr-2" /> Delete account
-              </Button>
-            </DialogTrigger>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>Delete Account</DialogTitle>
-                <DialogDescription>
-                  Are you sure you want to delete your Jaayedaad account?
-                </DialogDescription>
-              </DialogHeader>
-              <div>
-                Your account & data and any preferences you have saved will be
-                lost permanently.
-              </div>
-              <div className="flex justify-end">
-                <Button
-                  onClick={() => {
-                    handleDeleteAccount();
-                    signOut();
-                  }}
-                  variant="destructive"
-                  className="w-fit"
-                >
-                  Remove
+          <div className="mt-2 lg:mt-0 flex justify-end">
+            <Dialog>
+              <DialogTrigger asChild>
+                <Button variant="destructive">
+                  <Trash2 className="h-4 w-4 mr-2" /> Delete account
                 </Button>
-              </div>
-            </DialogContent>
-          </Dialog>
+              </DialogTrigger>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>Delete Account</DialogTitle>
+                  <DialogDescription>
+                    Are you sure you want to delete your Jaayedaad account?
+                  </DialogDescription>
+                </DialogHeader>
+                <div>
+                  Your account & data and any preferences you have saved will be
+                  lost permanently.
+                </div>
+                <div className="flex justify-end">
+                  <Button
+                    onClick={() => {
+                      handleDeleteAccount();
+                      signOut();
+                    }}
+                    variant="destructive"
+                    className="w-fit"
+                  >
+                    Remove
+                  </Button>
+                </div>
+              </DialogContent>
+            </Dialog>
+          </div>
         </div>
       </div>
     </>

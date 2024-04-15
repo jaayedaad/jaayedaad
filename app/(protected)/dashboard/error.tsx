@@ -21,8 +21,8 @@ export default function Error({
   }, [error]);
 
   return (
-    <div className="h-screen w-full flex justify-center items-center flex-col">
-      <h2 className="text-3xl">Houston, We have a problem!</h2>
+    <div className="h-screen px w-full flex justify-center items-center flex-col">
+      <h2 className="text-3xl text-center">Houston, We have a problem!</h2>
       <div className="flex gap-4 mt-8">
         <Button onClick={() => router.refresh()}>Try again</Button>
         <Button asChild>

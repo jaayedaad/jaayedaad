@@ -276,16 +276,16 @@ export function Dashboard({
                 conversionRates={conversionRates}
               />
             </div>
+            <div className="hidden px-1 col-span-3 lg:block">
+              {marqueeBarAssets && (
+                <AssetMarqueeBar
+                  assets={marqueeBarAssets}
+                  timeInterval={timeInterval}
+                  preferences={preferences}
+                />
+              )}
+            </div>
           </div>
-        </div>
-        <div className="hidden px-1 pt-2 lg:block">
-          {marqueeBarAssets && (
-            <AssetMarqueeBar
-              assets={marqueeBarAssets}
-              timeInterval={timeInterval}
-              preferences={preferences}
-            />
-          )}
         </div>
       </div>
       <WhitelistingModal whitelisted={whitelisted} />

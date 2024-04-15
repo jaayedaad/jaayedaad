@@ -86,7 +86,7 @@ function BottomBar({
               className={cn(
                 "w-full justify-start gap-1",
                 currentTab === "/dashboard/stocks" &&
-                  "bg-secondary text-foreground hover:bg-primary/20"
+                  "bg-[#171326]/70 text-foreground hover:bg-primary/30"
               )}
             >
               <Link href="/dashboard/stocks">
@@ -103,7 +103,7 @@ function BottomBar({
               className={cn(
                 "w-full justify-start gap-1",
                 currentTab === "/dashboard/crypto" &&
-                  "bg-secondary text-foreground hover:bg-primary/20"
+                  "bg-[#171326]/70 text-foreground hover:bg-primary/30"
               )}
             >
               <Link href="/dashboard/crypto">
@@ -120,7 +120,7 @@ function BottomBar({
               className={cn(
                 "w-full justify-start gap-1",
                 currentTab === "/dashboard/mutual funds" &&
-                  "bg-secondary text-foreground hover:bg-primary/20"
+                  "bg-[#171326]/70 text-foreground hover:bg-primary/30"
               )}
             >
               <Link href="/dashboard/mutual funds">
@@ -139,7 +139,7 @@ function BottomBar({
                   className={cn(
                     "w-full justify-start gap-1",
                     currentTab === `/dashboard/${category.toLowerCase()}` &&
-                      "bg-secondary text-foreground hover:bg-primary/20"
+                      "bg-[#171326]/70 text-foreground hover:bg-primary/30"
                   )}
                 >
                   <Link href={`/dashboard/${category.toLowerCase()}`}>
@@ -170,7 +170,7 @@ function BottomBar({
             {/* Add transaction */}
           </Button>
         </DialogTrigger>
-        <DialogContent className="p-4 md:p-6 w-[90vw] md:max-w-[50vw]">
+        <DialogContent className="p-4 md:p-6 w-[90vw] md:max-w-[50vw] max-h-[95vh] overflow-auto rounded-lg">
           <div className="md:flex md:gap-2">
             <DialogTitle>Make transactions</DialogTitle>
             <p className="text-muted-foreground text-sm">
@@ -203,7 +203,7 @@ function BottomBar({
         className={cn(
           `w-full h-full`,
           currentTab === "/dashboard/settings" &&
-            "bg-secondary text-foreground hover:bg-primary/20"
+            "bg-[#171326]/70 text-foreground hover:bg-primary/30"
         )}
       >
         <Link href={`/dashboard/settings`}>

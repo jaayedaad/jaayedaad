@@ -68,11 +68,12 @@ function PreferenceComponent({ preference: preferences }: PreferenceProps) {
           <div>
             <h2 className="text-foreground">Mode toggle</h2>
             <p className="text-muted-foreground text-sm">
-              Toggle visibility of your asset&apos;s values
+              Toggle visibility of your portfolio
             </p>
           </div>
           <div>
             <Toggle
+              variant="outline"
               onPressedChange={async () => {
                 setDashboardAmountVisibility(!dashboardAmountVisibility);
                 await updatePreferenceAction({
@@ -88,14 +89,14 @@ function PreferenceComponent({ preference: preferences }: PreferenceProps) {
             </Toggle>
           </div>
         </div>
-        <div className="py-5 px-4 flex items-center justify-between border rounded-lg w-full">
+        <div className="py-5 px-4 lg:flex lg:gap-2 lg:items-center lg:justify-between border rounded-lg w-full">
           <div>
             <h2 className="text-foreground">Default currency</h2>
             <p className="text-muted-foreground text-sm">
               Set your default currency
             </p>
           </div>
-          <div>
+          <div className="mt-2 lg:mt-0">
             <Select
               onValueChange={async (value) => {
                 setDefaultCurrency(value);
@@ -118,14 +119,14 @@ function PreferenceComponent({ preference: preferences }: PreferenceProps) {
             </Select>
           </div>
         </div>
-        <div className="py-5 px-4 flex items-center justify-between border rounded-lg w-full">
+        <div className="py-5 px-4 lg:flex lg:gap-2 lg:items-center lg:justify-between border rounded-lg w-full">
           <div>
             <h2 className="text-foreground">Default numbering system</h2>
             <p className="text-muted-foreground text-sm">
               Set your default numbering system
             </p>
           </div>
-          <div>
+          <div className="mt-2 lg:mt-0">
             <Select
               onValueChange={async (value) => {
                 setDefaultNumberSystem(value);
@@ -148,14 +149,14 @@ function PreferenceComponent({ preference: preferences }: PreferenceProps) {
             </Select>
           </div>
         </div>
-        <div className="py-5 px-4 flex items-center justify-between border rounded-lg w-full">
+        <div className="py-5 px-4 lg:flex lg:gap-2 lg:items-center lg:justify-between border rounded-lg w-full">
           <div>
             <h2 className="text-foreground">Asset performance bar order</h2>
             <p className="text-muted-foreground text-sm">
               Set the order of asset performance bar
             </p>
           </div>
-          <div>
+          <div className="mt-2 lg:mt-0">
             <Select
               onValueChange={async (value: PerformanceBarOrder) => {
                 setDefaultPerformanceBarOrder(value);
@@ -178,7 +179,7 @@ function PreferenceComponent({ preference: preferences }: PreferenceProps) {
             </Select>
           </div>
         </div>
-        <div className="py-5 px-4 flex items-center justify-between border rounded-lg w-full">
+        <div className="py-5 px-4 lg:flex lg:gap-2 lg:items-center lg:justify-between border rounded-lg w-full">
           <div>
             <h2 className="text-foreground">
               Asset performance bar display parameter
@@ -188,7 +189,7 @@ function PreferenceComponent({ preference: preferences }: PreferenceProps) {
               invested, current value, growth percentage
             </p>
           </div>
-          <div>
+          <div className="mt-2 lg:mt-0">
             <Select
               onValueChange={async (value: PerformanceBarParameter) => {
                 setDefaultPerformanceBarParameter(value);
