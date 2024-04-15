@@ -1,4 +1,4 @@
-import { TAsset } from "@/lib/types";
+import { TAsset, TConversionRates } from "@/lib/types";
 import { calculateTotalQuantity } from "./transactionValueCalculator";
 
 type AssetHistory = {
@@ -31,11 +31,9 @@ type AssetHistory = {
 export function calculateUnrealisedProfitLoss(assets: TAsset[]) {
   const value = (
     +assets.reduce((acc, asset) => {
-      // console.log("current value", asset.currentValue, asset.name);
       return acc + (asset.currentValue || 0);
     }, 0) -
     +assets.reduce((acc, asset) => {
-      // console.log("compare value", asset.compareValue, asset.name);
       return acc + (asset.compareValue || 0);
     }, 0)
   ).toFixed(2);
@@ -44,7 +42,8 @@ export function calculateUnrealisedProfitLoss(assets: TAsset[]) {
 
 export function getUnrealisedProfitLossArray(
   historicalData: AssetHistory[],
-  assets: TAsset[]
+  assets: TAsset[],
+  conversionRates: TConversionRates
 ) {
   const results: {
     category: string;
@@ -77,6 +76,8 @@ export function getUnrealisedProfitLossArray(
     }
 
     assets.forEach((asset, index) => {
+      const currencyConversionRate =
+        1 / conversionRates[asset.buyCurrency.toLowerCase()];
       const transactions = asset.transactions.filter(
         (transaction) => new Date(transaction.date) <= pastDate
       );
@@ -105,14 +106,19 @@ export function getUnrealisedProfitLossArray(
       const result = {
         category: asset.category,
         symbol: asset.symbol,
-        compareValue: (quantityTillInterval * +asset.buyPrice).toFixed(2),
-        currentValue: assetHistory.values[0].value.toFixed(2),
+        compareValue: (
+          +asset.quantity *
+          +asset.buyPrice *
+          currencyConversionRate
+        ).toFixed(2),
+        currentValue:
+          assetHistory.values[assetHistory.values.length - 1].value.toFixed(2),
         valueAtInterval: valueOfInterval[0].value,
         prevClose: valueOfInterval[0].close,
         interval: label,
         unrealisedProfitLoss: (
-          (parseFloat(valueOfInterval[0].close) - parseFloat(asset.buyPrice)) *
-          quantityTillInterval
+          assetHistory.values[assetHistory.values.length - 1].value -
+          valueOfInterval[0].value
         ).toFixed(2),
       };
 

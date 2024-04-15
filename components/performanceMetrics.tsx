@@ -4,7 +4,6 @@ import { TAsset, TConversionRates, TInterval } from "@/lib/types";
 import { cn } from "@/lib/helper";
 import { ArrowDown, ArrowUp } from "lucide-react";
 import React, { useEffect, useState } from "react";
-import { calculateUnrealisedProfitLoss } from "@/helper/unrealisedValueCalculator";
 
 function PerformanceMetrics({
   assets,
@@ -37,13 +36,11 @@ function PerformanceMetrics({
   const [unrealisedProfitLoss, setUnrealisedProfitLoss] = useState<number>();
 
   useEffect(() => {
-    if (timeInterval === "All" && assets && conversionRates) {
-      const unrealisedProfitsLosses = calculateUnrealisedProfitLoss(assets);
-      setUnrealisedProfitLoss(unrealisedProfitsLosses);
-    } else {
+    if (assets && conversionRates) {
       const filteredUnrealizedProfitsLosses = unrealisedProfitLossArray?.filter(
         (res) => res.interval === timeInterval
       );
+
       const unrealisedProfitLoss = filteredUnrealizedProfitsLosses?.reduce(
         (acc, entry) => acc + parseFloat(entry.unrealisedProfitLoss),
         0
@@ -121,20 +118,7 @@ function PerformanceMetrics({
                 <div className="flex items-center">
                   {conversionRates &&
                     (
-                      (assets.reduce((acc, asset) => {
-                        const assetCurrency = asset.buyCurrency.toLowerCase();
-                        const currencyConversion =
-                          conversionRates[assetCurrency];
-                        const multiplier = 1 / currencyConversion;
-                        return (
-                          acc +
-                          (asset.quantity > "0"
-                            ? (asset.currentValue - asset.compareValue) *
-                              multiplier
-                            : 0)
-                        );
-                      }, 0) *
-                        100) /
+                      (unrealisedProfitLoss * 100) /
                       assets.reduce((acc, asset) => {
                         const assetCurrency = asset.buyCurrency.toLowerCase();
                         const currencyConversion =
@@ -156,24 +140,7 @@ function PerformanceMetrics({
               <div className="text-sm flex items-center">
                 {unrealisedProfitLoss
                   ? dashboardAmountVisibility
-                    ? formatter.format(
-                        +assets
-                          .reduce((acc, asset) => {
-                            const assetCurrency =
-                              asset.buyCurrency.toLowerCase();
-                            const currencyConversion =
-                              conversionRates[assetCurrency];
-                            const multiplier = 1 / currencyConversion;
-                            return (
-                              acc +
-                              (asset.quantity > "0"
-                                ? (asset.currentValue - asset.compareValue) *
-                                  multiplier
-                                : 0)
-                            );
-                          }, 0)
-                          .toFixed(2)
-                      )
+                    ? formatter.format(unrealisedProfitLoss)
                     : "* ".repeat(5)
                   : "- - -"}
               </div>

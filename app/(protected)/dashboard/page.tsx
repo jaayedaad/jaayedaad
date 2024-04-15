@@ -1,4 +1,7 @@
-import { getDeccryptedAssetsByUserId, getAssetsQuoteFromApi } from "@/services/asset";
+import {
+  getDeccryptedAssetsByUserId,
+  getAssetsQuoteFromApi,
+} from "@/services/asset";
 import Dashboard from "./newPage";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/authOptions";
@@ -6,6 +9,8 @@ import { redirect } from "next/navigation";
 import { getConversionRate } from "@/services/thirdParty/currency";
 import { getHistoricalData } from "@/services/thirdParty/twelveData";
 import { getPreferenceFromUserId } from "@/services/preference";
+import { getUnrealisedProfitLossArray } from "@/helper/unrealisedValueCalculator";
+import { calculateRealisedProfitLoss } from "@/helper/realisedValueCalculator";
 
 const DashboardPage = async () => {
   const session = await getServerSession(authOptions);
@@ -29,6 +34,17 @@ const DashboardPage = async () => {
     throw new Error("Preference not found");
   }
 
+  const unrealisedResults = getUnrealisedProfitLossArray(
+    historicalData,
+    assets,
+    currencyConversionRates
+  );
+
+  const realisedResults = calculateRealisedProfitLoss(
+    assets,
+    currencyConversionRates
+  );
+
   return (
     <Dashboard
       usernameSet={usernameSet}
@@ -36,6 +52,8 @@ const DashboardPage = async () => {
       username={session.user.username}
       whitelisted={session.user.whitelisted}
       assets={assets}
+      unrealisedResults={unrealisedResults}
+      realisedResults={realisedResults}
       conversionRates={currencyConversionRates}
       historicalData={historicalData}
       preferences={preferences}

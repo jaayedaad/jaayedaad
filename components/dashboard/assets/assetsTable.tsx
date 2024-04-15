@@ -24,6 +24,7 @@ interface DataTableProps<TValue> {
   columns: ColumnDef<TAsset, TValue>[];
   data: TAsset[];
   setAssetToView: React.Dispatch<React.SetStateAction<TAsset | undefined>>;
+  setManualAsset: React.Dispatch<React.SetStateAction<TAsset | undefined>>;
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
@@ -31,6 +32,7 @@ export function AssetDataTable<TValue>({
   columns,
   data,
   setAssetToView,
+  setManualAsset,
   setOpen,
 }: DataTableProps<TValue>) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
@@ -73,7 +75,13 @@ export function AssetDataTable<TValue>({
                 className="hover:cursor-pointer"
                 key={row.id}
                 onClick={() => {
-                  setAssetToView(row.original);
+                  if (row.original.isManualEntry) {
+                    setAssetToView(undefined);
+                    setManualAsset(row.original);
+                  } else {
+                    setAssetToView(row.original);
+                    setManualAsset(undefined);
+                  }
                   setOpen(true);
                 }}
                 data-state={row.getIsSelected() && "selected"}

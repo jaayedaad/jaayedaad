@@ -46,7 +46,7 @@ function AssetMarqueeBar({
 
   return (
     <div className="hidden lg:block w-full">
-      <Marquee gradient gradientColor="hsl(--background)" speed={250}>
+      <Marquee gradient gradientColor="hsl(--background)" speed={150}>
         <div className="flex gap-6">
           {assets.map((asset) => {
             if (asset === null) return null;

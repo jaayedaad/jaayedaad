@@ -47,10 +47,9 @@ function ViewAsset({
     }[]
   >();
   const [currentValue, setCurrentValue] = useState("");
+  const [investedValue, setInvestedValue] = useState("");
   const [compareLabel, setCompareLabel] = useState("");
   const [assetSummary, setAssetSummary] = useState<{
-    compareValue: string;
-    currentValue: string;
     unrealisedProfitLoss: string;
     realisedProfitLoss: string;
   }>();
@@ -86,28 +85,35 @@ function ViewAsset({
 
   useEffect(() => {
     async function fetchData() {
-      if (assetToView) {
-        const unrealisedResults = getUnrealisedProfitLossArray(historicalData, [
-          assetToView,
-        ]);
+      const asset = assetToView || manualAsset;
+      if (asset) {
+        const unrealisedResults = getUnrealisedProfitLossArray(
+          historicalData,
+          [asset],
+          conversionRates
+        );
         setUnrealisedProfitLossArray(unrealisedResults);
         const realisedProfitLossResults = calculateRealisedProfitLoss(
-          [assetToView],
+          [asset],
           conversionRates
         );
         setRealisedProfitLossArray(realisedProfitLossResults);
+        const currentValue = unrealisedResults.filter(
+          (res) => res.interval === "All"
+        )[0].currentValue;
+        const investedValue = unrealisedResults.filter(
+          (res) => res.interval === "All"
+        )[0].compareValue;
+        const valueAtAllInterval = unrealisedResults.filter(
+          (res) => res.interval === "All"
+        )[0].valueAtInterval;
+        setCurrentValue(currentValue);
+        setInvestedValue(investedValue);
+        setCompareLabel((+currentValue - valueAtAllInterval).toFixed(2));
         setAssetSummary({
-          compareValue: (
-            assetToView.compareValue /
-            conversionRates[assetToView.buyCurrency.toLowerCase()]
-          ).toFixed(2),
-          currentValue: (
-            assetToView.currentValue /
-            conversionRates[assetToView.buyCurrency.toLowerCase()]
-          ).toFixed(2),
-          unrealisedProfitLoss: calculateUnrealisedProfitLoss([
-            assetToView,
-          ]).toString(),
+          unrealisedProfitLoss: unrealisedResults.filter(
+            (res) => res.interval === "All"
+          )[0].unrealisedProfitLoss,
           realisedProfitLoss: realisedProfitLossResults.filter(
             (res) => res.interval === "All"
           )[0].realisedProfitLoss,
@@ -115,7 +121,7 @@ function ViewAsset({
       }
     }
     fetchData();
-  }, [assetToView, historicalData]);
+  }, [assetToView, manualAsset, historicalData]);
 
   // // Handle change in interval
   function onChange(value: TInterval) {
@@ -125,156 +131,29 @@ function ViewAsset({
       );
     }
     prepareLineChartData(value, lineChartData, setDataToShow);
-    setCurrentValue(
-      assetToView
-        ? (
-            +assetHistory[0].values[assetHistory[0].values.length - 1].close /
-            conversionRates[assetToView.buyCurrency.toLowerCase()]
-          ).toFixed(2)
-        : (
-            +manualAsset?.currentPrice! /
-            conversionRates[manualAsset!.buyCurrency.toLowerCase()]
-          ).toFixed(2)
-    );
 
-    switch (value) {
-      case "1d":
-        setCompareLabel(
-          assetHistory[0].values.length > 0
-            ? assetToView?.symbol !== null
-              ? assetHistory[0].values[1].close
-              : assetHistory[0].values[assetHistory[0].values.length - 2].value
-            : assetToView?.symbol !== null
-            ? assetHistory[0].values[0].close
-            : assetHistory[0].values[0].value
-        );
-        unrealisedProfitLossArray &&
-          realisedProfitLossArray &&
-          setAssetSummary({
-            compareValue: unrealisedProfitLossArray.filter(
-              (res) => res.interval === "1d"
-            )[0].compareValue,
-            currentValue: unrealisedProfitLossArray.filter(
-              (res) => res.interval === "1d"
-            )[0].currentValue,
-            unrealisedProfitLoss: unrealisedProfitLossArray.filter(
-              (res) => res.interval === "1d"
-            )[0].unrealisedProfitLoss,
-            realisedProfitLoss: realisedProfitLossArray.filter(
-              (res) => res.interval === "1d"
-            )[0].realisedProfitLoss,
-          });
-        break;
-      case "1w":
-        setCompareLabel(
-          assetHistory[0].values.length > 6
-            ? assetToView?.symbol !== null
-              ? assetHistory[0].values[assetHistory[0].values.length - 7].close
-              : assetHistory[0].values[assetHistory[0].values.length - 7].value
-            : assetToView?.symbol !== null
-            ? assetHistory[0].values[0].close
-            : assetHistory[0].values[0].value
-        );
-        unrealisedProfitLossArray &&
-          realisedProfitLossArray &&
-          setAssetSummary({
-            compareValue: unrealisedProfitLossArray.filter(
-              (res) => res.interval === "1w"
-            )[0].compareValue,
-            currentValue: unrealisedProfitLossArray.filter(
-              (res) => res.interval === "1w"
-            )[0].currentValue,
-            unrealisedProfitLoss: unrealisedProfitLossArray.filter(
-              (res) => res.interval === "1w"
-            )[0].unrealisedProfitLoss,
-            realisedProfitLoss: realisedProfitLossArray.filter(
-              (res) => res.interval === "1w"
-            )[0].realisedProfitLoss,
-          });
-        break;
-      case "1m":
-        setCompareLabel(
-          assetHistory[0].values.length > 29
-            ? assetToView?.symbol !== null
-              ? assetHistory[0].values[assetHistory[0].values.length - 30].close
-              : assetHistory[0].values[assetHistory[0].values.length - 30].value
-            : assetToView?.symbol !== null
-            ? assetHistory[0].values[0].close
-            : assetHistory[0].values[0].value
-        );
-        unrealisedProfitLossArray &&
-          realisedProfitLossArray &&
-          setAssetSummary({
-            compareValue: unrealisedProfitLossArray.filter(
-              (res) => res.interval === "1m"
-            )[0].compareValue,
-            currentValue: unrealisedProfitLossArray.filter(
-              (res) => res.interval === "1m"
-            )[0].currentValue,
-            unrealisedProfitLoss: unrealisedProfitLossArray.filter(
-              (res) => res.interval === "1m"
-            )[0].unrealisedProfitLoss,
-            realisedProfitLoss: realisedProfitLossArray.filter(
-              (res) => res.interval === "1m"
-            )[0].realisedProfitLoss,
-          });
-        break;
-      case "1y":
-        setCompareLabel(
-          assetHistory[0].values.length > 365
-            ? assetToView?.symbol !== null
-              ? assetHistory[0].values[assetHistory[0].values.length - 365]
-                  .close
-              : assetHistory[0].values[assetHistory[0].values.length - 365]
-                  .value
-            : assetToView?.symbol !== null
-            ? assetHistory[0].values[0].close
-            : assetHistory[0].values[0].value
-        );
-        unrealisedProfitLossArray &&
-          realisedProfitLossArray &&
-          setAssetSummary({
-            compareValue: unrealisedProfitLossArray.filter(
-              (res) => res.interval === "1y"
-            )[0].compareValue,
-            currentValue: unrealisedProfitLossArray.filter(
-              (res) => res.interval === "1y"
-            )[0].currentValue,
-            unrealisedProfitLoss: unrealisedProfitLossArray.filter(
-              (res) => res.interval === "1y"
-            )[0].unrealisedProfitLoss,
-            realisedProfitLoss: realisedProfitLossArray.filter(
-              (res) => res.interval === "1y"
-            )[0].realisedProfitLoss,
-          });
-        break;
-      case "All":
-        setCompareLabel(
-          assetToView?.symbol !== null
-            ? assetHistory[0].values[0].close
-            : assetHistory[0].values[0].value
-        );
-        assetToView &&
-          realisedProfitLossArray &&
-          setAssetSummary({
-            compareValue: (
-              assetToView.compareValue /
-              conversionRates[assetToView.buyCurrency.toLowerCase()]
-            ).toFixed(2),
-            currentValue: (
-              assetToView.currentValue /
-              conversionRates[assetToView.buyCurrency.toLowerCase()]
-            ).toFixed(2),
-            unrealisedProfitLoss: calculateUnrealisedProfitLoss([
-              assetToView,
-            ]).toString(),
-            realisedProfitLoss: realisedProfitLossArray.filter(
-              (res) => res.interval === "All"
-            )[0].realisedProfitLoss,
-          });
-        break;
-      default:
-        throw new Error("Invalid interval value");
+    if (unrealisedProfitLossArray && realisedProfitLossArray) {
+      const unrealisedIntervalData = unrealisedProfitLossArray.filter(
+        (res) => res.interval === value
+      )[0];
+      const realisedIntervalData = realisedProfitLossArray.filter(
+        (res) => res.interval === value
+      )[0];
+
+      setCurrentValue(unrealisedIntervalData.currentValue);
+      setInvestedValue(unrealisedIntervalData.compareValue);
+
+      setCompareLabel(
+        (
+          +unrealisedIntervalData.currentValue -
+          unrealisedIntervalData.valueAtInterval
+        ).toFixed(2)
+      );
+
+      setAssetSummary({
+        unrealisedProfitLoss: unrealisedIntervalData.unrealisedProfitLoss,
+        realisedProfitLoss: realisedIntervalData.realisedProfitLoss,
+      });
     }
   }
 
@@ -335,46 +214,39 @@ function ViewAsset({
                 </h3>
                 {assetToView && (
                   <div className="flex gap-1">
-                    <p
-                      className={cn(
-                        "ml-1 text-sm",
-                        parseFloat(currentValue) > parseFloat(compareLabel)
-                          ? "text-green-400"
-                          : parseFloat(currentValue) < parseFloat(compareLabel)
-                          ? "text-red-400"
-                          : "text-white"
-                      )}
-                    >
-                      {currentValue > compareLabel && "+"}
-                      {(
-                        parseFloat(currentValue) - parseFloat(compareLabel)
-                      ).toLocaleString("en-IN")}
-                    </p>
-                    <p
-                      className={cn(
-                        "text-sm rounded-sm px-0.5",
-                        parseFloat(currentValue) > parseFloat(compareLabel)
-                          ? "text-green-400 bg-green-400/30"
-                          : parseFloat(currentValue) < parseFloat(compareLabel)
-                          ? "text-red-400 bg-red-400/30"
-                          : "text-white bg-white/30"
-                      )}
-                    >
-                      {currentValue > compareLabel && "+"}
-                      {assetToView
-                        ? (
-                            ((+parseFloat(currentValue) -
-                              +parseFloat(compareLabel)) *
-                              100) /
-                            +compareLabel
-                          ).toFixed(2)
-                        : manualAsset &&
-                          (
-                            ((manualAsset.currentValue - +compareLabel) * 100) /
-                            +compareLabel
+                    {assetSummary && (
+                      <>
+                        <p
+                          className={cn(
+                            "ml-1 text-sm",
+                            +compareLabel > 0
+                              ? "text-green-400"
+                              : +compareLabel < 0
+                              ? "text-red-400"
+                              : "text-white"
+                          )}
+                        >
+                          {(+compareLabel).toLocaleString("en-IN")}
+                        </p>
+
+                        <p
+                          className={cn(
+                            "text-sm rounded-sm px-0.5",
+                            +compareLabel > 0
+                              ? "text-green-400 bg-green-400/30"
+                              : +compareLabel < 0
+                              ? "text-red-400 bg-red-400/30"
+                              : "text-white bg-white/30"
+                          )}
+                        >
+                          {(
+                            (+compareLabel * 100) /
+                            (+currentValue - +compareLabel)
                           ).toFixed(2)}
-                      %
-                    </p>
+                          %
+                        </p>
+                      </>
+                    )}
                   </div>
                 )}
               </div>
@@ -425,11 +297,11 @@ function ViewAsset({
                   <p className="text-muted-foreground text-sm">
                     Invested value
                   </p>
-                  {formatter.format(+assetSummary.compareValue)}
+                  {formatter.format(+investedValue)}
                 </div>
                 <div>
                   <p className="text-muted-foreground text-sm">Current value</p>
-                  {formatter.format(+assetSummary.currentValue)}
+                  {formatter.format(+currentValue)}
                 </div>
                 <div>
                   <p className="text-muted-foreground text-sm">

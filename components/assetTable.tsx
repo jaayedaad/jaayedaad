@@ -9,6 +9,7 @@ import { DashboardTable } from "./dashboard/dashboardTable";
 import { AssetDataTable } from "./dashboard/assets/assetsTable";
 import { ManualAssetDataTable } from "./dashboard/manualAssets/manualAssetsTable";
 import { log } from "console";
+import { useRouter } from "next/navigation";
 
 interface AssetTableProps {
   data: TAsset[];
@@ -160,6 +161,7 @@ function AssetTable({
             )}
             data={filteredAsset}
             setAssetToView={setAssetToView}
+            setManualAsset={setManualAsset}
             setOpen={setOpen}
           />
         )}

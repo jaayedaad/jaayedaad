@@ -33,6 +33,8 @@ export function Dashboard({
   conversionRates,
   historicalData,
   preferences,
+  unrealisedResults,
+  realisedResults,
 }: {
   user: TUser;
   usernameSet: boolean;
@@ -42,6 +44,17 @@ export function Dashboard({
   conversionRates: TConversionRates;
   historicalData: any; // TODO: define type in return of this method from ssr
   preferences: TPreference;
+  unrealisedResults: {
+    category: string;
+    symbol: string;
+    compareValue: string;
+    valueAtInterval: number;
+    currentValue: string;
+    prevClose: string;
+    interval: string;
+    unrealisedProfitLoss: string;
+  }[];
+  realisedResults: TProfitLoss[];
 }) {
   const [realisedProfitLoss, setRealisedProfitLoss] = useState<string>();
   const [timeInterval, setTimeInterval] = useState<TInterval>("All");
@@ -56,9 +69,9 @@ export function Dashboard({
       interval: string;
       unrealisedProfitLoss: string;
     }[]
-  >();
+  >(unrealisedResults);
   const [realisedProfitLossArray, setRealisedProfitLossArray] =
-    useState<TProfitLoss[]>();
+    useState<TProfitLoss[]>(realisedResults);
   const [marqueeBarAssets, setMarqueeBarAssets] = useState<
     TAsset[] | undefined
   >(assets);
@@ -81,7 +94,8 @@ export function Dashboard({
       if (historicalData?.length) {
         const unrealisedResults = getUnrealisedProfitLossArray(
           historicalData,
-          assets
+          assets,
+          conversionRates
         );
         setUnrealisedProfitLossArray(unrealisedResults);
       }

@@ -9,6 +9,7 @@ import { redirect } from "next/navigation";
 import { getHistoricalData } from "@/services/thirdParty/twelveData";
 import { getConversionRate } from "@/services/thirdParty/currency";
 import { getPreferenceFromUserId } from "@/services/preference";
+import { getUnrealisedProfitLossArray } from "@/helper/unrealisedValueCalculator";
 
 const reverseAssetTypeMappings: Record<string, string> = {
   stocks: "common stock",
@@ -51,6 +52,12 @@ export default async function AssetPage({
     throw new Error("Preference not found");
   }
 
+  const unrealisedResults = getUnrealisedProfitLossArray(
+    historicalData,
+    filteredAssets,
+    currencyConversionRates
+  );
+
   return (
     <Page
       username={session.user.username}
@@ -61,6 +68,7 @@ export default async function AssetPage({
       historicalData={historicalData}
       conversionRates={currencyConversionRates}
       preferences={preferences}
+      unrealisedResults={unrealisedResults}
     />
   );
 }
