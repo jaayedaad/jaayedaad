@@ -42,7 +42,8 @@ export default async function PublicProfile({
 
   const unrealisedProfitLossArray = getUnrealisedProfitLossArray(
     historicalData,
-    assets
+    assets,
+    conversionRates
   );
 
   const realisedProfitLoss = calculateRealisedProfitLoss(

@@ -31,6 +31,7 @@ function Page({
   historicalData,
   conversionRates,
   preferences,
+  unrealisedResults,
 }: {
   user: TUser;
   username: string;
@@ -40,6 +41,16 @@ function Page({
   historicalData: any;
   conversionRates: TConversionRates;
   preferences: TPreference;
+  unrealisedResults: {
+    category: string;
+    symbol: string;
+    compareValue: string;
+    valueAtInterval: number;
+    currentValue: string;
+    prevClose: string;
+    interval: string;
+    unrealisedProfitLoss: string;
+  }[];
 }) {
   const [assetsToView, setAssetsToView] = useState<TAsset[] | undefined>(
     filteredAssets
@@ -71,7 +82,7 @@ function Page({
       interval: string;
       unrealisedProfitLoss: string;
     }[]
-  >();
+  >(unrealisedResults);
   const [timeOfDay, setTimeOfDay] = useState("");
 
   useEffect(() => {
@@ -104,7 +115,8 @@ function Page({
             if (historicalData) {
               const unrealisedResults = getUnrealisedProfitLossArray(
                 historicalData,
-                filteredAssets
+                filteredAssets,
+                conversionRates
               );
               setUnrealisedProfitLossArray(unrealisedResults);
             }
