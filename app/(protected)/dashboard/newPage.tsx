@@ -1,12 +1,9 @@
 "use client";
 import AssetPieChart from "@/components/assetPieChart";
-import AssetTable from "@/components/assetTable";
 import ChangeInterval from "@/components/changeInterval";
 import PerformanceMetrics from "@/components/performanceMetrics";
 import PortfolioLineChart from "@/components/portfolioLineChart";
 import LoadingSpinner from "@/components/ui/loading-spinner";
-import { calculateRealisedProfitLoss } from "@/helper/realisedValueCalculator";
-import { getUnrealisedProfitLossArray } from "@/helper/unrealisedValueCalculator";
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import AssetMarqueeBar from "@/components/assetMarqueeBar";
@@ -18,12 +15,15 @@ import {
   TPreference,
   TUser,
   TUnrealisedProfitLoss,
-} from "@/lib/types";
+  TGroupedAssets,
+} from "@/types/types";
 import WhitelistingModal from "@/components/onboarding/whitelistingModal";
 import MockLineChart from "@/components/mock/mockLineChart";
 import MockAssetTable from "@/components/mock/mockAssetTable";
 import OnboardingModal from "@/components/onboarding/onboardingModal";
 import JaayedaadLogo from "@/public/branding/jaayedaadLogo";
+import { DashboardTable } from "@/components/dashboard/dashboardTable";
+import { getDashboardTableColumns } from "@/components/dashboard/columns";
 
 export function Dashboard({
   user,
@@ -36,6 +36,8 @@ export function Dashboard({
   preferences,
   unrealisedResults,
   realisedResults,
+  lineChartData,
+  dashboardTableData,
 }: {
   user: TUser;
   usernameSet: boolean;
@@ -45,15 +47,24 @@ export function Dashboard({
   conversionRates: TConversionRates;
   historicalData: any; // TODO: define type in return of this method from ssr
   preferences: TPreference;
+  dashboardTableData: {
+    interval: string;
+    data: TGroupedAssets;
+  }[];
+  lineChartData: {
+    interval: string;
+    data: {
+      name: string;
+      amt: number;
+    }[];
+  }[];
   unrealisedResults: TUnrealisedProfitLoss[];
   realisedResults: TProfitLoss[];
 }) {
-  const [realisedProfitLoss, setRealisedProfitLoss] = useState<string>();
   const [timeInterval, setTimeInterval] = useState<TInterval>("All");
-  const [unrealisedProfitLossArray, setUnrealisedProfitLossArray] =
-    useState<TUnrealisedProfitLoss[]>(unrealisedResults);
-  const [realisedProfitLossArray, setRealisedProfitLossArray] =
-    useState<TProfitLoss[]>(realisedResults);
+  const [tableData, setTableData] = useState<TGroupedAssets | undefined>(
+    dashboardTableData.find((data) => data.interval === "All")?.data
+  );
   const [marqueeBarAssets, setMarqueeBarAssets] = useState<
     TAsset[] | undefined
   >(assets);
@@ -71,64 +82,29 @@ export function Dashboard({
     }
   }, []);
 
-  useEffect(() => {
-    if (assets && conversionRates) {
-      if (historicalData?.length) {
-        const unrealisedResults = getUnrealisedProfitLossArray(
-          historicalData,
-          assets,
-          conversionRates
-        );
-        setUnrealisedProfitLossArray(unrealisedResults);
-      }
-      const realisedProfitLossResults = calculateRealisedProfitLoss(
-        assets,
-        conversionRates
-      );
-      if (timeInterval === "All") {
-        setRealisedProfitLoss(
-          realisedProfitLossResults.filter(
-            (profitLoss) => profitLoss.interval === "All"
-          )[0].realisedProfitLoss
-        );
-      }
-      setRealisedProfitLossArray(realisedProfitLossResults);
-    }
-  }, [historicalData, timeInterval, conversionRates, assets]);
-
-  // Get today's date
-  const today = new Date();
-
-  // Subtract one day
-  const yesterday = new Date(today);
-  yesterday.setDate(today.getDate() - 1);
-
   const onChange = (value: TInterval) => {
     setTimeInterval(value);
-    const profitLoss = realisedProfitLossArray?.filter(
-      (profitLoss) => profitLoss.interval === value
-    )[0].realisedProfitLoss;
-    setRealisedProfitLoss(profitLoss);
 
-    if (value !== "All" && assets) {
-      const updatedAssetsToView = assets.map((asset) => {
-        const matchingIntervalData = unrealisedProfitLossArray?.find(
-          (data) => data.symbol === asset.symbol && data.interval === value
-        );
-        if (matchingIntervalData) {
-          return {
-            ...asset,
-            compareValue: +matchingIntervalData.compareValue,
-            currentValue: +matchingIntervalData.currentValue,
-            prevClose: matchingIntervalData.prevClose,
-          };
-        }
-        return asset;
-      });
-      setMarqueeBarAssets(updatedAssetsToView);
-    } else {
-      setMarqueeBarAssets(assets);
-    }
+    const tableData = dashboardTableData.find(
+      (data) => data.interval === value
+    );
+    setTableData(tableData?.data);
+
+    const updatedAssetsToView = assets.map((asset) => {
+      const matchingIntervalData = unrealisedResults?.find(
+        (data) => data.symbol === asset.symbol && data.interval === value
+      );
+      if (matchingIntervalData) {
+        return {
+          ...asset,
+          compareValue: +matchingIntervalData.compareValue,
+          currentValue: +matchingIntervalData.currentValue,
+          valueAtInterval: +matchingIntervalData.valueAtInterval,
+        };
+      }
+      return asset;
+    });
+    setMarqueeBarAssets(updatedAssetsToView);
   };
 
   return assets ? (
@@ -179,8 +155,7 @@ export function Dashboard({
               {historicalData ? (
                 historicalData.length ? (
                   <PortfolioLineChart
-                    data={historicalData}
-                    view="dashboard"
+                    chartData={lineChartData}
                     timeInterval={timeInterval}
                     dashboardAmountVisibility={
                       preferences.dashboardAmountVisibility
@@ -218,21 +193,14 @@ export function Dashboard({
                     Collection of your assets
                   </p>
                 </div>
-                <div>
-                  <p className="text-muted-foreground text-end text-xs xl:text-sm">
-                    As on ({yesterday.toLocaleDateString("en-GB")})
-                  </p>
-                </div>
               </div>
               <div className="mt-6 overflow-auto">
-                {assets.length ? (
-                  <AssetTable
-                    data={assets}
-                    historicalData={historicalData}
-                    timelineInterval={timeInterval}
-                    intervalChangeData={unrealisedProfitLossArray}
-                    conversionRates={conversionRates}
-                    preferences={preferences}
+                {assets.length && tableData ? (
+                  <DashboardTable
+                    columns={getDashboardTableColumns(
+                      preferences.dashboardAmountVisibility
+                    )}
+                    data={tableData}
                   />
                 ) : (
                   <MockAssetTable />
@@ -240,15 +208,17 @@ export function Dashboard({
               </div>
             </div>
             {/* Performance metrics */}
-            <div className="lg:col-span-1 lg:row-span-4 bg-[#171326]/70 backdrop-blur shadow-2xl border rounded-xl p-4 mb-4 md:mb-6 lg:mb-0">
-              <h3 className="font-semibold">Performance Metrics</h3>
-              <p className="text-muted-foreground text-xs xl:text-sm">
-                Analyze investment performance
-              </p>
+            <div className="lg:col-span-1 lg:row-span-4 flex flex-col justify-between bg-[#171326]/70 backdrop-blur shadow-2xl border rounded-xl p-4 mb-4 md:mb-6 lg:mb-0">
+              <div>
+                <h3 className="font-semibold">Performance Metrics</h3>
+                <p className="text-muted-foreground text-xs xl:text-sm">
+                  Analyze investment performance
+                </p>
+              </div>
               <PerformanceMetrics
                 assets={assets}
-                realisedProfitLoss={realisedProfitLoss}
-                unrealisedProfitLossArray={unrealisedProfitLossArray}
+                realisedProfitLossArray={realisedResults}
+                unrealisedProfitLossArray={unrealisedResults}
                 timeInterval={timeInterval}
                 dashboardAmountVisibility={
                   preferences.dashboardAmountVisibility

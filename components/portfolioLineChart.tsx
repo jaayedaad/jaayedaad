@@ -9,29 +9,27 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
-import { accumulateLineChartData } from "@/helper/lineChartDataAccumulator";
 import {
   formatIndianNumber,
   formatInternationalNumber,
 } from "@/helper/indianNumberingFormatter";
-import { prepareLineChartData } from "@/helper/prepareLineChartData";
 import { TInterval } from "@/types/types";
 
-interface FilterMap {
-  [key: string]: () => { name: string; amt: number }[];
-}
-
 function PortfolioLineChart({
-  data,
-  view,
   timeInterval,
   dashboardAmountVisibility,
+  chartData,
   numberSystem,
   defaultCurrency,
 }: {
-  data: any[];
-  view: string;
   timeInterval?: TInterval;
+  chartData: {
+    interval: string;
+    data: {
+      name: string;
+      amt: number;
+    }[];
+  }[];
   dashboardAmountVisibility: boolean;
   numberSystem: string;
   defaultCurrency: string;
@@ -50,38 +48,14 @@ function PortfolioLineChart({
       name: string;
       amt: number;
     }[]
-  >();
-
-  let accumulatedData: {
-    name: string;
-    amt: number;
-  }[];
-
-  const filterMap: FilterMap = {
-    dashboard: () => accumulateLineChartData(data),
-    "common stock": () =>
-      accumulateLineChartData(
-        data.filter((item) => item.assetType === "Common Stock")
-      ),
-    "digital currency": () =>
-      accumulateLineChartData(
-        data.filter((item) => item.assetType === "Digital Currency")
-      ),
-    "mutual fund": () =>
-      accumulateLineChartData(
-        data.filter((item) => item.assetType === "Mutual Fund")
-      ),
-  };
-  if (filterMap.hasOwnProperty(view)) {
-    accumulatedData = filterMap[view]();
-  } else {
-    // Handle case where view is not recognized
-  }
+  >(chartData.filter((data) => data.interval === "All")[0].data);
 
   useEffect(() => {
     timeInterval &&
-      prepareLineChartData(timeInterval, accumulatedData, setDataToShow);
-  }, [timeInterval]);
+      setDataToShow(
+        chartData.filter((data) => data.interval === timeInterval)[0].data
+      );
+  }, [timeInterval, chartData]);
   return (
     <>
       <div className="flex gap-64">

@@ -40,16 +40,13 @@ export default async function PublicProfile({
   );
   const historicalData = await getHistoricalData(user.id, assets);
 
-  const unrealisedProfitLossArray = getUnrealisedProfitLossArray(
+  const unrealisedResults = getUnrealisedProfitLossArray(
     historicalData,
     assets,
     conversionRates
   );
 
-  const realisedProfitLoss = calculateRealisedProfitLoss(
-    assets,
-    conversionRates
-  ).filter((profitLoss) => profitLoss.interval === "All")[0].realisedProfitLoss;
+  const realisedResults = calculateRealisedProfitLoss(assets, conversionRates);
 
   const today = new Date();
 
@@ -135,8 +132,10 @@ export default async function PublicProfile({
                   </div>
                   <div className="mt-6">
                     <AssetTable
-                      data={assets}
                       isPublic
+                      data={assets}
+                      unrealisedResults={unrealisedResults}
+                      realisedResults={realisedResults}
                       conversionRates={conversionRates}
                       preferences={preferences}
                     />
@@ -153,8 +152,8 @@ export default async function PublicProfile({
 
                   <PerformanceMetrics
                     assets={assets}
-                    realisedProfitLoss={realisedProfitLoss}
-                    unrealisedProfitLossArray={unrealisedProfitLossArray}
+                    realisedProfitLossArray={realisedResults}
+                    unrealisedProfitLossArray={unrealisedResults}
                     timeInterval="All"
                     dashboardAmountVisibility={
                       preferences.dashboardAmountVisibility

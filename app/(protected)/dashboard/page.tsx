@@ -11,7 +11,9 @@ import { getHistoricalData } from "@/services/thirdParty/twelveData";
 import { getPreferenceFromUserId } from "@/services/preference";
 import { getUnrealisedProfitLossArray } from "@/helper/unrealisedValueCalculator";
 import { calculateRealisedProfitLoss } from "@/helper/realisedValueCalculator";
-import { TUnrealisedProfitLoss } from "@/lib/types";
+import { TGroupedAssets, TUnrealisedProfitLoss } from "@/types/types";
+import { getDashboardTableData } from "@/services/dashboard/tableData";
+import { getLineChartData } from "@/helper/prepareLineChartData";
 
 const DashboardPage = async () => {
   const session = await getServerSession(authOptions);
@@ -36,11 +38,30 @@ const DashboardPage = async () => {
   }
 
   let unrealisedResults: TUnrealisedProfitLoss[] = [];
+  let lineChartData: {
+    interval: string;
+    data: {
+      name: string;
+      amt: number;
+    }[];
+  }[] = [];
+  let dashboardTableData: {
+    interval: string;
+    data: TGroupedAssets;
+  }[] = [];
 
   if (historicalData.length) {
-    const unrealisedResults = getUnrealisedProfitLossArray(
+    unrealisedResults = getUnrealisedProfitLossArray(
       historicalData,
       assets,
+      currencyConversionRates
+    );
+
+    lineChartData = await getLineChartData(historicalData);
+
+    dashboardTableData = await getDashboardTableData(
+      assets,
+      unrealisedResults,
       currencyConversionRates
     );
   }
@@ -60,6 +81,8 @@ const DashboardPage = async () => {
       unrealisedResults={unrealisedResults}
       realisedResults={realisedResults}
       conversionRates={currencyConversionRates}
+      dashboardTableData={dashboardTableData}
+      lineChartData={lineChartData}
       historicalData={historicalData}
       preferences={preferences}
     />

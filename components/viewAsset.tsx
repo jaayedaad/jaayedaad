@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs";
 import { Dialog, DialogContent } from "./ui/dialog";
 import { cn } from "@/lib/helper";
@@ -15,11 +15,6 @@ import {
   TUnrealisedProfitLoss,
 } from "@/types/types";
 import AssetPriceUpdates from "./assetPriceUpdates";
-import {
-  calculateUnrealisedProfitLoss,
-  getUnrealisedProfitLossArray,
-} from "@/helper/unrealisedValueCalculator";
-import { calculateRealisedProfitLoss } from "@/helper/realisedValueCalculator";
 import LoadingSpinner from "./ui/loading-spinner";
 
 interface ViewAssetProps {
@@ -27,12 +22,20 @@ interface ViewAssetProps {
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
   assetToView?: TAsset;
   manualAsset?: TAsset;
-  historicalData: any[];
+  unrealisedResults: TUnrealisedProfitLoss[];
+  realisedResults: TProfitLoss[];
   conversionRates: {
     [currency: string]: number;
   };
   numberSystem: string;
   defaultCurrency: string;
+  chartData: {
+    interval: string;
+    data: {
+      name: string;
+      amt: number;
+    }[];
+  }[];
 }
 
 function ViewAsset({
@@ -40,98 +43,52 @@ function ViewAsset({
   setOpen,
   assetToView,
   manualAsset,
-  historicalData,
   conversionRates,
   numberSystem,
+  unrealisedResults,
+  realisedResults,
   defaultCurrency,
+  chartData,
 }: ViewAssetProps) {
   const [dataToShow, setDataToShow] = useState<
     {
       name: string;
       amt: number;
     }[]
-  >();
-  const [currentValue, setCurrentValue] = useState("");
-  const [investedValue, setInvestedValue] = useState("");
-  const [compareLabel, setCompareLabel] = useState("");
+  >(chartData.filter((data) => data.interval === "All")[0].data);
+  const [currentValue, setCurrentValue] = useState(
+    unrealisedResults.filter((res) => res.interval === "All")[0].currentValue
+  );
+  const [investedValue, setInvestedValue] = useState(
+    unrealisedResults.filter((res) => res.interval === "All")[0].compareValue
+  );
+  const [compareLabel, setCompareLabel] = useState(
+    (
+      +currentValue -
+      unrealisedResults.filter((res) => res.interval === "All")[0]
+        .valueAtInterval
+    ).toFixed(2)
+  );
   const [assetSummary, setAssetSummary] = useState<{
     unrealisedProfitLoss: string;
     realisedProfitLoss: string;
-  }>();
-  const [realisedProfitLossArray, setRealisedProfitLossArray] =
-    useState<TProfitLoss[]>();
-  const [unrealisedProfitLossArray, setUnrealisedProfitLossArray] =
-    useState<TUnrealisedProfitLoss[]>();
-
-  const assetHistory: any[] = [];
-  if (assetToView) {
-    assetHistory.push(
-      historicalData.find((data) => data.assetSymbol === assetToView?.symbol)
-    );
-  }
-  if (manualAsset) {
-    const manualHistory = prepareHistoricalDataForManualCategory(
-      [manualAsset],
-      conversionRates
-    );
-    assetHistory.splice(0, assetHistory.length, ...manualHistory);
-  }
-  const lineChartData = accumulateLineChartData(assetHistory);
-
-  useEffect(() => {
-    async function fetchData() {
-      const asset = assetToView || manualAsset;
-      if (asset) {
-        const unrealisedResults = getUnrealisedProfitLossArray(
-          historicalData,
-          [asset],
-          conversionRates
-        );
-        setUnrealisedProfitLossArray(unrealisedResults);
-        const realisedProfitLossResults = calculateRealisedProfitLoss(
-          [asset],
-          conversionRates
-        );
-        setRealisedProfitLossArray(realisedProfitLossResults);
-        const currentValue = unrealisedResults.filter(
-          (res) => res.interval === "All"
-        )[0].currentValue;
-        const investedValue = unrealisedResults.filter(
-          (res) => res.interval === "All"
-        )[0].compareValue;
-        const valueAtAllInterval = unrealisedResults.filter(
-          (res) => res.interval === "All"
-        )[0].valueAtInterval;
-        setCurrentValue(currentValue);
-        setInvestedValue(investedValue);
-        setCompareLabel((+currentValue - valueAtAllInterval).toFixed(2));
-        setAssetSummary({
-          unrealisedProfitLoss: unrealisedResults.filter(
-            (res) => res.interval === "All"
-          )[0].unrealisedProfitLoss,
-          realisedProfitLoss: realisedProfitLossResults.filter(
-            (res) => res.interval === "All"
-          )[0].realisedProfitLoss,
-        });
-      }
-    }
-    fetchData();
-  }, [assetToView, manualAsset, historicalData]);
-
+  }>({
+    unrealisedProfitLoss: unrealisedResults.filter(
+      (res) => res.interval === "All"
+    )[0].unrealisedProfitLoss,
+    realisedProfitLoss: realisedResults.filter(
+      (res) => res.interval === "All"
+    )[0].realisedProfitLoss,
+  });
   // // Handle change in interval
   function onChange(value: TInterval) {
-    if (manualAsset) {
-      lineChartData.sort(
-        (a, b) => new Date(b.name).getTime() - new Date(a.name).getTime()
-      );
-    }
-    prepareLineChartData(value, lineChartData, setDataToShow);
+    setDataToShow(chartData.filter((data) => data.interval === value)[0].data);
 
-    if (unrealisedProfitLossArray && realisedProfitLossArray) {
-      const unrealisedIntervalData = unrealisedProfitLossArray.filter(
+    if (unrealisedResults && realisedResults) {
+      const unrealisedIntervalData = unrealisedResults.filter(
         (res) => res.interval === value
       )[0];
-      const realisedIntervalData = realisedProfitLossArray.filter(
+      const realisedIntervalData = realisedResults.filter(
         (res) => res.interval === value
       )[0];
 
