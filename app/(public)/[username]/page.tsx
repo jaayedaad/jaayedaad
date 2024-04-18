@@ -15,6 +15,7 @@ import AssetTable from "@/components/assetTable";
 import LoadingSpinner from "@/components/ui/loading-spinner";
 import PortfolioLineChart from "@/components/portfolioLineChart";
 import PerformanceMetrics from "@/components/performanceMetrics";
+import { getLineChartData } from "@/helper/prepareLineChartData";
 
 export default async function PublicProfile({
   params,
@@ -39,6 +40,17 @@ export default async function PublicProfile({
     await getDeccryptedAssetsByUserId(user.id)
   );
   const historicalData = await getHistoricalData(user.id, assets);
+
+  let lineChartData: {
+    interval: string;
+    data: {
+      name: string;
+      amt: number;
+    }[];
+  }[] = [];
+  if (historicalData.length) {
+    lineChartData = await getLineChartData(historicalData);
+  }
 
   const unrealisedResults = getUnrealisedProfitLossArray(
     historicalData,
@@ -80,8 +92,7 @@ export default async function PublicProfile({
                   {historicalData ? (
                     historicalData.length ? (
                       <PortfolioLineChart
-                        data={historicalData}
-                        view="dashboard"
+                        chartData={lineChartData}
                         timeInterval="All"
                         dashboardAmountVisibility={
                           preferences.dashboardAmountVisibility
@@ -134,6 +145,7 @@ export default async function PublicProfile({
                     <AssetTable
                       isPublic
                       data={assets}
+                      lineChartData={lineChartData}
                       unrealisedResults={unrealisedResults}
                       realisedResults={realisedResults}
                       conversionRates={conversionRates}
