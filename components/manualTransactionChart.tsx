@@ -1,5 +1,5 @@
 "use client";
-import { TAsset, TConversionRates, TInterval } from "@/lib/types";
+import { TAsset, TConversionRates, TInterval } from "@/types/types";
 import {
   formatIndianNumber,
   formatInternationalNumber,

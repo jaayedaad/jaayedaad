@@ -31,7 +31,7 @@ import {
 import { Check, ChevronsUpDown, Loader2 } from "lucide-react";
 import DynamicIcon from "./dynamicIcon";
 import { manualCategoryIcons as iconsArray } from "@/constants/manualCategoryIcons";
-import { TManualCategoryIcons, TUserManualCategory } from "@/lib/types";
+import { TManualCategoryIcons, TUserManualCategory } from "@/types/types";
 
 interface ManualTransactionFormPropsType {
   usersManualCategories: TUserManualCategory[];

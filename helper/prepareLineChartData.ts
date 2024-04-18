@@ -1,4 +1,4 @@
-import { TInterval } from "@/lib/types";
+import { TInterval } from "@/types/types";
 
 export function prepareLineChartData(
   timeRange: TInterval,

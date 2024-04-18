@@ -15,7 +15,7 @@ import {
   formatInternationalNumber,
 } from "@/helper/indianNumberingFormatter";
 import { prepareLineChartData } from "@/helper/prepareLineChartData";
-import { TInterval } from "@/lib/types";
+import { TInterval } from "@/types/types";
 
 interface FilterMap {
   [key: string]: () => { name: string; amt: number }[];

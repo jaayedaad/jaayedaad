@@ -2,7 +2,7 @@ import { prisma } from "@/lib/prisma";
 import { authOptions } from "@/lib/authOptions";
 import { getServerSession } from "next-auth";
 import CryptoJS from "crypto-js";
-import { TSiaObject } from "@/lib/types";
+import { TSiaObject } from "@/types/types";
 import {
   ENCRYPTION_KEY,
   SIA_ADMIN_PASSWORD,

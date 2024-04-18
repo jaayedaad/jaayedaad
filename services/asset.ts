@@ -10,7 +10,7 @@ import {
   deleteAssetForUserInSia,
   getDecryptedAssetsFromSia,
 } from "@/services/thirdParty/sia";
-import { TAsset } from "@/lib/types";
+import { TAsset } from "@/types/types";
 import { fetchQuoteFromApi } from "@/services/thirdParty/twelveData";
 
 export const getDeccryptedAssetsByUserId = async (id: string) => {

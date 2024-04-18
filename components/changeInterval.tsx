@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { TInterval } from "@/lib/types";
+import { TInterval } from "@/types/types";
 import { cn } from "@/lib/helper";
 
 interface ChildProps {

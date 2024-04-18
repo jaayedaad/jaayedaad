@@ -18,7 +18,7 @@ import {
   performanceBarParameter,
 } from "@/constants/performanceBar";
 import { Toggle } from "./ui/toggle";
-import { TPreference } from "@/lib/types";
+import { TPreference } from "@/types/types";
 import { updatePreferenceAction } from "@/app/(protected)/dashboard/settings/actions";
 import { PerformanceBarOrder, PerformanceBarParameter } from "@prisma/client";
 

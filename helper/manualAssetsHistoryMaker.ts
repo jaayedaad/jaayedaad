@@ -1,4 +1,4 @@
-import { TAsset, TConversionRates } from "@/lib/types";
+import { TAsset, TConversionRates } from "@/types/types";
 
 export function prepareHistoricalDataForManualCategory(
   manualCategoryAssets: TAsset[],

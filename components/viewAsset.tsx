@@ -13,7 +13,7 @@ import {
   TInterval,
   TProfitLoss,
   TUnrealisedProfitLoss,
-} from "@/lib/types";
+} from "@/types/types";
 import AssetPriceUpdates from "./assetPriceUpdates";
 import {
   calculateUnrealisedProfitLoss,

@@ -1,7 +1,7 @@
 "use server";
 
 import { authOptions } from "@/lib/authOptions";
-import { TPreference } from "@/lib/types";
+import { TPreference } from "@/types/types";
 import { updatePreference } from "@/services/preference";
 import { deleteUser } from "@/services/user";
 import { getServerSession } from "next-auth";

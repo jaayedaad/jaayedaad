@@ -8,10 +8,10 @@ import {
   AssetPriceUpdate,
   Transaction,
 } from "@prisma/client";
-import { TAsset } from "@/lib/types";
+import { TAsset } from "@/types/types";
 import CryptoJS from "crypto-js";
 import { createId } from "@paralleldrive/cuid2";
-import { getAssetById } from "@/sia/getAssetById";
+import { getAssetById } from "@/helper/sia/getAssetById";
 import {
   decryptObjectValues,
   encryptDataValue,

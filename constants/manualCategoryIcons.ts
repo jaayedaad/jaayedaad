@@ -1,4 +1,4 @@
-import { TManualCategoryIcons } from "@/lib/types";
+import { TManualCategoryIcons } from "@/types/types";
 
 export const manualCategoryIcons: TManualCategoryIcons[] = [
   "shapes",

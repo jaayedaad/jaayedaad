@@ -5,7 +5,7 @@ import SearchField from "@/components/searchField";
 import LoadingSpinner from "@/components/ui/loading-spinner";
 import ManualTransactionForm from "./manualTransactionForm";
 import { Button } from "./ui/button";
-import { TTwelveDataResult, TUserManualCategory } from "@/lib/types";
+import { TTwelveDataResult, TUserManualCategory } from "@/types/types";
 import { searchAssetsFromApi } from "@/services/thirdParty/twelveData";
 import { searchResultsFromExistingAssetsInDatabaseAction } from "@/app/(protected)/dashboard/actions";
 

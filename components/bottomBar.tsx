@@ -28,7 +28,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import AddTransaction from "./addTransaction";
-import { TUserManualCategory } from "@/lib/types";
+import { TUserManualCategory } from "@/types/types";
 import { updatePreferenceAction } from "@/app/(protected)/dashboard/settings/actions";
 
 function BottomBar({
