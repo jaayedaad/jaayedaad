@@ -1,4 +1,4 @@
-import { TAsset } from "./types";
+import { TAsset } from "../types/types";
 
 export const calculateCurrentValue = (asset: TAsset): TAsset => {
   const calculateBaseValue = () => {

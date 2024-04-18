@@ -3,7 +3,7 @@ import { Switch } from "@/components/ui/switch";
 import { Separator } from "@/components/ui/separator";
 import { useState } from "react";
 import { toast } from "sonner";
-import { TPreference } from "@/lib/types";
+import { TPreference } from "@/types/types";
 import { updatePreferenceAction } from "@/app/(protected)/dashboard/settings/actions";
 import { Button } from "./ui/button";
 import { signOut } from "next-auth/react";

@@ -16,7 +16,7 @@ import { ScrollArea } from "./ui/scroll-area";
 import TransactionForm from "./transactionForm";
 import { Plus } from "lucide-react";
 import RemoveAssetButton from "./removeAssetButton";
-import { TAsset } from "@/lib/types";
+import { TAsset } from "@/types/types";
 
 function TransactionHistory({
   assetToView,

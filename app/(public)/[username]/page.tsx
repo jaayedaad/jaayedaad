@@ -15,6 +15,7 @@ import AssetTable from "@/components/assetTable";
 import LoadingSpinner from "@/components/ui/loading-spinner";
 import PortfolioLineChart from "@/components/portfolioLineChart";
 import PerformanceMetrics from "@/components/performanceMetrics";
+import { getLineChartData } from "@/helper/prepareLineChartData";
 
 export default async function PublicProfile({
   params,
@@ -40,16 +41,24 @@ export default async function PublicProfile({
   );
   const historicalData = await getHistoricalData(user.id, assets);
 
-  const unrealisedProfitLossArray = getUnrealisedProfitLossArray(
+  let lineChartData: {
+    interval: string;
+    data: {
+      name: string;
+      amt: number;
+    }[];
+  }[] = [];
+  if (historicalData.length) {
+    lineChartData = await getLineChartData(historicalData);
+  }
+
+  const unrealisedResults = getUnrealisedProfitLossArray(
     historicalData,
     assets,
     conversionRates
   );
 
-  const realisedProfitLoss = calculateRealisedProfitLoss(
-    assets,
-    conversionRates
-  ).filter((profitLoss) => profitLoss.interval === "All")[0].realisedProfitLoss;
+  const realisedResults = calculateRealisedProfitLoss(assets, conversionRates);
 
   const today = new Date();
 
@@ -83,8 +92,7 @@ export default async function PublicProfile({
                   {historicalData ? (
                     historicalData.length ? (
                       <PortfolioLineChart
-                        data={historicalData}
-                        view="dashboard"
+                        chartData={lineChartData}
                         timeInterval="All"
                         dashboardAmountVisibility={
                           preferences.dashboardAmountVisibility
@@ -135,8 +143,11 @@ export default async function PublicProfile({
                   </div>
                   <div className="mt-6">
                     <AssetTable
-                      data={assets}
                       isPublic
+                      data={assets}
+                      lineChartData={lineChartData}
+                      unrealisedResults={unrealisedResults}
+                      realisedResults={realisedResults}
                       conversionRates={conversionRates}
                       preferences={preferences}
                     />
@@ -153,8 +164,8 @@ export default async function PublicProfile({
 
                   <PerformanceMetrics
                     assets={assets}
-                    realisedProfitLoss={realisedProfitLoss}
-                    unrealisedProfitLossArray={unrealisedProfitLossArray}
+                    realisedProfitLossArray={realisedResults}
+                    unrealisedProfitLossArray={unrealisedResults}
                     timeInterval="All"
                     dashboardAmountVisibility={
                       preferences.dashboardAmountVisibility

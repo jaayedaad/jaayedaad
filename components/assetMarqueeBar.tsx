@@ -1,6 +1,6 @@
-import React, { useEffect } from "react";
+import React from "react";
 import Marquee from "react-fast-marquee";
-import { TAsset, TInterval, TPreference } from "@/lib/types";
+import { TAsset, TInterval, TPreference } from "@/types/types";
 import { cn } from "@/lib/helper";
 import { ArrowDownIcon, ArrowUpIcon } from "lucide-react";
 
@@ -10,40 +10,7 @@ interface AssetMarqueeBarProps {
   preferences: TPreference;
 }
 
-function AssetMarqueeBar({
-  assets: assets,
-  timeInterval,
-  preferences,
-}: AssetMarqueeBarProps) {
-  useEffect(() => {}, [timeInterval]);
-
-  // Sort data based on performanceBarOrder
-  const sortedData = [...assets].sort((a, b) => {
-    let aValue: number, bValue: number;
-
-    switch (preferences.performanceBarParameter) {
-      case "totalInvestment":
-        aValue = a.compareValue;
-        bValue = b.compareValue;
-        break;
-      case "totalValue":
-        aValue = a.currentValue;
-        bValue = b.currentValue;
-        break;
-      case "percentageChange":
-      default:
-        aValue = ((a.currentValue - a.compareValue) * 100) / a.compareValue;
-        bValue = ((b.currentValue - b.compareValue) * 100) / b.compareValue;
-        break;
-    }
-
-    if (preferences.performanceBarOrder === "Ascending") {
-      return aValue - bValue;
-    } else {
-      return bValue - aValue;
-    }
-  });
-
+function AssetMarqueeBar({ assets, preferences }: AssetMarqueeBarProps) {
   return (
     <div className="hidden lg:block w-full">
       <Marquee gradient gradientColor="hsl(--background)" speed={150}>
@@ -66,9 +33,9 @@ function AssetMarqueeBar({
               case "percentageChange":
               default:
                 value =
-                  ((asset.currentValue - asset.compareValue) * 100) /
-                  asset.compareValue;
-                isIncrease = asset.currentValue > asset.compareValue;
+                  ((asset.currentValue - asset.valueAtInterval) * 100) /
+                  asset.valueAtInterval;
+                isIncrease = asset.currentValue > asset.valueAtInterval;
                 isPercentage = true;
                 break;
             }

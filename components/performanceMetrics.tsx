@@ -1,13 +1,18 @@
 "use client";
 
-import { TAsset, TConversionRates, TInterval } from "@/lib/types";
+import {
+  TAsset,
+  TConversionRates,
+  TInterval,
+  TProfitLoss,
+} from "@/types/types";
 import { cn } from "@/lib/helper";
 import { ArrowDown, ArrowUp } from "lucide-react";
 import React, { useEffect, useState } from "react";
 
 function PerformanceMetrics({
   assets,
-  realisedProfitLoss,
+  realisedProfitLossArray,
   unrealisedProfitLossArray,
   timeInterval,
   dashboardAmountVisibility,
@@ -16,7 +21,7 @@ function PerformanceMetrics({
   conversionRates,
 }: {
   assets: TAsset[];
-  realisedProfitLoss: string | undefined;
+  realisedProfitLossArray: TProfitLoss[];
   unrealisedProfitLossArray?: {
     category: string;
     symbol: string;
@@ -34,21 +39,28 @@ function PerformanceMetrics({
   conversionRates: TConversionRates;
 }) {
   const [unrealisedProfitLoss, setUnrealisedProfitLoss] = useState<number>();
+  const [realisedProfitLoss, setRealisedProfitLoss] = useState<number>();
 
   useEffect(() => {
-    if (assets && conversionRates) {
-      const filteredUnrealizedProfitsLosses = unrealisedProfitLossArray?.filter(
-        (res) => res.interval === timeInterval
-      );
+    const filteredUnrealizedProfitsLosses = unrealisedProfitLossArray?.filter(
+      (res) => res.interval === timeInterval
+    );
+    const filteredRealizedProfitsLosses = realisedProfitLossArray?.filter(
+      (res) => res.interval === timeInterval
+    );
 
-      const unrealisedProfitLoss = filteredUnrealizedProfitsLosses?.reduce(
-        (acc, entry) => acc + parseFloat(entry.unrealisedProfitLoss),
-        0
-      );
+    const unrealisedProfitLoss = filteredUnrealizedProfitsLosses?.reduce(
+      (acc, entry) => acc + parseFloat(entry.unrealisedProfitLoss),
+      0
+    );
+    const realisedProfitLoss = filteredRealizedProfitsLosses?.reduce(
+      (acc, entry) => acc + parseFloat(entry.realisedProfitLoss),
+      0
+    );
 
-      setUnrealisedProfitLoss(unrealisedProfitLoss);
-    }
-  }, [assets, conversionRates, timeInterval, unrealisedProfitLossArray]);
+    setUnrealisedProfitLoss(unrealisedProfitLoss);
+    setRealisedProfitLoss(realisedProfitLoss);
+  }, [timeInterval, unrealisedProfitLossArray, realisedProfitLossArray]);
   const formatter = new Intl.NumberFormat(
     numberSystem === "Indian" ? "en-IN" : "en-US",
     {
@@ -60,12 +72,12 @@ function PerformanceMetrics({
   );
 
   return (
-    <div className="mt-4">
-      <div className="flex justify-between items-center mb-3">
+    <div>
+      <div className="flex justify-between items-center mb-1">
         <div>
           <p className="text-muted-foreground text-xs">Current Value</p>
           <div className="flex items-center gap-1">
-            <span className="text-xl lg:text-2xl font-bold">
+            <span className="text-xl font-bold">
               {conversionRates && assets.length
                 ? dashboardAmountVisibility
                   ? formatter.format(
@@ -113,7 +125,7 @@ function PerformanceMetrics({
                 : "text-green-400"
             )}
           >
-            <div className="text-xl lg:text-2xl font-bold">
+            <div className="text-xl font-bold">
               {unrealisedProfitLoss ? (
                 <div className="flex items-center">
                   {conversionRates &&
@@ -138,7 +150,7 @@ function PerformanceMetrics({
                 "- - -"
               )}
               <div className="text-sm flex items-center">
-                {unrealisedProfitLoss
+                {unrealisedProfitLoss !== undefined
                   ? dashboardAmountVisibility
                     ? formatter.format(unrealisedProfitLoss)
                     : "* ".repeat(5)
@@ -166,8 +178,8 @@ function PerformanceMetrics({
                 : "text-green-400"
             )}
           >
-            <span className="text-xl lg:text-2xl font-bold">
-              {assets.length && realisedProfitLoss
+            <span className="text-xl font-bold">
+              {realisedProfitLoss !== undefined
                 ? dashboardAmountVisibility
                   ? formatter.format(+realisedProfitLoss)
                   : "* ".repeat(5)

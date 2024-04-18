@@ -2,7 +2,7 @@
 
 import { authOptions } from "@/lib/authOptions";
 import { findTopMatchingAssets, transformToResultFormat } from "@/lib/helper";
-import { TTwelveDataResult } from "@/lib/types";
+import { TTwelveDataResult } from "@/types/types";
 import {
   deleteAssetByIdAndUserId,
   getDeccryptedAssetsByUserId,

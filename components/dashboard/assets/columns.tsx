@@ -1,5 +1,5 @@
 import { cn, formatToLocaleString } from "@/lib/helper";
-import { TAsset, TConversionRates, TInterval } from "@/lib/types";
+import { TAsset, TConversionRates, TInterval } from "@/types/types";
 import { ColumnDef } from "@tanstack/react-table";
 import { ArrowDown, ArrowUp, ArrowUpDown } from "lucide-react";
 

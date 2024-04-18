@@ -19,7 +19,7 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import { Separator } from "./ui/separator";
-import { TAsset } from "@/lib/types";
+import { TAsset } from "@/types/types";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { DatePicker } from "./ui/date-picker";

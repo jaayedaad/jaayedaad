@@ -7,7 +7,7 @@ import CryptoJS from "crypto-js";
 import { createId } from "@paralleldrive/cuid2";
 import findExistingAssetFromSia from "@/helper/sia/findExisitingAsset";
 import findExistingCategoryFromSia from "@/helper/sia/findExisitingCategory";
-import getAllTransactions from "@/sia/getAllTransactions";
+import getAllTransactions from "@/helper/sia/getAllTransactions";
 import {
   decryptObjectValues,
   encryptDataValue,

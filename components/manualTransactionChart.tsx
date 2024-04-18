@@ -1,5 +1,5 @@
 "use client";
-import { TAsset, TConversionRates, TInterval } from "@/lib/types";
+import { TAsset, TConversionRates, TInterval } from "@/types/types";
 import {
   formatIndianNumber,
   formatInternationalNumber,
@@ -14,25 +14,27 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
-import { prepareLineChartData } from "@/helper/prepareLineChartData";
-import { accumulateLineChartData } from "@/helper/lineChartDataAccumulator";
 
 interface ManualTransactionChartProps {
-  manualCategoryAssets: TAsset[];
   timeInterval?: TInterval | undefined;
   dashboardAmountVisibility: boolean;
   numberSystem: string;
   defaultCurrency: string;
-  conversionRates: TConversionRates;
+  chartData: {
+    interval: string;
+    data: {
+      name: string;
+      amt: number;
+    }[];
+  }[];
 }
 
 function ManualTransactionChart({
-  manualCategoryAssets,
   timeInterval,
+  chartData,
   dashboardAmountVisibility,
   numberSystem,
   defaultCurrency,
-  conversionRates,
 }: ManualTransactionChartProps) {
   const formatter = new Intl.NumberFormat(
     numberSystem === "Indian" ? "en-IN" : "en-US",
@@ -48,31 +50,30 @@ function ManualTransactionChart({
       name: string;
       amt: number;
     }[]
-  >();
-  const historicalData = prepareHistoricalDataForManualCategory(
-    manualCategoryAssets,
-    conversionRates
-  );
+  >(chartData.filter((data) => data.interval === "All")[0].data);
 
-  const lineChartData = accumulateLineChartData(historicalData);
+  // const lineChartData = accumulateLineChartData(historicalData);
 
-  const seen: Record<string, boolean> = {};
-  const uniqueData = lineChartData.filter((item) => {
-    if (!seen[item.name]) {
-      seen[item.name] = true;
-      return true;
-    }
-    return false;
-  });
+  // const seen: Record<string, boolean> = {};
+  // const uniqueData = lineChartData.filter((item) => {
+  //   if (!seen[item.name]) {
+  //     seen[item.name] = true;
+  //     return true;
+  //   }
+  //   return false;
+  // });
 
-  uniqueData.sort(
-    (a, b) => new Date(b.name).getTime() - new Date(a.name).getTime()
-  );
+  // uniqueData.sort(
+  //   (a, b) => new Date(b.name).getTime() - new Date(a.name).getTime()
+  // );
 
   useEffect(() => {
     timeInterval &&
-      prepareLineChartData(timeInterval, uniqueData, setDataToShow);
-  }, [timeInterval]);
+      setDataToShow(
+        chartData.filter((data) => data.interval === timeInterval)[0].data
+      );
+    // prepareLineChartData(timeInterval, uniqueData, setDataToShow);
+  }, [timeInterval, chartData]);
 
   return (
     <div className="h-full">

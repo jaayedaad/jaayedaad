@@ -18,7 +18,7 @@ import CreateCategoryButton from "./createCategoryButton";
 import dynamicIconImports from "lucide-react/dynamicIconImports";
 import DynamicIcon from "./dynamicIcon";
 import JaayedaadLogo from "@/public/branding/jaayedaadLogo";
-import { TUserManualCategory } from "@/lib/types";
+import { TUserManualCategory } from "@/types/types";
 
 function Sidebar({
   usersManualCategories,

@@ -4,7 +4,7 @@ import { TWELVEDATA_API_KEY } from "@/constants/env";
 import { prepareHistoricalDataForManualCategory } from "@/helper/manualAssetsHistoryMaker";
 import { calculateCurrentValue } from "@/lib/assetCalculation";
 import { areDatesEqual } from "@/lib/helper";
-import { TAsset, TTwelveDataInstrumentQuote } from "@/lib/types";
+import { TAsset, TTwelveDataInstrumentQuote } from "@/types/types";
 import { getConversionRate } from "@/services/thirdParty/currency";
 
 export const getAssetQuoteFromApiBySymbol = async (

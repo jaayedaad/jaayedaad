@@ -1,4 +1,4 @@
-import { TAsset, TProfitLoss } from "@/lib/types";
+import { TAsset, TProfitLoss } from "@/types/types";
 import {
   calculateTotalQuantity,
   calculateTotalValue,
@@ -23,12 +23,13 @@ export function calculateRealisedProfitLoss(
     { label: "1w", days: 7 },
     { label: "1m", days: 30 },
     { label: "1y", days: 365 },
+    { label: "All", days: Infinity },
   ];
 
   intervals.forEach(({ label, days }) => {
     const currentDate = new Date();
     const pastDate = new Date(currentDate);
-    pastDate.setDate(currentDate.getDate() - days);
+    pastDate.setDate(currentDate.getDate() - (isFinite(days) ? days : 0));
 
     let realisedProfitLoss = 0;
 
@@ -65,80 +66,7 @@ export function calculateRealisedProfitLoss(
     });
   });
 
-  realisedProfitsLosses.push({
-    interval: "All",
-    realisedProfitLoss: calculateRealisedProfitLossAll(
-      assets,
-      conversionRate
-    ).toString(),
-  });
-
   return realisedProfitsLosses;
-}
-
-// Function to calculate realized profit/loss for each asset
-function calculateRealisedProfitLossAll(
-  assets: TAsset[] | undefined,
-  conversionRate: {
-    [currency: string]: number;
-  }
-) {
-  const realisedProfitsLosses: {
-    id: string;
-    realisedProfitLoss: string;
-  }[] = [];
-
-  assets?.forEach((asset) => {
-    // Initialize quantities for buy and sell transactions
-    let realisedProfitLoss = 0;
-
-    asset.transactions.forEach((transaction) => {
-      const assetCurrency = asset.buyCurrency.toLowerCase();
-      const currencyConversion = conversionRate[assetCurrency];
-      const multiplier = 1 / currencyConversion;
-      if (transaction.type === "sell") {
-        const sortedTransactions = asset.transactions.sort(
-          (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
-        );
-        const pastTransactions = sortedTransactions.filter(
-          (pastTransaction) => {
-            const transactionDateToCompare = new Date(pastTransaction.date);
-            return transactionDateToCompare < new Date(transaction.date);
-          }
-        );
-        let avgBuyPrice: number;
-        if (asset.symbol) {
-          const valueTillTransaction = calculateTotalValue(pastTransactions);
-          const quantityTillTransaction = pastTransactions.reduce(
-            (sum, transaction) => {
-              return transaction.type === "buy"
-                ? sum + parseFloat(transaction.quantity)
-                : sum;
-            },
-            0
-          );
-
-          avgBuyPrice = valueTillTransaction / quantityTillTransaction;
-        } else {
-          avgBuyPrice = +asset.buyPrice;
-        }
-        realisedProfitLoss +=
-          (+transaction.price - avgBuyPrice) *
-          +transaction.quantity *
-          multiplier;
-      }
-    });
-
-    realisedProfitsLosses.push({
-      id: asset.id,
-      realisedProfitLoss: realisedProfitLoss.toFixed(2),
-    });
-  });
-  const value = realisedProfitsLosses?.reduce((acc, current) => {
-    return acc + parseFloat(current.realisedProfitLoss);
-  }, 0);
-
-  return value;
 }
 
 function calculateAverageBuyPrice(

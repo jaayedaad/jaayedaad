@@ -1,5 +1,5 @@
 "use client";
-import { TAsset, TConversionRates } from "@/lib/types";
+import { TAsset, TConversionRates } from "@/types/types";
 import { useState } from "react";
 import {
   PieChart,

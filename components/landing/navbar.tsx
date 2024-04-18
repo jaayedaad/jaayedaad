@@ -1,7 +1,7 @@
 "use client";
 import { signIn } from "next-auth/react";
 import FlashyButton from "../ui/flashy-button";
-import { TUser } from "@/lib/types";
+import { TUser } from "@/types/types";
 import { useRouter } from "next/navigation";
 
 function Navbar({ userSignedIn }: { userSignedIn: TUser | null }) {

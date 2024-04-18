@@ -1,7 +1,7 @@
 "use server";
 
 import { prisma } from "@/lib/prisma";
-import { TPreference } from "@/lib/types";
+import { TPreference } from "@/types/types";
 
 export const createDefaultPreference = async (
   userId: string

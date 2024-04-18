@@ -10,7 +10,10 @@ import { getHistoricalData } from "@/services/thirdParty/twelveData";
 import { getConversionRate } from "@/services/thirdParty/currency";
 import { getPreferenceFromUserId } from "@/services/preference";
 import { getUnrealisedProfitLossArray } from "@/helper/unrealisedValueCalculator";
-import { TUnrealisedProfitLoss } from "@/lib/types";
+import { TAsset, TUnrealisedProfitLoss } from "@/types/types";
+import { getAssetTableData } from "@/services/dashboard/assets/assetTableData";
+import { calculateRealisedProfitLoss } from "@/helper/realisedValueCalculator";
+import { getLineChartData } from "@/helper/prepareLineChartData";
 
 const reverseAssetTypeMappings: Record<string, string> = {
   stocks: "common stock",
@@ -54,6 +57,17 @@ export default async function AssetPage({
   }
 
   let unrealisedResults: TUnrealisedProfitLoss[] = [];
+  let lineChartData: {
+    interval: string;
+    data: {
+      name: string;
+      amt: number;
+    }[];
+  }[] = [];
+  let assetTableData: {
+    interval: string;
+    data: TAsset[];
+  }[] = [];
 
   if (historicalData.length) {
     unrealisedResults = getUnrealisedProfitLossArray(
@@ -61,7 +75,14 @@ export default async function AssetPage({
       filteredAssets,
       currencyConversionRates
     );
+    lineChartData = await getLineChartData(historicalData);
+    assetTableData = await getAssetTableData(filteredAssets, unrealisedResults);
   }
+
+  const realisedResults = calculateRealisedProfitLoss(
+    assets,
+    currencyConversionRates
+  );
 
   return (
     <Page
@@ -69,11 +90,14 @@ export default async function AssetPage({
       user={session.user}
       assetCategory={pageParams.toLowerCase()}
       reverseMappedName={reverseMappedName}
+      assetTableData={assetTableData}
       filteredAssets={filteredAssets}
       historicalData={historicalData}
+      lineChartData={lineChartData}
       conversionRates={currencyConversionRates}
       preferences={preferences}
       unrealisedResults={unrealisedResults}
+      realisedResults={realisedResults}
     />
   );
 }

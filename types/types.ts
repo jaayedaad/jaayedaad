@@ -131,4 +131,11 @@ export type TUnrealisedProfitLoss = {
   unrealisedProfitLoss: string;
 };
 
+export type TGroupedAssets = {
+  category: string;
+  currentValue: number;
+  compareValue: number;
+  valueAtInterval: number;
+}[];
+
 export type TManualCategoryIcons = keyof typeof dynamicIconImports;

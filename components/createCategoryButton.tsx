@@ -26,7 +26,7 @@ import DynamicIcon from "./dynamicIcon";
 import { manualCategoryIcons as iconsArray } from "@/constants/manualCategoryIcons";
 import { cn } from "@/lib/helper";
 import { toast } from "sonner";
-import { TManualCategoryIcons } from "@/lib/types";
+import { TManualCategoryIcons } from "@/types/types";
 
 function CreateCategoryButton() {
   const [categoryName, setCategoryName] = useState("");

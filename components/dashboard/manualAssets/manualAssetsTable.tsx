@@ -18,7 +18,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import React from "react";
-import { TAsset, TConversionRates } from "@/lib/types";
+import { TAsset, TConversionRates } from "@/types/types";
 import ManualAssetsTableCard from "@/components/mobile/manualAssetsTableCard";
 
 interface DataTableProps<TValue> {

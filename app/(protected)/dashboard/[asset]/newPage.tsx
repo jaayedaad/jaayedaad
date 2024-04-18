@@ -4,9 +4,10 @@ import {
   TConversionRates,
   TInterval,
   TPreference,
+  TProfitLoss,
   TUnrealisedProfitLoss,
   TUser,
-} from "@/lib/types";
+} from "@/types/types";
 import AssetPieChart from "@/components/assetPieChart";
 import AssetTable from "@/components/assetTable";
 import ChangeInterval from "@/components/changeInterval";
@@ -14,8 +15,6 @@ import ManualTransactionChart from "@/components/manualTransactionChart";
 import PortfolioLineChart from "@/components/portfolioLineChart";
 import LoadingSpinner from "@/components/ui/loading-spinner";
 import { defaultCategories } from "@/constants/category";
-import { getUnrealisedProfitLossArray } from "@/helper/unrealisedValueCalculator";
-import { redirect } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import AssetMarqueeBar from "@/components/assetMarqueeBar";
@@ -31,40 +30,39 @@ function Page({
   filteredAssets,
   historicalData,
   conversionRates,
-  preferences,
   unrealisedResults,
+  realisedResults,
+  lineChartData,
+  preferences,
+  assetTableData,
 }: {
   user: TUser;
   username: string;
   assetCategory: string;
   reverseMappedName: string;
-  filteredAssets?: TAsset[];
-  historicalData: any;
+  filteredAssets: TAsset[];
+  historicalData: any[];
   conversionRates: TConversionRates;
   preferences: TPreference;
   unrealisedResults: TUnrealisedProfitLoss[];
+  realisedResults: TProfitLoss[];
+  lineChartData: {
+    interval: string;
+    data: {
+      name: string;
+      amt: number;
+    }[];
+  }[];
+  assetTableData: {
+    interval: string;
+    data: TAsset[];
+  }[];
 }) {
   const [assetsToView, setAssetsToView] = useState<TAsset[] | undefined>(
     filteredAssets
   );
 
-  const categoryExist = filteredAssets?.some(
-    (asset) => asset.category.toLowerCase() === reverseMappedName
-  );
-
-  let manualCategoryAsset: TAsset[] | undefined;
-  if (categoryExist) {
-    manualCategoryAsset = filteredAssets?.filter(
-      (asset) => asset.category.toLowerCase() === reverseMappedName
-    );
-  }
-
-  const [manualCategoryAssets, setManualCategoryAssets] = useState<
-    TAsset[] | undefined
-  >(manualCategoryAsset);
   const [timeInterval, setTimeInterval] = useState<TInterval>("1d");
-  const [unrealisedProfitLossArray, setUnrealisedProfitLossArray] =
-    useState<TUnrealisedProfitLoss[]>(unrealisedResults);
   const [timeOfDay, setTimeOfDay] = useState("");
 
   useEffect(() => {
@@ -79,69 +77,10 @@ function Page({
     }
   }, []);
 
-  useEffect(() => {
-    async function getPageData() {
-      if (filteredAssets && filteredAssets.length) {
-        if (!defaultCategories.includes(reverseMappedName)) {
-          if (!categoryExist) {
-            redirect("/dashboard");
-          }
-        } else {
-          if (
-            !filteredAssets.filter(
-              (asset) => asset.category.toLowerCase() === reverseMappedName
-            ).length
-          ) {
-            redirect("/dashboard");
-          } else {
-            if (historicalData) {
-              const unrealisedResults = getUnrealisedProfitLossArray(
-                historicalData,
-                filteredAssets,
-                conversionRates
-              );
-              setUnrealisedProfitLossArray(unrealisedResults);
-            }
-          }
-        }
-      }
-    }
-
-    getPageData();
-  }, [
-    categoryExist,
-    conversionRates,
-    filteredAssets,
-    historicalData,
-    reverseMappedName,
-  ]);
-
-  // Get today's date
-  const today = new Date();
-
-  // Subtract one day
-  const yesterday = new Date(today);
-  yesterday.setDate(today.getDate() - 1);
-
   const onChange = (value: TInterval) => {
     setTimeInterval(value);
-    if (filteredAssets) {
-      const updatedAssetsToView = filteredAssets.map((asset) => {
-        const matchingIntervalData = unrealisedProfitLossArray?.find(
-          (data) => data.symbol === asset.symbol && data.interval === value
-        );
-
-        if (matchingIntervalData) {
-          return {
-            ...asset,
-            valueAtInterval: +matchingIntervalData.valueAtInterval,
-            compareValue: +matchingIntervalData.compareValue,
-          };
-        }
-        return asset;
-      });
-      setAssetsToView(updatedAssetsToView);
-    }
+    const tableData = assetTableData.find((data) => data.interval === value);
+    setAssetsToView(tableData?.data);
   };
 
   return filteredAssets ? (
@@ -191,8 +130,7 @@ function Page({
               {historicalData ? (
                 defaultCategories.includes(reverseMappedName) ? (
                   <PortfolioLineChart
-                    data={historicalData}
-                    view={reverseMappedName}
+                    chartData={lineChartData}
                     timeInterval={timeInterval}
                     dashboardAmountVisibility={
                       preferences.dashboardAmountVisibility
@@ -201,18 +139,15 @@ function Page({
                     defaultCurrency={preferences.defaultCurrency}
                   />
                 ) : (
-                  manualCategoryAssets && (
-                    <ManualTransactionChart
-                      manualCategoryAssets={manualCategoryAssets}
-                      timeInterval={timeInterval}
-                      dashboardAmountVisibility={
-                        preferences.dashboardAmountVisibility
-                      }
-                      numberSystem={preferences.numberSystem}
-                      defaultCurrency={preferences.defaultCurrency}
-                      conversionRates={conversionRates}
-                    />
-                  )
+                  <ManualTransactionChart
+                    chartData={lineChartData}
+                    timeInterval={timeInterval}
+                    dashboardAmountVisibility={
+                      preferences.dashboardAmountVisibility
+                    }
+                    numberSystem={preferences.numberSystem}
+                    defaultCurrency={preferences.defaultCurrency}
+                  />
                 )
               ) : (
                 <div>
@@ -236,20 +171,16 @@ function Page({
                     Collection of your {assetCategory}
                   </p>
                 </div>
-                <div>
-                  <p className="text-muted-foreground text-right text-xs xl:text-sm">
-                    As on ({yesterday.toLocaleDateString("en-GB")})
-                  </p>
-                </div>
               </div>
               <div className="mt-6 overflow-auto">
                 {assetsToView ? (
                   <AssetTable
                     data={assetsToView}
                     historicalData={historicalData}
-                    view={reverseMappedName}
-                    timelineInterval={timeInterval}
                     conversionRates={conversionRates}
+                    unrealisedResults={unrealisedResults}
+                    realisedResults={realisedResults}
+                    lineChartData={lineChartData}
                     preferences={preferences}
                   />
                 ) : (

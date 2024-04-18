@@ -1,4 +1,4 @@
-import { TConversionRates } from "@/lib/types";
+import { TConversionRates } from "@/types/types";
 import { getPreferenceFromUserId } from "../preference";
 
 export const getConversionRate = async (

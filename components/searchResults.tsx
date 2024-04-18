@@ -14,7 +14,7 @@ import { useState } from "react";
 import { ScrollArea } from "./ui/scroll-area";
 import TransactionForm from "./transactionForm";
 import { cn } from "@/lib/helper";
-import { TTwelveDataResult } from "@/lib/types";
+import { TTwelveDataResult } from "@/types/types";
 import { getAssetQuoteFromApiBySymbol } from "@/services/thirdParty/twelveData";
 
 type searchResultProps = {

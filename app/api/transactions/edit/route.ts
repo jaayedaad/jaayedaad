@@ -8,7 +8,7 @@ import {
 } from "@/helper/transactionValueCalculator";
 import { isValidTransactions } from "@/helper/canSellAssets";
 import CryptoJS from "crypto-js";
-import { getAssetById } from "@/sia/getAssetById";
+import { getAssetById } from "@/helper/sia/getAssetById";
 import { encryptDataValue, encryptObjectValues } from "@/lib/dataSecurity";
 import {
   DATABASE_URL,

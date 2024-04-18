@@ -4,7 +4,7 @@ import {
   SIA_ADMIN_USERNAME,
   SIA_API_URL,
 } from "@/constants/env";
-import { TSiaObject } from "@/lib/types";
+import { TSiaObject } from "@/types/types";
 import CryptoJS from "crypto-js";
 
 export default async function findExistingCategoryFromSia(

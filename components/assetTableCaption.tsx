@@ -20,7 +20,7 @@ import {
 import { currencies } from "@/constants/currency";
 import { Loader2 } from "lucide-react";
 import { cn } from "@/lib/helper";
-import { TPreference } from "@/lib/types";
+import { TPreference } from "@/types/types";
 import { updatePreferenceAction } from "@/app/(protected)/dashboard/settings/actions";
 import { toast } from "sonner";
 
