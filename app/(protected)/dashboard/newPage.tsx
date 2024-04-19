@@ -16,6 +16,7 @@ import {
   TUser,
   TUnrealisedProfitLoss,
   TGroupedAssets,
+  THistoricalData,
 } from "@/types/types";
 import WhitelistingModal from "@/components/onboarding/whitelistingModal";
 import MockLineChart from "@/components/mock/mockLineChart";
@@ -45,7 +46,7 @@ export function Dashboard({
   whitelisted: boolean;
   assets: TAsset[];
   conversionRates: TConversionRates;
-  historicalData: any; // TODO: define type in return of this method from ssr
+  historicalData: THistoricalData[]; // TODO: define type in return of this method from ssr
   preferences: TPreference;
   dashboardTableData: {
     interval: string;

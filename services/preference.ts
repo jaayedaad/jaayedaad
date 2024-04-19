@@ -37,7 +37,7 @@ export const getPreferenceFromUserId = async (
 
 export const updatePreference = async (
   userId: string,
-  preference: any
+  preference: Partial<TPreference>
 ): Promise<TPreference> => {
   try {
     const updatedPreference = await prisma.preference.update({

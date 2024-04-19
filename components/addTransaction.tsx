@@ -46,19 +46,17 @@ export default function AddTransaction({
       const resultsFromApi = await searchAssetsFromApi(searchQuery);
 
       // Merge resultsFromDB with resultsFromAPI, keeping all items from resultsFromDB and adding unmatched items from resultsFromAPI
-      const mergedResults = resultsFromDB.map((dbResult: any) => {
-        const matchingResult = resultsFromApi.find(
-          (apiResult: any) =>
-            apiResult.instrument_name === dbResult.instrument_name
+      const mergedResults = resultsFromDB.map((dbResult) => {
+        const matchingResult = resultsFromApi?.find(
+          (apiResult) => apiResult.instrument_name === dbResult.instrument_name
         );
         return matchingResult ? { ...dbResult, ...matchingResult } : dbResult;
       });
 
       // Add unmatched items from resultsFromAPI
-      resultsFromApi.forEach((apiResult: any) => {
+      resultsFromApi?.forEach((apiResult) => {
         const isUnmatched = !resultsFromDB.some(
-          (dbResult: any) =>
-            dbResult.instrument_name === apiResult.instrument_name
+          (dbResult) => dbResult.instrument_name === apiResult.instrument_name
         );
         if (isUnmatched) {
           mergedResults.push(apiResult);

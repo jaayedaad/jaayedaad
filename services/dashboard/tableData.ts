@@ -25,7 +25,12 @@ export const getDashboardTableData = async (
     );
 
     const intervalDataSumByType = intervalData.reduce(
-      (accumulator: any, data) => {
+      (
+        accumulator: {
+          [category: string]: number;
+        },
+        data
+      ) => {
         const { category, valueAtInterval } = data;
         accumulator[category] = (accumulator[category] || 0) + valueAtInterval;
         return accumulator;

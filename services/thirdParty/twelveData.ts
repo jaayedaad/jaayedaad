@@ -4,7 +4,14 @@ import { TWELVEDATA_API_KEY } from "@/constants/env";
 import { prepareHistoricalDataForManualCategory } from "@/helper/manualAssetsHistoryMaker";
 import { calculateCurrentValue } from "@/lib/assetCalculation";
 import { areDatesEqual } from "@/lib/helper";
-import { TAsset, TTwelveDataInstrumentQuote } from "@/types/types";
+import {
+  TAsset,
+  THistoricalData,
+  TTwelveDataHistoricalData,
+  TTwelveDataHistoricalDataErrorResponse,
+  TTwelveDataInstrumentQuote,
+  TTwelveDataResult,
+} from "@/types/types";
 import { getConversionRate } from "@/services/thirdParty/currency";
 
 export const getAssetQuoteFromApiBySymbol = async (
@@ -65,7 +72,7 @@ export const getHistoricalData = async (userId: string, assets: TAsset[]) => {
     if (!conversionRate) {
       throw new Error("Error fetching conversion rate");
     }
-    let historicalData = [];
+    let historicalData: THistoricalData[] = [];
     for (const asset of assets) {
       if (
         !asset.isManualEntry &&
@@ -141,23 +148,26 @@ export const getHistoricalData = async (userId: string, assets: TAsset[]) => {
           );
         }
 
-        const data = await res.json();
-        if (data.code === 401) {
-          throw new Error("Twelve Data API key is invalid");
-        } else if (data.code === 429) {
-          throw new Error("Twelve Data API rate limit exceeded");
-        }
-
-        // remove historical data for past dates for current day transactions
-        if (
-          areDatesEqual(new Date(formattedToday), new Date(formattedStartDate))
-        ) {
-          data.values = data.values.slice(0, 1);
-        }
-
-        if (data.code === undefined) {
+        const response = await res.json();
+        if (response.code) {
+          if (response.code === 401) {
+            throw new Error("Twelve Data API key is invalid");
+          } else if (response.code === 429) {
+            throw new Error("Twelve Data API rate limit exceeded");
+          }
+        } else {
+          const data: THistoricalData = response;
+          // remove historical data for past dates for current day transactions
+          if (
+            areDatesEqual(
+              new Date(formattedToday),
+              new Date(formattedStartDate)
+            )
+          ) {
+            data.values = data.values.slice(0, 1);
+          }
           // Calculate total value of asset and add it to the data object
-          data.values.forEach((dayData: any) => {
+          data.values.forEach((dayData) => {
             dayData.date = new Date(dayData.datetime).getTime() / 1000;
             data.assetType = asset.category;
             data.assetSymbol = asset.symbol;
@@ -166,7 +176,7 @@ export const getHistoricalData = async (userId: string, assets: TAsset[]) => {
             const multiplier = 1 / currencyConversion;
 
             if (dayData.close) {
-              dayData.value = dayData.close * +asset.quantity * multiplier;
+              dayData.value = +dayData.close * +asset.quantity * multiplier;
             }
           });
 
@@ -177,12 +187,8 @@ export const getHistoricalData = async (userId: string, assets: TAsset[]) => {
           [asset],
           conversionRate
         )[0];
-        const manualAssetHistoryWithAssetType = {
-          ...manualAssetHistory,
-          assetType: asset.category,
-        };
 
-        historicalData.push(manualAssetHistoryWithAssetType);
+        historicalData.push(manualAssetHistory);
       }
     }
 
@@ -236,7 +242,7 @@ export const searchAssetsFromApi = async (searchQuery: string) => {
       if (!res.ok) {
         throw new Error(`API request failed with status ${res.status}`);
       }
-      const { data } = await res.json();
+      const { data }: { data: TTwelveDataResult[] } = await res.json();
       return data;
     } catch (error) {
       console.error(
