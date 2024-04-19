@@ -67,13 +67,13 @@ export default async function PublicProfile({
   yesterday.setDate(today.getDate() - 1);
 
   return (
-    <div className="h-screen">
+    <div className="lg:h-screen">
       {preferences.publicVisibility ? (
         <div className="h-full">
           {preferences && (
-            <div className="grid grid-cols-5 grid-rows-7 h-full gap-6 p-6">
+            <div className="grid grid-cols-1 lg:grid-cols-6 lg:grid-rows-7 h-full gap-6 p-6">
               {preferences.showHoldingsInPublic && (
-                <div className="col-span-2 row-span-3 bg-[#171326] shadow-2xl border rounded-xl p-6">
+                <div className="lg:col-span-2 lg:row-span-3 bg-[#171326]/70 backdrop-blur shadow-2xl border rounded-xl p-6">
                   <AssetPieChart
                     view="dashboard"
                     assets={assets}
@@ -86,9 +86,9 @@ export default async function PublicProfile({
                   />
                 </div>
               )}
-              {/* Performance */}
+              {/* Portfolio Performance */}
               {preferences.showMetricsInPublic && (
-                <div className="col-span-3 row-span-3 bg-[#171326] shadow-2xl border rounded-xl p-6">
+                <div className="lg:col-span-4 lg:row-span-3 bg-[#171326]/70 backdrop-blur shadow-2xl border rounded-xl p-6">
                   {historicalData ? (
                     historicalData.length ? (
                       <PortfolioLineChart
@@ -127,7 +127,7 @@ export default async function PublicProfile({
 
               {/* Asset Table */}
               {preferences.showHoldingsInPublic && (
-                <div className="col-span-3 row-span-4 bg-[#171326] shadow-2xl border rounded-xl p-6">
+                <div className="flex flex-col lg:col-span-4 lg:row-span-4 bg-[#171326]/70 backdrop-blur shadow-2xl border rounded-xl p-6">
                   <div className="flex justify-between">
                     <div className="flex flex-col">
                       <h3 className="font-semibold">Asset Overview</h3>
@@ -141,7 +141,7 @@ export default async function PublicProfile({
                       </p>
                     </div>
                   </div>
-                  <div className="mt-6">
+                  <div className="mt-6 overflow-auto">
                     <AssetTable
                       isPublic
                       data={assets}
@@ -156,11 +156,13 @@ export default async function PublicProfile({
               )}
               {/* Metrics */}
               {preferences.showMetricsInPublic && (
-                <div className="col-span-2 row-span-4 bg-[#171326] shadow-2xl border rounded-xl p-6">
-                  <h3 className="font-semibold">Performance Metrics</h3>
-                  <p className="text-muted-foreground text-xs xl:text-sm">
-                    Analyze investment performance
-                  </p>
+                <div className="lg:col-span-2 lg:row-span-4 flex flex-col justify-between bg-[#171326]/70 backdrop-blur shadow-2xl border rounded-xl p-6">
+                  <div>
+                    <h3 className="font-semibold">Performance Metrics</h3>
+                    <p className="text-muted-foreground text-xs xl:text-sm">
+                      Analyze investment performance
+                    </p>
+                  </div>
 
                   <PerformanceMetrics
                     assets={assets}
