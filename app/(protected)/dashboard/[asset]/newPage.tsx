@@ -2,6 +2,7 @@
 import {
   TAsset,
   TConversionRates,
+  THistoricalData,
   TInterval,
   TPreference,
   TProfitLoss,
@@ -41,7 +42,7 @@ function Page({
   assetCategory: string;
   reverseMappedName: string;
   filteredAssets: TAsset[];
-  historicalData: any[];
+  historicalData: THistoricalData[];
   conversionRates: TConversionRates;
   preferences: TPreference;
   unrealisedResults: TUnrealisedProfitLoss[];
@@ -127,38 +128,26 @@ function Page({
               />
             </div>
             <div className="lg:row-span-3 lg:col-span-2 bg-[#171326]/70 backdrop-blur shadow-2xl border rounded-xl p-4">
-              {historicalData ? (
-                defaultCategories.includes(reverseMappedName) ? (
-                  <PortfolioLineChart
-                    chartData={lineChartData}
-                    timeInterval={timeInterval}
-                    dashboardAmountVisibility={
-                      preferences.dashboardAmountVisibility
-                    }
-                    numberSystem={preferences.numberSystem}
-                    defaultCurrency={preferences.defaultCurrency}
-                  />
-                ) : (
-                  <ManualTransactionChart
-                    chartData={lineChartData}
-                    timeInterval={timeInterval}
-                    dashboardAmountVisibility={
-                      preferences.dashboardAmountVisibility
-                    }
-                    numberSystem={preferences.numberSystem}
-                    defaultCurrency={preferences.defaultCurrency}
-                  />
-                )
+              {defaultCategories.includes(reverseMappedName) ? (
+                <PortfolioLineChart
+                  chartData={lineChartData}
+                  timeInterval={timeInterval}
+                  dashboardAmountVisibility={
+                    preferences.dashboardAmountVisibility
+                  }
+                  numberSystem={preferences.numberSystem}
+                  defaultCurrency={preferences.defaultCurrency}
+                />
               ) : (
-                <div>
-                  <h3 className="font-semibold">Portfolio Performance</h3>
-                  <p className="text-muted-foreground text-sm">
-                    Insight into your portfolio&apos;s value dynamics
-                  </p>
-                  <div className="h-40 flex items-center">
-                    <LoadingSpinner />
-                  </div>
-                </div>
+                <ManualTransactionChart
+                  chartData={lineChartData}
+                  timeInterval={timeInterval}
+                  dashboardAmountVisibility={
+                    preferences.dashboardAmountVisibility
+                  }
+                  numberSystem={preferences.numberSystem}
+                  defaultCurrency={preferences.defaultCurrency}
+                />
               )}
             </div>
             <div className="lg:row-span-4 flex flex-col lg:col-span-3 bg-[#171326]/70 backdrop-blur shadow-2xl border rounded-xl p-4">

@@ -1,4 +1,9 @@
-import { AssetPriceUpdate, Preference, Transaction } from "@prisma/client";
+import {
+  AssetPriceUpdate,
+  PerformanceBarOrder,
+  PerformanceBarParameter,
+  Transaction,
+} from "@prisma/client";
 import dynamicIconImports from "lucide-react/dynamicIconImports";
 
 export type TAsset = {
@@ -69,6 +74,64 @@ export type TTwelveDataInstrumentQuote = {
   extended_timestamp?: number;
 };
 
+export type TTwelveDataHistoricalData = {
+  meta: {
+    symbol: string;
+    interval: string;
+    currency: string;
+    exchange_timezone: string;
+    exchange: string;
+    mic_code: string;
+    type: string;
+  };
+  values: {
+    datetime: string;
+    open: string;
+    high: string;
+    low: string;
+    close: string;
+    volume: string;
+  }[];
+  status: string;
+};
+
+export type TTwelveDataHistoricalDataErrorResponse = {
+  code: number;
+  message: string;
+  status: string;
+  meta: {
+    symbol: string;
+    interval: string;
+    exchange: string;
+  };
+};
+
+export type THistoricalData = {
+  meta?: {
+    symbol: string;
+    interval: string;
+    currency: string;
+    exchange_timezone: string;
+    exchange: string;
+    mic_code: string;
+    type: string;
+  };
+  values: {
+    datetime: string;
+    open: string;
+    high: string;
+    low: string;
+    close: string;
+    volume: string;
+    previous_close: string;
+    date: number;
+    value: number;
+  }[];
+  status?: string;
+  assetType: string;
+  assetSymbol: string | null;
+};
+
 export type TInterval = "1d" | "1w" | "1m" | "1y" | "All";
 
 export type TProfitLoss = {
@@ -107,8 +170,8 @@ export type TPreference = {
   numberSystem: string;
   showHoldingsInPublic: boolean;
   showMetricsInPublic: boolean;
-  performanceBarOrder: string;
-  performanceBarParameter: string;
+  performanceBarOrder: PerformanceBarOrder;
+  performanceBarParameter: PerformanceBarParameter;
   dashboardAmountVisibility: boolean;
 };
 

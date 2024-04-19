@@ -1,4 +1,4 @@
-import { TInterval } from "@/types/types";
+import { THistoricalData, TInterval } from "@/types/types";
 import { accumulateLineChartData } from "./lineChartDataAccumulator";
 
 export function prepareLineChartData(
@@ -78,7 +78,7 @@ export function prepareLineChartData(
 }
 
 export const getLineChartData = async (
-  historicalData: any[]
+  historicalData: THistoricalData[]
 ): Promise<
   {
     interval: string;

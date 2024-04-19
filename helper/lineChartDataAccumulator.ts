@@ -1,3 +1,5 @@
+import { THistoricalData } from "@/types/types";
+
 function fillMissingDates(data: { [date: string]: number }): {
   [date: string]: number;
 } {
@@ -72,7 +74,7 @@ function fillMissingDates(data: { [date: string]: number }): {
   return sortedFinalData;
 }
 
-export function accumulateLineChartData(historicalData: any[]) {
+export function accumulateLineChartData(historicalData: THistoricalData[]) {
   // Function to format timestamp to human-readable date
   function formatTimestamp(timestamp: number) {
     const date = new Date(timestamp * 1000);
@@ -102,7 +104,7 @@ export function accumulateLineChartData(historicalData: any[]) {
   historicalData.forEach((asset) => {
     let aggregatedAmountsForAsset: { [date: string]: number } = {};
     // Iterate through prices in each asset
-    asset.values.forEach((price: any) => {
+    asset.values.forEach((price) => {
       const formattedDate = formatTimestamp(price.date);
       // If date already exists, add the value, else initialize it
       if (aggregatedAmountsForAsset[formattedDate]) {

@@ -1,31 +1,5 @@
-import { TAsset, TConversionRates } from "@/types/types";
+import { TAsset, TConversionRates, THistoricalData } from "@/types/types";
 import { calculateTotalQuantity } from "./transactionValueCalculator";
-
-type AssetHistory = {
-  meta: {
-    symbol: string;
-    interval: string;
-    currency: string;
-    exchange_timezone: string;
-    exchange: string;
-    mic_code: string;
-    type: string;
-  };
-  values: {
-    datetime: string;
-    open: string;
-    high: string;
-    low: string;
-    close: string;
-    volume: string;
-    previous_close: string;
-    date: number;
-    value: number;
-  }[];
-  status: string;
-  assetType: string;
-  assetSymbol: string;
-};
 
 // Function to calculate unrealized profit/loss for each asset
 export function calculateUnrealisedProfitLoss(assets: TAsset[]) {
@@ -41,7 +15,7 @@ export function calculateUnrealisedProfitLoss(assets: TAsset[]) {
 }
 
 export function getUnrealisedProfitLossArray(
-  historicalData: AssetHistory[],
+  historicalData: THistoricalData[],
   assets: TAsset[],
   conversionRates: TConversionRates
 ) {
@@ -129,7 +103,7 @@ export function getUnrealisedProfitLossArray(
   return results;
 }
 
-function populateMissingDates(rawData: AssetHistory) {
+function populateMissingDates(rawData: THistoricalData) {
   const values = rawData.values.sort((a, b) => a.date - b.date);
   const today = new Date(); // Get today's date
 

@@ -1,23 +1,10 @@
-import { TAsset, TConversionRates } from "@/types/types";
+import { TAsset, TConversionRates, THistoricalData } from "@/types/types";
 
 export function prepareHistoricalDataForManualCategory(
   manualCategoryAssets: TAsset[],
   conversionRate: TConversionRates
 ) {
-  const historicalData: {
-    assetSymbol: string;
-    values: {
-      datetime: string;
-      open: string;
-      high: string;
-      low: string;
-      close: string;
-      volume: string;
-      previous_close: string;
-      date: number;
-      value: number;
-    }[];
-  }[] = [];
+  const historicalData: THistoricalData[] = [];
   manualCategoryAssets.forEach((asset) => {
     const conversionRateMultiplier =
       1 / conversionRate[asset.buyCurrency.toLowerCase()];
@@ -180,6 +167,7 @@ export function prepareHistoricalDataForManualCategory(
     historicalData.push({
       values: aggregatedAssetData,
       assetSymbol: asset.symbol,
+      assetType: asset.category,
     });
   });
 

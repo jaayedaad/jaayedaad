@@ -131,8 +131,8 @@ function ManualTransactionChart({
               />
               <YAxis
                 domain={[
-                  (dataMin: any) => Math.max(0, dataMin - dataMin / 10),
-                  (dataMax: any) => dataMax + dataMax / 10,
+                  (dataMin: number) => Math.max(0, dataMin - dataMin / 10),
+                  (dataMax: number) => dataMax + dataMax / 10,
                 ]}
                 tickLine={false}
                 axisLine={false}

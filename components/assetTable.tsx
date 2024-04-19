@@ -2,6 +2,7 @@
 import {
   TAsset,
   TConversionRates,
+  THistoricalData,
   TPreference,
   TProfitLoss,
   TUnrealisedProfitLoss,
@@ -15,7 +16,7 @@ import { ManualAssetDataTable } from "./dashboard/manualAssets/manualAssetsTable
 
 interface AssetTableProps {
   data: TAsset[];
-  historicalData?: any[];
+  historicalData?: THistoricalData[];
   isPublic?: boolean;
   unrealisedResults?: TUnrealisedProfitLoss[];
   realisedResults?: TProfitLoss[];
