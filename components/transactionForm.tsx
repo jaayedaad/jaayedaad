@@ -122,7 +122,7 @@ function TransactionForm({
   };
 
   const handleAssetQuantiy = (value: string) => {
-    if(parseFloat(value) <= 0){
+    if (parseFloat(value) <= 0) {
       toast.error("Quantity should be greater than 0");
       return;
     }
@@ -156,13 +156,13 @@ function TransactionForm({
           <div className="text-base col-span-1">Symbol</div>
           <Input
             className="col-span-3 no-spinner"
-            value={selectedAsset.symbol.length ? selectedAsset.symbol : "-"}
+            value={selectedAsset.symbol ? selectedAsset.symbol : "-"}
             disabled
           />
           <div className="text-base col-span-1">Exchange</div>
           <Input
             className="col-span-3 no-spinner"
-            value={selectedAsset.exchange.length ? selectedAsset.exchange : "-"}
+            value={selectedAsset.exchange ? selectedAsset.exchange : "-"}
             disabled
           />
           <div className="text-base col-span-1 after:content-['*'] after:ml-0.5 after:text-red-500">

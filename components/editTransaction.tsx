@@ -85,7 +85,6 @@ function EditTransaction({
             <DialogFooter className="sm:justify-start">
               <Button
                 className="w-full"
-                variant="secondary"
                 disabled={loading}
                 onClick={() =>
                   handleEditTransaction({
