@@ -1,10 +1,10 @@
 import { prisma } from "@/lib/prisma";
 import { authOptions } from "@/lib/authOptions";
 import { getServerSession } from "next-auth";
-import getAllTransactions from "../../sia/getAllTransactions";
+import getAllTransactions from "@/helper/sia/getAllTransactions";
 import CryptoJS from "crypto-js";
 import getAllPriceUpdates from "@/helper/sia/findAllPriceUpdates";
-import { TAsset, TSiaObject } from "@/lib/types";
+import { TAsset, TSiaObject } from "@/types/types";
 import {
   ENCRYPTION_KEY,
   SIA_ADMIN_PASSWORD,
