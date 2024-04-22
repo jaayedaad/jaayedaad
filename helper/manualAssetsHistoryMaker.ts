@@ -166,6 +166,7 @@ export function prepareHistoricalDataForManualCategory(
     aggregatedAssetData.shift();
     historicalData.push({
       values: aggregatedAssetData,
+      assetId: asset.id,
       assetSymbol: asset.symbol,
       assetType: asset.category,
     });

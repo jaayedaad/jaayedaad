@@ -74,38 +74,6 @@ export type TTwelveDataInstrumentQuote = {
   extended_timestamp?: number;
 };
 
-export type TTwelveDataHistoricalData = {
-  meta: {
-    symbol: string;
-    interval: string;
-    currency: string;
-    exchange_timezone: string;
-    exchange: string;
-    mic_code: string;
-    type: string;
-  };
-  values: {
-    datetime: string;
-    open: string;
-    high: string;
-    low: string;
-    close: string;
-    volume: string;
-  }[];
-  status: string;
-};
-
-export type TTwelveDataHistoricalDataErrorResponse = {
-  code: number;
-  message: string;
-  status: string;
-  meta: {
-    symbol: string;
-    interval: string;
-    exchange: string;
-  };
-};
-
 export type THistoricalData = {
   meta?: {
     symbol: string;
@@ -128,9 +96,18 @@ export type THistoricalData = {
     value: number;
   }[];
   status?: string;
+  assetId: string;
   assetType: string;
   assetSymbol: string | null;
 };
+
+export type TLineChartData = {
+  interval: string;
+  data: {
+    name: string;
+    amt: number;
+  }[];
+}[];
 
 export type TInterval = "1d" | "1w" | "1m" | "1y" | "All";
 
@@ -184,6 +161,7 @@ export type TUserManualCategory = {
 };
 
 export type TUnrealisedProfitLoss = {
+  assetId: string;
   category: string;
   symbol: string;
   compareValue: string;

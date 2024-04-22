@@ -10,7 +10,7 @@ import { getHistoricalData } from "@/services/thirdParty/twelveData";
 import { getConversionRate } from "@/services/thirdParty/currency";
 import { getPreferenceFromUserId } from "@/services/preference";
 import { getUnrealisedProfitLossArray } from "@/helper/unrealisedValueCalculator";
-import { TAsset, TUnrealisedProfitLoss } from "@/types/types";
+import { TAsset, TLineChartData, TUnrealisedProfitLoss } from "@/types/types";
 import { getAssetTableData } from "@/services/dashboard/assets/assetTableData";
 import { calculateRealisedProfitLoss } from "@/helper/realisedValueCalculator";
 import { getLineChartData } from "@/helper/prepareLineChartData";
@@ -57,12 +57,14 @@ export default async function AssetPage({
   }
 
   let unrealisedResults: TUnrealisedProfitLoss[] = [];
-  let lineChartData: {
-    interval: string;
-    data: {
-      name: string;
-      amt: number;
-    }[];
+  let assetsUnrealisedResults: {
+    assetId: string;
+    unrealisedResults: TUnrealisedProfitLoss[];
+  }[] = [];
+  let lineChartData: TLineChartData = [];
+  let assetsChartData: {
+    assetId: string;
+    lineChartData: TLineChartData;
   }[] = [];
   let assetTableData: {
     interval: string;
@@ -76,6 +78,13 @@ export default async function AssetPage({
       currencyConversionRates
     );
     lineChartData = await getLineChartData(historicalData);
+
+    historicalData.forEach(async (data) => {
+      assetsChartData.push({
+        assetId: data.assetId,
+        lineChartData: await getLineChartData([data]),
+      });
+    });
     assetTableData = await getAssetTableData(filteredAssets, unrealisedResults);
   }
 
@@ -94,6 +103,7 @@ export default async function AssetPage({
       filteredAssets={filteredAssets}
       historicalData={historicalData}
       lineChartData={lineChartData}
+      assetsChartData={assetsChartData}
       conversionRates={currencyConversionRates}
       preferences={preferences}
       unrealisedResults={unrealisedResults}

@@ -2,12 +2,9 @@ import React, { useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs";
 import { Dialog, DialogContent } from "./ui/dialog";
 import { cn } from "@/lib/helper";
-import { accumulateLineChartData } from "@/helper/lineChartDataAccumulator";
 import ChangeInterval from "./changeInterval";
 import AssetLineChart from "./assetLineChart";
-import { prepareLineChartData } from "@/helper/prepareLineChartData";
 import TransactionHistory from "./transactionHistory";
-import { prepareHistoricalDataForManualCategory } from "@/helper/manualAssetsHistoryMaker";
 import {
   TAsset,
   TInterval,

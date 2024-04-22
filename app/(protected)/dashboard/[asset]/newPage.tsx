@@ -4,6 +4,7 @@ import {
   TConversionRates,
   THistoricalData,
   TInterval,
+  TLineChartData,
   TPreference,
   TProfitLoss,
   TUnrealisedProfitLoss,
@@ -34,6 +35,7 @@ function Page({
   unrealisedResults,
   realisedResults,
   lineChartData,
+  assetsChartData,
   preferences,
   assetTableData,
 }: {
@@ -47,12 +49,10 @@ function Page({
   preferences: TPreference;
   unrealisedResults: TUnrealisedProfitLoss[];
   realisedResults: TProfitLoss[];
-  lineChartData: {
-    interval: string;
-    data: {
-      name: string;
-      amt: number;
-    }[];
+  lineChartData: TLineChartData;
+  assetsChartData: {
+    assetId: string;
+    lineChartData: TLineChartData;
   }[];
   assetTableData: {
     interval: string;
@@ -170,6 +170,7 @@ function Page({
                     unrealisedResults={unrealisedResults}
                     realisedResults={realisedResults}
                     lineChartData={lineChartData}
+                    assetsChartData={assetsChartData}
                     preferences={preferences}
                   />
                 ) : (
