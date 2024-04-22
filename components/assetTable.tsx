@@ -3,6 +3,7 @@ import {
   TAsset,
   TConversionRates,
   THistoricalData,
+  TLineChartData,
   TPreference,
   TProfitLoss,
   TUnrealisedProfitLoss,
@@ -20,12 +21,9 @@ interface AssetTableProps {
   isPublic?: boolean;
   unrealisedResults?: TUnrealisedProfitLoss[];
   realisedResults?: TProfitLoss[];
-  lineChartData: {
-    interval: string;
-    data: {
-      name: string;
-      amt: number;
-    }[];
+  assetsChartData: {
+    assetId: string;
+    lineChartData: TLineChartData;
   }[];
   conversionRates: TConversionRates;
   preferences: TPreference;
@@ -36,7 +34,7 @@ function AssetTable({
   historicalData,
   unrealisedResults,
   realisedResults,
-  lineChartData,
+  assetsChartData,
   conversionRates,
   preferences,
 }: AssetTableProps) {
@@ -81,8 +79,18 @@ function AssetTable({
               setOpen={setOpen}
               assetToView={assetToView}
               manualAsset={manualAsset}
-              chartData={lineChartData}
-              unrealisedResults={unrealisedResults}
+              chartData={
+                assetsChartData.filter(
+                  (assetChartData) =>
+                    assetChartData.assetId ===
+                    (assetToView?.id || manualAsset?.id)
+                )[0]?.lineChartData
+              }
+              unrealisedResults={unrealisedResults.filter(
+                (assetUnrealisedResult) =>
+                  assetUnrealisedResult.assetId ===
+                  (assetToView?.id || manualAsset?.id)
+              )}
               realisedResults={realisedResults}
               conversionRates={conversionRates}
               numberSystem={preferences.numberSystem}

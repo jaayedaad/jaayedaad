@@ -1,4 +1,9 @@
-import { TAsset, TConversionRates, THistoricalData } from "@/types/types";
+import {
+  TAsset,
+  TConversionRates,
+  THistoricalData,
+  TUnrealisedProfitLoss,
+} from "@/types/types";
 import { calculateTotalQuantity } from "./transactionValueCalculator";
 
 // Function to calculate unrealized profit/loss for each asset
@@ -19,16 +24,7 @@ export function getUnrealisedProfitLossArray(
   assets: TAsset[],
   conversionRates: TConversionRates
 ) {
-  const results: {
-    category: string;
-    symbol: string;
-    compareValue: string;
-    valueAtInterval: number;
-    currentValue: string;
-    prevClose: string;
-    interval: string;
-    unrealisedProfitLoss: string;
-  }[] = [];
+  const results: TUnrealisedProfitLoss[] = [];
 
   const intervals = [
     { label: "1d", days: 1 },
@@ -78,6 +74,7 @@ export function getUnrealisedProfitLossArray(
       });
 
       const result = {
+        assetId: asset.id,
         category: asset.category,
         symbol: asset.symbol,
         compareValue: (

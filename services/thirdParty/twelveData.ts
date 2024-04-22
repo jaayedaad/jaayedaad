@@ -7,8 +7,6 @@ import { areDatesEqual } from "@/lib/helper";
 import {
   TAsset,
   THistoricalData,
-  TTwelveDataHistoricalData,
-  TTwelveDataHistoricalDataErrorResponse,
   TTwelveDataInstrumentQuote,
   TTwelveDataResult,
 } from "@/types/types";
@@ -171,6 +169,7 @@ export const getHistoricalData = async (userId: string, assets: TAsset[]) => {
             dayData.date = new Date(dayData.datetime).getTime() / 1000;
             data.assetType = asset.category;
             data.assetSymbol = asset.symbol;
+            data.assetId = asset.id;
             const assetCurrency = asset.buyCurrency.toLowerCase();
             const currencyConversion = conversionRate[assetCurrency];
             const multiplier = 1 / currencyConversion;
