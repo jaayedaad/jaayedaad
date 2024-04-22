@@ -169,7 +169,6 @@ function Page({
                     conversionRates={conversionRates}
                     unrealisedResults={unrealisedResults}
                     realisedResults={realisedResults}
-                    lineChartData={lineChartData}
                     assetsChartData={assetsChartData}
                     preferences={preferences}
                   />

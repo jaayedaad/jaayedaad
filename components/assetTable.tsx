@@ -21,7 +21,6 @@ interface AssetTableProps {
   isPublic?: boolean;
   unrealisedResults?: TUnrealisedProfitLoss[];
   realisedResults?: TProfitLoss[];
-  lineChartData: TLineChartData;
   assetsChartData: {
     assetId: string;
     lineChartData: TLineChartData;
@@ -35,7 +34,6 @@ function AssetTable({
   historicalData,
   unrealisedResults,
   realisedResults,
-  lineChartData,
   assetsChartData,
   conversionRates,
   preferences,

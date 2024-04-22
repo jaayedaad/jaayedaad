@@ -16,6 +16,7 @@ import LoadingSpinner from "@/components/ui/loading-spinner";
 import PortfolioLineChart from "@/components/portfolioLineChart";
 import PerformanceMetrics from "@/components/performanceMetrics";
 import { getLineChartData } from "@/helper/prepareLineChartData";
+import { TLineChartData } from "@/types/types";
 
 export default async function PublicProfile({
   params,
@@ -41,15 +42,19 @@ export default async function PublicProfile({
   );
   const historicalData = await getHistoricalData(user.id, assets);
 
-  let lineChartData: {
-    interval: string;
-    data: {
-      name: string;
-      amt: number;
-    }[];
+  let lineChartData: TLineChartData = [];
+  let assetsChartData: {
+    assetId: string;
+    lineChartData: TLineChartData;
   }[] = [];
   if (historicalData.length) {
     lineChartData = await getLineChartData(historicalData);
+    historicalData.forEach(async (data) => {
+      assetsChartData.push({
+        assetId: data.assetId,
+        lineChartData: await getLineChartData([data]),
+      });
+    });
   }
 
   const unrealisedResults = getUnrealisedProfitLossArray(
@@ -145,7 +150,7 @@ export default async function PublicProfile({
                     <AssetTable
                       isPublic
                       data={assets}
-                      lineChartData={lineChartData}
+                      assetsChartData={assetsChartData}
                       unrealisedResults={unrealisedResults}
                       realisedResults={realisedResults}
                       conversionRates={conversionRates}
