@@ -1,13 +1,13 @@
 import {
   getDeccryptedAssetsByUserId,
   getAssetsQuoteFromApi,
+  getHistoricalData,
 } from "@/services/asset";
 import Dashboard from "./newPage";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/authOptions";
 import { redirect } from "next/navigation";
 import { getConversionRate } from "@/services/thirdParty/currency";
-import { getHistoricalData } from "@/services/thirdParty/twelveData";
 import { getPreferenceFromUserId } from "@/services/preference";
 import { getUnrealisedProfitLossArray } from "@/helper/unrealisedValueCalculator";
 import { calculateRealisedProfitLoss } from "@/helper/realisedValueCalculator";
@@ -30,7 +30,10 @@ const DashboardPage = async () => {
   if (!currencyConversionRates) {
     throw new Error("Currency conversion rates not found");
   }
-  const historicalData = await getHistoricalData(session.user.id, assets);
+  const historicalData = await getHistoricalData({
+    userId: session.user.id,
+    assets: assets,
+  });
 
   const preferences = await getPreferenceFromUserId(session.user.id);
   if (!preferences) {

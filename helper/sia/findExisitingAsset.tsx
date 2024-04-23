@@ -5,14 +5,14 @@ import {
   SIA_API_URL,
 } from "@/constants/env";
 import { TSiaObject } from "@/types/types";
-import { Asset } from "@prisma/client";
+import { Asset, AssetSource } from "@prisma/client";
 import CryptoJS from "crypto-js";
 
 export default async function findExistingAssetFromSia(
   userId: string,
   assetSymbol: string,
   assetName: string,
-  isManualEntry: boolean | undefined
+  source: AssetSource
 ) {
   const username = SIA_ADMIN_USERNAME;
   const password = SIA_ADMIN_PASSWORD;
@@ -54,7 +54,7 @@ export default async function findExistingAssetFromSia(
 
       // Parsing decrypted data
       const decryptedObject = JSON.parse(decryptedData);
-      if (!isManualEntry) {
+      if (source !== "manual") {
         if (decryptedObject.symbol === assetSymbol) {
           existingAsset = decryptedObject;
         }

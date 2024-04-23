@@ -117,6 +117,7 @@ function TransactionHistory({
             <DialogContent>
               {assetToView && (
                 <TransactionForm
+                  source={assetToView.source}
                   selectedAsset={{
                     instrument_name: assetToView.name,
                     symbol: assetToView.symbol,

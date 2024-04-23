@@ -66,7 +66,7 @@ export async function POST(req: Request) {
         user.id,
         body.symbol,
         body.name,
-        body.isManualEntry
+        body.source
       );
       const username = SIA_ADMIN_USERNAME;
       const password = SIA_ADMIN_PASSWORD;
@@ -87,7 +87,7 @@ export async function POST(req: Request) {
         const belongsToDefaultCategory = defaultCategories.includes(
           body.category.toLowerCase()
         );
-        if (body.isManualEntry) {
+        if (body.soure === "manual") {
           if (!belongsToDefaultCategory) {
             if (existingCategoryId) {
               // add asset to sia
@@ -300,7 +300,7 @@ export async function POST(req: Request) {
           existingAssetTransactions.push(transaction);
 
           const avgBuyPrice = calculateAvgBuyPrice(existingAssetTransactions);
-          if (!body.isManualEntry) {
+          if (body.source !== "manual") {
             // add asset to sia
             fetch(
               `${SIA_API_URL}/worker/objects/${user.id}/assets/${existingAsset.id}/data`,
@@ -404,7 +404,7 @@ export async function POST(req: Request) {
           return asset.name === body.name;
         }
       });
-      const manualEntry = body.isManualEntry;
+      const manualEntry = body.source === "manual";
       const belongsToDefaultCategory = defaultCategories.includes(
         body.category.toLowerCase()
       );

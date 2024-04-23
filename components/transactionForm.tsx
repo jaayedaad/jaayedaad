@@ -15,6 +15,7 @@ import { Loader2 } from "lucide-react";
 import { cn } from "@/lib/helper";
 
 interface transactionFormPropsType {
+  source: string;
   previousClose?: string;
   selectedAsset: {
     prevClose?: string;
@@ -38,6 +39,7 @@ const instrumentNameMappings: Record<string, string> = {
 };
 
 function TransactionForm({
+  source,
   previousClose,
   selectedAsset,
   modalOpen,
@@ -69,8 +71,10 @@ function TransactionForm({
       buyDate: date,
       category: category,
       exchange: (exchange.length && exchange) || null,
-      isManualEntry:
-        previousClose === "NaN" || !selectedAsset.symbol.length ? true : false,
+      source:
+        previousClose === "NaN" || !selectedAsset.symbol.length
+          ? "manual"
+          : source,
       buyCurrency: currency,
     };
 

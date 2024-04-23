@@ -30,6 +30,7 @@ import {
 import AddTransaction from "./addTransaction";
 import { TUserManualCategory } from "@/types/types";
 import { updatePreferenceAction } from "@/app/(protected)/dashboard/settings/actions";
+import MutualFundsForm from "./forms/mutualFundForm";
 
 function BottomBar({
   dashboardAmountVisibility,
@@ -177,11 +178,13 @@ function BottomBar({
               Add transactions to your portfolio
             </p>
           </div>
-          <AddTransaction
-            usersManualCategories={usersManualCategories}
-            handleModalState={setOpen}
-            defaultCurrency={defaultCurrency}
-          />
+          <div className="grid grid-cols-2 gap-4">
+            <AddTransaction
+              usersManualCategories={usersManualCategories}
+              defaultCurrency={defaultCurrency}
+            />
+            <MutualFundsForm />
+          </div>
         </DialogContent>
       </Dialog>
 

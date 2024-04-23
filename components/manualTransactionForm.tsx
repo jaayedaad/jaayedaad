@@ -102,7 +102,7 @@ function ManualTransactionForm({
       icon: icon,
       buyPrice: price,
       buyDate: date,
-      isManualEntry: true,
+      source: "manual",
     };
 
     await fetch("/api/assets/add", {

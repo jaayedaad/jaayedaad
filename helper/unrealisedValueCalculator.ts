@@ -62,7 +62,7 @@ export function getUnrealisedProfitLossArray(
 
       let assetHistory = historicalData[index];
 
-      if (!asset.isManualEntry) {
+      if (asset.source !== "manual") {
         assetHistory = populateMissingDates(assetHistory);
       }
 

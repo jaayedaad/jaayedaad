@@ -1,7 +1,6 @@
 "use server";
 
 import { TWELVEDATA_API_KEY } from "@/constants/env";
-import { prepareHistoricalDataForManualCategory } from "@/helper/manualAssetsHistoryMaker";
 import { calculateCurrentValue } from "@/lib/assetCalculation";
 import { areDatesEqual } from "@/lib/helper";
 import {
@@ -12,7 +11,7 @@ import {
 } from "@/types/types";
 import { getConversionRate } from "@/services/thirdParty/currency";
 
-export const getAssetQuoteFromApiBySymbol = async (
+export const getAssetQuoteFromTwelveDataBySymbol = async (
   symbol: string
 ): Promise<TTwelveDataInstrumentQuote | null> => {
   try {
@@ -34,49 +33,48 @@ export const getAssetQuoteFromApiBySymbol = async (
   }
 };
 
-export const fetchQuoteFromApi = async (
+export const fetchQuoteFromTwelveData = async (
   asset: TAsset
-): Promise<TAsset | null> => {
+): Promise<TAsset> => {
   try {
-    if (!asset.isManualEntry && asset.symbol) {
-      const response = await fetch(
-        `https://api.twelvedata.com/quote?symbol=${asset.symbol}`,
-        {
-          method: "GET",
-          headers: {
-            Authorization: `apikey ${TWELVEDATA_API_KEY}`,
-          },
-        }
-      );
-
-      const quote = await response.json();
-
-      if (!quote.code || quote.code !== 404) {
-        asset.prevClose = (+quote.close).toFixed(2);
+    const response = await fetch(
+      `https://api.twelvedata.com/quote?symbol=${asset.symbol}`,
+      {
+        method: "GET",
+        headers: {
+          Authorization: `apikey ${TWELVEDATA_API_KEY}`,
+        },
       }
+    );
+
+    const quote = await response.json();
+
+    if (!quote.code || quote.code !== 404) {
+      asset.prevClose = (+quote.close).toFixed(2);
     }
 
     const updatedAsset = calculateCurrentValue(asset);
     return updatedAsset;
   } catch (error) {
     console.error("Error fetching quote:", error);
-    return null;
+    return asset;
   }
 };
 
-export const getHistoricalData = async (userId: string, assets: TAsset[]) => {
+export const getHistoricalDataFromTwelveData = async (
+  userId: string,
+  assets: TAsset[]
+) => {
   try {
     const conversionRate = await getConversionRate(userId);
     if (!conversionRate) {
       throw new Error("Error fetching conversion rate");
     }
+
     let historicalData: THistoricalData[] = [];
+
     for (const asset of assets) {
-      if (
-        !asset.isManualEntry &&
-        asset.symbol &&
-        parseFloat(asset.quantity) > 0
-      ) {
+      if (parseFloat(asset.quantity) > 0) {
         const { symbol, transactions } = asset;
         const sortedTransactions = transactions.sort(
           (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
@@ -181,39 +179,9 @@ export const getHistoricalData = async (userId: string, assets: TAsset[]) => {
 
           historicalData.push(data);
         }
-      } else {
-        const manualAssetHistory = prepareHistoricalDataForManualCategory(
-          [asset],
-          conversionRate
-        )[0];
-
-        historicalData.push(manualAssetHistory);
       }
     }
 
-    historicalData.forEach((obj) => {
-      let prices = obj.values;
-      let lastNonNullValue = 0;
-
-      // Backward pass: replace null values with the nearest non-null value preceding them
-      for (let i = prices.length - 1; i >= 0; i--) {
-        if (prices[i].value) {
-          lastNonNullValue = prices[i].value;
-        } else if (lastNonNullValue !== 0) {
-          prices[i].value = lastNonNullValue;
-        }
-      }
-
-      // Forward pass: replace null values with the nearest non-null value following them
-      lastNonNullValue = 0;
-      for (let i = 0; i < prices.length; i++) {
-        if (prices[i].value) {
-          lastNonNullValue = prices[i].value;
-        } else if (lastNonNullValue !== 0) {
-          prices[i].value = lastNonNullValue;
-        }
-      }
-    });
     return historicalData;
   } catch (err) {
     console.error("Error fetching historical data:", err);
