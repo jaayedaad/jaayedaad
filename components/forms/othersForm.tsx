@@ -15,7 +15,7 @@ import { TTwelveDataResult, TUserManualCategory } from "@/types/types";
 import { Shapes } from "lucide-react";
 import ManualTransactionForm from "../manualTransactionForm";
 
-function ManualForm({
+function OthersForm({
   defaultCurrency,
   usersManualCategories,
 }: {
@@ -53,6 +53,34 @@ function ManualForm({
     // Set the state with the initial results from the database
     setResults(resultsFromDB);
     setLoadingAsset(false);
+
+    try {
+      const resultsFromApi = await searchAssetsFromApi({
+        query: searchQuery,
+      });
+
+      // Merge resultsFromDB with resultsFromAPI, keeping all items from resultsFromDB and adding unmatched items from resultsFromAPI
+      const mergedResults = resultsFromDB.map((dbResult) => {
+        const matchingResult = resultsFromApi?.find(
+          (apiResult) => apiResult.instrument_name === dbResult.instrument_name
+        );
+        return matchingResult ? { ...dbResult, ...matchingResult } : dbResult;
+      });
+
+      // Add unmatched items from resultsFromAPI
+      resultsFromApi?.forEach((apiResult) => {
+        const isUnmatched = !resultsFromDB.some(
+          (dbResult) => dbResult.instrument_name === apiResult.instrument_name
+        );
+        if (isUnmatched) {
+          mergedResults.push(apiResult);
+        }
+      });
+
+      setResults(mergedResults);
+    } finally {
+      setLoadingAsset(false);
+    }
   };
 
   const handleManualTransaction = () => {
@@ -67,12 +95,12 @@ function ManualForm({
           className="flex-col lg:flex-row h-24 px-6 items-center gap-4"
         >
           <Shapes height={24} width={24} fill="white" />
-          Manual
+          Others
         </Button>
       </DialogTrigger>
       <DialogContent>
         <div className="md:flex md:gap-2">
-          <DialogTitle>Add Transaction for Manual Assets</DialogTitle>
+          <DialogTitle>Add Transaction for anything</DialogTitle>
         </div>
         <div className="flex w-full flex-col pt-4">
           <div className="grid grid-cols-1 gap-4 lg:grid-cols-2 md:gap-6 items-center">
@@ -121,4 +149,4 @@ function ManualForm({
   );
 }
 
-export default ManualForm;
+export default OthersForm;

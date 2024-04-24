@@ -194,7 +194,7 @@ export const searchAssetsFromApi = async ({
   type,
 }: {
   query: string;
-  type: string;
+  type?: string;
 }) => {
   let retryCount = 0;
   const maxRetries = 5; // Maximum number of retries
@@ -216,9 +216,9 @@ export const searchAssetsFromApi = async ({
         throw new Error(`API request failed with status ${res.status}`);
       }
       const { data }: { data: TTwelveDataResult[] } = await res.json();
-      const filteredData = data.filter(
-        (asset) => asset.instrument_type === type
-      );
+      const filteredData = type
+        ? data.filter((asset) => asset.instrument_type === type)
+        : data;
       return filteredData;
     } catch (error) {
       console.error(
