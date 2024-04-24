@@ -79,8 +79,6 @@ const SearchResults = ({
                   <TableCell>
                     <Button
                       onClick={() => {
-                        console.log(result);
-
                         handleAddClick(result);
                       }}
                       className="w-full"

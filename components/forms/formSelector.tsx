@@ -13,7 +13,7 @@ import { TUserManualCategory } from "@/types/types";
 import MutualFundsForm from "./mutualFundForm";
 import StocksForm from "./stocksForm";
 import CryptoForm from "./cryptoForm";
-import ManualForm from "./manualForm";
+import OthersForm from "./othersForm";
 
 type FormSelectorPropsType = {
   usersManualCategories: TUserManualCategory[];
@@ -43,7 +43,7 @@ function FormSelector({
           <StocksForm defaultCurrency={defaultCurrency} />
           <MutualFundsForm />
           <CryptoForm defaultCurrency={defaultCurrency} />
-          <ManualForm
+          <OthersForm
             defaultCurrency={defaultCurrency}
             usersManualCategories={usersManualCategories}
           />

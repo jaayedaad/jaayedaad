@@ -30,7 +30,7 @@ import {
 import { TUserManualCategory } from "@/types/types";
 import { updatePreferenceAction } from "@/app/(protected)/dashboard/settings/actions";
 import MutualFundsForm from "./forms/mutualFundForm";
-import ManualForm from "./forms/manualForm";
+import ManualForm from "./forms/othersForm";
 import StocksForm from "./forms/stocksForm";
 import CryptoForm from "./forms/cryptoForm";
 
