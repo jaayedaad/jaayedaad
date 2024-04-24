@@ -33,22 +33,24 @@ export function similarityScore(assetName: string, searchString: string) {
 }
 
 export function findTopMatchingAssets(assets: any, searchString: string) {
-  // Calculate similarity between searchString and asset names
-  const matchingAssets = assets.map((asset: any) => {
-    const similarity = similarityScore(asset.name, searchString);
-    return { ...asset, similarity };
-  });
+  if (assets) {
+    // Calculate similarity between searchString and asset names
+    const matchingAssets = assets.map((asset: any) => {
+      const similarity = similarityScore(asset.name, searchString);
+      return { ...asset, similarity };
+    });
 
-  // Filter out assets with 0 similarity
-  const filteredAssets = matchingAssets.filter(
-    (asset: any) => asset.similarity > 0
-  );
+    // Filter out assets with 0 similarity
+    const filteredAssets = matchingAssets.filter(
+      (asset: any) => asset.similarity > 0
+    );
 
-  // Sort assets based on similarity score
-  filteredAssets.sort((a: any, b: any) => b.similarity - a.similarity);
+    // Sort assets based on similarity score
+    filteredAssets.sort((a: any, b: any) => b.similarity - a.similarity);
 
-  // Return top matching asset if any
-  return filteredAssets.slice(0, 1);
+    // Return top matching asset if any
+    return filteredAssets.slice(0, 1);
+  } else return [];
 }
 
 export function transformToResultFormat(

@@ -1,12 +1,12 @@
 import {
   getDeccryptedAssetsByUserId,
   getAssetsQuoteFromApi,
+  getHistoricalData,
 } from "@/services/asset";
 import Page from "./newPage";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/authOptions";
 import { redirect } from "next/navigation";
-import { getHistoricalData } from "@/services/thirdParty/twelveData";
 import { getConversionRate } from "@/services/thirdParty/currency";
 import { getPreferenceFromUserId } from "@/services/preference";
 import { getUnrealisedProfitLossArray } from "@/helper/unrealisedValueCalculator";
@@ -46,10 +46,10 @@ export default async function AssetPage({
   if (!currencyConversionRates) {
     throw new Error("Currency conversion rates not found");
   }
-  const historicalData = await getHistoricalData(
-    session.user.id,
-    filteredAssets
-  );
+  const historicalData = await getHistoricalData({
+    userId: session.user.id,
+    assets: filteredAssets,
+  });
 
   const preferences = await getPreferenceFromUserId(session.user.id);
   if (!preferences) {
@@ -57,10 +57,6 @@ export default async function AssetPage({
   }
 
   let unrealisedResults: TUnrealisedProfitLoss[] = [];
-  let assetsUnrealisedResults: {
-    assetId: string;
-    unrealisedResults: TUnrealisedProfitLoss[];
-  }[] = [];
   let lineChartData: TLineChartData = [];
   let assetsChartData: {
     assetId: string;

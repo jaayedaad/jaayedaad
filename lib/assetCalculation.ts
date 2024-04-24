@@ -34,11 +34,12 @@ export const calculateCurrentValue = (asset: TAsset): TAsset => {
       return asset;
     } else {
       asset.compareValue = calculateBaseValue();
-      asset.currentValue = asset.isManualEntry
-        ? (asset.currentPrice !== null ? +asset.currentPrice : 0) *
-          +asset.quantity
-        : (asset.prevClose !== undefined ? +asset.prevClose : 0) *
-          +asset.quantity;
+      asset.currentValue =
+        asset.source === "manual"
+          ? (asset.currentPrice !== null ? +asset.currentPrice : 0) *
+            +asset.quantity
+          : (asset.prevClose !== undefined ? +asset.prevClose : 0) *
+            +asset.quantity;
       asset.valueAtInterval = asset.currentValue;
       return asset;
     }

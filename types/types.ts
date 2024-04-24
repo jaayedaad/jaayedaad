@@ -1,5 +1,6 @@
 import {
   AssetPriceUpdate,
+  AssetSource,
   PerformanceBarOrder,
   PerformanceBarParameter,
   Transaction,
@@ -19,7 +20,7 @@ export type TAsset = {
   buyDate: Date;
   userId: string;
   currentPrice: string; // shubham: fix this bec its not in prisma schema so shouldnt be here as well
-  isManualEntry: boolean;
+  source: AssetSource;
   currentValue: number; // shubham: fix this bec its not in prisma schema so shouldnt be here as well
   compareValue: number; // shubham: fix this bec its not in prisma schema so shouldnt be here as well
   valueAtInterval: number;
@@ -36,6 +37,11 @@ export type TTwelveDataResult = {
   currency: string;
   country: string;
   exchange_timezone: string;
+};
+
+export type TMFAPISearchResult = {
+  schemeCode: number;
+  schemeName: string;
 };
 
 export type TTwelveDataInstrumentQuote = {
@@ -72,6 +78,21 @@ export type TTwelveDataInstrumentQuote = {
   extended_percent_change?: string;
   extended_price?: string;
   extended_timestamp?: number;
+};
+
+export type TMFApiInstrumentQuote = {
+  meta: {
+    fund_house: string;
+    scheme_type: string;
+    scheme_category: string;
+    scheme_code: number;
+    scheme_name: string;
+  };
+  data: {
+    date: string;
+    nav: string;
+  }[];
+  status: string;
 };
 
 export type THistoricalData = {

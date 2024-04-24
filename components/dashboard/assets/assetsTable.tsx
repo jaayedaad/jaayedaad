@@ -79,7 +79,7 @@ export function AssetDataTable<TValue>({
                   className="hover:cursor-pointer"
                   key={row.id}
                   onClick={() => {
-                    if (row.original.isManualEntry) {
+                    if (row.original.source === "manual") {
                       setAssetToView(undefined);
                       setManualAsset(row.original);
                     } else {
@@ -130,7 +130,7 @@ export function AssetDataTable<TValue>({
               <div
                 key={row.id}
                 onClick={() => {
-                  if (row.original.isManualEntry) {
+                  if (row.original.source === "manual") {
                     setAssetToView(undefined);
                     setManualAsset(row.original);
                   } else {

@@ -5,8 +5,8 @@ import { getUserByUsername } from "@/services/user";
 import {
   getDeccryptedAssetsByUserId,
   getAssetsQuoteFromApi,
+  getHistoricalData,
 } from "@/services/asset";
-import { getHistoricalData } from "@/services/thirdParty/twelveData";
 import { getUnrealisedProfitLossArray } from "@/helper/unrealisedValueCalculator";
 import { calculateRealisedProfitLoss } from "@/helper/realisedValueCalculator";
 import React from "react";
@@ -40,7 +40,10 @@ export default async function PublicProfile({
   const assets = await getAssetsQuoteFromApi(
     await getDeccryptedAssetsByUserId(user.id)
   );
-  const historicalData = await getHistoricalData(user.id, assets);
+  const historicalData = await getHistoricalData({
+    userId: user.id,
+    assets: assets,
+  });
 
   let lineChartData: TLineChartData = [];
   let assetsChartData: {

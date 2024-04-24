@@ -57,6 +57,13 @@ model VerificationToken {
   @@unique([identifier, token])
 }
 
+enum AssetSource {
+  manual
+  twelvedata
+  mfapi
+  binance
+}
+
 model Asset {
   id                String               @id @default(cuid())
   name              String
@@ -69,7 +76,7 @@ model Asset {
   category          String
   exchange          String?
   currentPrice      String?
-  isManualEntry     Boolean              @default(false)
+  source            AssetSource          @default(twelvedata)
   manualCategoryId  String?
   manualCategory    UsersManualCategory? @relation(fields: [manualCategoryId], references: [id], onDelete: Cascade)
   user              User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
