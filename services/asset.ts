@@ -138,6 +138,9 @@ export const getAssetQuoteBySymbol = async ({
       return assetQuote;
     case "mfapi":
       assetQuote = await getAssetQuoteFromMFApiBySymbol(symbol);
+      if (!assetQuote) {
+        assetQuote = await getAssetQuoteFromTwelveDataBySymbol(symbol);
+      }
       return assetQuote;
     default:
       return null;

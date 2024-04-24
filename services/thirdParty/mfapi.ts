@@ -10,6 +10,7 @@ import {
 } from "@/types/types";
 import { getConversionRate } from "./currency";
 import { calculateCurrentValue } from "@/lib/assetCalculation";
+import { searchAssetsFromApi } from "./twelveData";
 
 export const searchFundsFromMFApi = async (searchQuery: string) => {
   let retryCount = 0;
@@ -31,7 +32,7 @@ export const searchFundsFromMFApi = async (searchQuery: string) => {
       }
       const data: TMFAPISearchResult[] = await res.json();
 
-      const searchResults: TTwelveDataResult[] = data.map((result) => {
+      let searchResults: TTwelveDataResult[] = data.map((result) => {
         return {
           instrument_name: result.schemeName,
           symbol: result.schemeCode.toString(),
@@ -43,6 +44,16 @@ export const searchFundsFromMFApi = async (searchQuery: string) => {
           exchange_timezone: "Asia/Kolkata",
         };
       });
+      if (searchResults.length === 0) {
+        const response = await searchAssetsFromApi({
+          query: searchQuery,
+          type: "Mutual Fund",
+        });
+        if (response) {
+          searchResults = response;
+        }
+      }
+
       return searchResults;
     } catch (error) {
       console.error(

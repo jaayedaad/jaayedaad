@@ -27,10 +27,12 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import AddTransaction from "./addTransaction";
 import { TUserManualCategory } from "@/types/types";
 import { updatePreferenceAction } from "@/app/(protected)/dashboard/settings/actions";
 import MutualFundsForm from "./forms/mutualFundForm";
+import ManualForm from "./forms/manualForm";
+import StocksForm from "./forms/stocksForm";
+import CryptoForm from "./forms/cryptoForm";
 
 function BottomBar({
   dashboardAmountVisibility,
@@ -179,11 +181,13 @@ function BottomBar({
             </p>
           </div>
           <div className="grid grid-cols-2 gap-4">
-            <AddTransaction
+            <StocksForm defaultCurrency={defaultCurrency} />
+            <CryptoForm defaultCurrency={defaultCurrency} />
+            <MutualFundsForm />
+            <ManualForm
               usersManualCategories={usersManualCategories}
               defaultCurrency={defaultCurrency}
             />
-            <MutualFundsForm />
           </div>
         </DialogContent>
       </Dialog>

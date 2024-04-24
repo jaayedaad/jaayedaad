@@ -1,19 +1,16 @@
 "use client";
-import React, { useState } from "react";
+import React from "react";
 import { Button } from "./ui/button";
 import {
   Bitcoin,
   CandlestickChart,
   Home,
-  Plus,
   Settings,
   SquareStack,
 } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/helper";
 import Link from "next/link";
-import { Dialog, DialogContent, DialogTitle, DialogTrigger } from "./ui/dialog";
-import AddTransaction from "./addTransaction";
 import CreateCategoryButton from "./createCategoryButton";
 import dynamicIconImports from "lucide-react/dynamicIconImports";
 import DynamicIcon from "./dynamicIcon";

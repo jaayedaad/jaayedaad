@@ -6,15 +6,15 @@ import {
   DialogTrigger,
 } from "../ui/dialog";
 import { Button } from "../ui/button";
-import { MutualFundIcon } from "@/public/feature-svgs/featureIcons";
+import { CryptoIcon } from "@/public/feature-svgs/featureIcons";
 import SearchField from "../searchField";
+import { searchAssetsFromApi } from "@/services/thirdParty/twelveData";
 import { searchResultsFromExistingAssetsInDatabaseAction } from "@/app/(protected)/dashboard/actions";
-import { TTwelveDataResult } from "@/types/types";
-import { searchFundsFromMFApi } from "@/services/thirdParty/mfapi";
 import LoadingSpinner from "../ui/loading-spinner";
 import SearchResults from "../searchResults";
+import { TTwelveDataResult } from "@/types/types";
 
-function MutualFundsForm() {
+function CryptoForm({ defaultCurrency }: { defaultCurrency: string }) {
   const [open, setOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [results, setResults] = useState<TTwelveDataResult[]>([]);
@@ -46,7 +46,10 @@ function MutualFundsForm() {
     setLoadingAsset(false);
 
     try {
-      const resultsFromApi = await searchFundsFromMFApi(searchQuery);
+      const resultsFromApi = await searchAssetsFromApi({
+        query: searchQuery,
+        type: "Digital Currency",
+      });
 
       // Merge resultsFromDB with resultsFromAPI, keeping all items from resultsFromDB and adding unmatched items from resultsFromAPI
       const mergedResults = resultsFromDB.map((dbResult) => {
@@ -78,16 +81,14 @@ function MutualFundsForm() {
           variant="secondary"
           className="flex-col lg:flex-row h-24 px-6 items-center gap-4"
         >
-          <MutualFundIcon height={24} width={24} fill="white" />
-          Mutual funds
+          <CryptoIcon height={24} width={24} fill="white" />
+          Crypto
         </Button>
       </DialogTrigger>
       <DialogContent>
         <div className="md:flex md:gap-2">
-          <DialogTitle>Add Transaction for Mutual Funds</DialogTitle>
-          <p className="text-muted-foreground text-sm">
-            Search for mutual funds
-          </p>
+          <DialogTitle>Add Transaction for Crypto</DialogTitle>
+          <p className="text-muted-foreground text-sm">Search for Crypto</p>
         </div>
         <div className="flex w-full flex-col pt-4">
           <div className="grid grid-cols-1 gap-4 lg:grid-cols-2 md:gap-6 items-center">
@@ -105,10 +106,10 @@ function MutualFundsForm() {
               {results.length > 0 ? (
                 <>
                   <SearchResults
-                    source="mfapi"
+                    source="twelveData"
                     results={results}
                     handleModalState={setOpen}
-                    defaultCurrency={"INR"}
+                    defaultCurrency={defaultCurrency}
                   />
                 </>
               ) : (
@@ -122,4 +123,4 @@ function MutualFundsForm() {
   );
 }
 
-export default MutualFundsForm;
+export default CryptoForm;

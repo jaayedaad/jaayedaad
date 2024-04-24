@@ -189,14 +189,20 @@ export const getHistoricalDataFromTwelveData = async (
   }
 };
 
-export const searchAssetsFromApi = async (searchQuery: string) => {
+export const searchAssetsFromApi = async ({
+  query,
+  type,
+}: {
+  query: string;
+  type: string;
+}) => {
   let retryCount = 0;
   const maxRetries = 5; // Maximum number of retries
 
   while (retryCount < maxRetries) {
     try {
       const url = `https://api.twelvedata.com/symbol_search?symbol=${encodeURIComponent(
-        searchQuery
+        query
       )}&outputsize=9`;
       const options = {
         method: "GET",
@@ -210,12 +216,15 @@ export const searchAssetsFromApi = async (searchQuery: string) => {
         throw new Error(`API request failed with status ${res.status}`);
       }
       const { data }: { data: TTwelveDataResult[] } = await res.json();
-      return data;
+      const filteredData = data.filter(
+        (asset) => asset.instrument_type === type
+      );
+      return filteredData;
     } catch (error) {
       console.error(
         `Attempt ${
           retryCount + 1
-        }: Error fetching search results for query "${searchQuery}" - ${error}`
+        }: Error fetching search results for query "${query}" - ${error}`
       );
       retryCount++;
       if (retryCount === maxRetries) {

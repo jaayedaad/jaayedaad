@@ -9,10 +9,11 @@ import {
 } from "../ui/dialog";
 import { Button } from "../ui/button";
 import { Plus } from "lucide-react";
-import { MutualFundIcon, StockIcon } from "@/public/feature-svgs/featureIcons";
-import AddTransaction from "../addTransaction";
 import { TUserManualCategory } from "@/types/types";
 import MutualFundsForm from "./mutualFundForm";
+import StocksForm from "./stocksForm";
+import CryptoForm from "./cryptoForm";
+import ManualForm from "./manualForm";
 
 type FormSelectorPropsType = {
   usersManualCategories: TUserManualCategory[];
@@ -39,11 +40,13 @@ function FormSelector({
           </DialogDescription>
         </DialogHeader>
         <div className="grid grid-cols-2 gap-4">
-          <AddTransaction
+          <StocksForm defaultCurrency={defaultCurrency} />
+          <MutualFundsForm />
+          <CryptoForm defaultCurrency={defaultCurrency} />
+          <ManualForm
             defaultCurrency={defaultCurrency}
             usersManualCategories={usersManualCategories}
           />
-          <MutualFundsForm />
         </div>
       </DialogContent>
     </Dialog>

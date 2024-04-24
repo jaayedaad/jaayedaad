@@ -1,74 +1,33 @@
-"use client";
-import { useEffect, useState } from "react";
-import SearchResults from "@/components/searchResults";
-import SearchField from "@/components/searchField";
-import LoadingSpinner from "@/components/ui/loading-spinner";
-import ManualTransactionForm from "./manualTransactionForm";
-import { Button } from "./ui/button";
-import { Dialog, DialogContent, DialogTitle, DialogTrigger } from "./ui/dialog";
-import { TTwelveDataResult, TUserManualCategory } from "@/types/types";
+import React, { useEffect, useState } from "react";
+import {
+  Dialog,
+  DialogContent,
+  DialogTitle,
+  DialogTrigger,
+} from "../ui/dialog";
+import { Button } from "../ui/button";
+import SearchField from "../searchField";
 import { searchAssetsFromApi } from "@/services/thirdParty/twelveData";
 import { searchResultsFromExistingAssetsInDatabaseAction } from "@/app/(protected)/dashboard/actions";
-import { StockIcon } from "@/public/feature-svgs/featureIcons";
+import LoadingSpinner from "../ui/loading-spinner";
+import SearchResults from "../searchResults";
+import { TTwelveDataResult, TUserManualCategory } from "@/types/types";
+import { Shapes } from "lucide-react";
+import ManualTransactionForm from "../manualTransactionForm";
 
-type AddTransactionPropsType = {
-  usersManualCategories: TUserManualCategory[];
-  defaultCurrency: string;
-};
-
-export default function AddTransaction({
-  usersManualCategories,
+function ManualForm({
   defaultCurrency,
-}: AddTransactionPropsType) {
+  usersManualCategories,
+}: {
+  defaultCurrency: string;
+  usersManualCategories: TUserManualCategory[];
+}) {
   const [open, setOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [results, setResults] = useState<TTwelveDataResult[]>([]);
   const [loadingAsset, setLoadingAsset] = useState(false);
   const [showManualTransactionForm, setShowManualTransactionForm] =
     useState(false);
-
-  // Function to handle search change
-  const handleSearchChange = (value: string) => {
-    setSearchQuery(value);
-    setLoadingAsset(true);
-  };
-
-  // Function to handle search
-  const handleSearch = async () => {
-    setShowManualTransactionForm(false);
-    const resultsFromDB = await searchResultsFromExistingAssetsInDatabaseAction(
-      searchQuery
-    );
-    // Set the state with the initial results from the database
-    setResults(resultsFromDB);
-    setLoadingAsset(false);
-
-    try {
-      const resultsFromApi = await searchAssetsFromApi(searchQuery);
-
-      // Merge resultsFromDB with resultsFromAPI, keeping all items from resultsFromDB and adding unmatched items from resultsFromAPI
-      const mergedResults = resultsFromDB.map((dbResult) => {
-        const matchingResult = resultsFromApi?.find(
-          (apiResult) => apiResult.instrument_name === dbResult.instrument_name
-        );
-        return matchingResult ? { ...dbResult, ...matchingResult } : dbResult;
-      });
-
-      // Add unmatched items from resultsFromAPI
-      resultsFromApi?.forEach((apiResult) => {
-        const isUnmatched = !resultsFromDB.some(
-          (dbResult) => dbResult.instrument_name === apiResult.instrument_name
-        );
-        if (isUnmatched) {
-          mergedResults.push(apiResult);
-        }
-      });
-
-      setResults(mergedResults);
-    } finally {
-      setLoadingAsset(false);
-    }
-  };
 
   // useEffect to trigger API call when searchQuery changes
   useEffect(() => {
@@ -83,6 +42,19 @@ export default function AddTransaction({
     return () => clearTimeout(timerId);
   }, [searchQuery]);
 
+  const handleSearchChange = (value: string) => {
+    setSearchQuery(value);
+    setLoadingAsset(true);
+  };
+  const handleSearch = async () => {
+    const resultsFromDB = await searchResultsFromExistingAssetsInDatabaseAction(
+      searchQuery
+    );
+    // Set the state with the initial results from the database
+    setResults(resultsFromDB);
+    setLoadingAsset(false);
+  };
+
   const handleManualTransaction = () => {
     setShowManualTransactionForm(true);
   };
@@ -94,18 +66,15 @@ export default function AddTransaction({
           variant="secondary"
           className="flex-col lg:flex-row h-24 px-6 items-center gap-4"
         >
-          <StockIcon height={24} width={24} fill="white" />
-          Stocks
+          <Shapes height={24} width={24} fill="white" />
+          Manual
         </Button>
       </DialogTrigger>
       <DialogContent>
         <div className="md:flex md:gap-2">
-          <DialogTitle>Make transactions</DialogTitle>
-          <p className="text-muted-foreground text-sm">
-            Add transactions to your portfolio
-          </p>
+          <DialogTitle>Add Transaction for Manual Assets</DialogTitle>
         </div>
-        <div className="flex w-full flex-col">
+        <div className="flex w-full flex-col pt-4">
           <div className="grid grid-cols-1 gap-4 lg:grid-cols-2 md:gap-6 items-center">
             <SearchField
               searchQuery={searchQuery}
@@ -151,3 +120,5 @@ export default function AddTransaction({
     </Dialog>
   );
 }
+
+export default ManualForm;
