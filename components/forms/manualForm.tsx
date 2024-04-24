@@ -99,7 +99,7 @@ function ManualForm({
             <div className="pt-4">
               {!showManualTransactionForm && results.length > 0 ? (
                 <SearchResults
-                  source="twelveData"
+                  source="twelvedata"
                   results={results}
                   handleModalState={setOpen}
                   defaultCurrency={defaultCurrency}

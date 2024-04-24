@@ -68,7 +68,7 @@ export const getAssetsQuoteFromApi = async (assets: any): Promise<TAsset[]> => {
   try {
     const dataFromTwelveData = await Promise.all(
       assets
-        .filter((asset: TAsset) => asset.source === "twelveData")
+        .filter((asset: TAsset) => asset.source === "twelvedata")
         .map(fetchQuoteFromTwelveData)
     );
     const dataFromMFApi = await Promise.all(
@@ -133,7 +133,7 @@ export const getAssetQuoteBySymbol = async ({
 }): Promise<TTwelveDataInstrumentQuote | null> => {
   let assetQuote: TTwelveDataInstrumentQuote | null;
   switch (source) {
-    case "twelveData":
+    case "twelvedata":
       assetQuote = await getAssetQuoteFromTwelveDataBySymbol(symbol);
       return assetQuote;
     case "mfapi":
@@ -156,7 +156,7 @@ export const getHistoricalData = async ({
 }): Promise<THistoricalData[]> => {
   const filteredAssets = assets.reduce(
     (acc, asset) => {
-      if (asset.source === "twelveData") {
+      if (asset.source === "twelvedata") {
         acc.twelveDataAssets.push(asset);
       } else if (asset.source === "mfapi") {
         acc.mfapiAssets.push(asset);

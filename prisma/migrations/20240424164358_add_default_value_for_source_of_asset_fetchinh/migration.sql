@@ -1,4 +1,13 @@
 -- CreateEnum
+CREATE TYPE "AssetSource" AS ENUM ('manual', 'twelvedata', 'mfapi', 'binance');
+
+-- CreateEnum
+CREATE TYPE "PerformanceBarParameter" AS ENUM ('totalInvestment', 'totalValue', 'percentageChange');
+
+-- CreateEnum
+CREATE TYPE "PerformanceBarOrder" AS ENUM ('Ascending', 'Descending');
+
+-- CreateEnum
 CREATE TYPE "TransactionType" AS ENUM ('buy', 'sell');
 
 -- CreateTable
@@ -59,10 +68,10 @@ CREATE TABLE "Asset" (
     "buyDate" TIMESTAMP(3) NOT NULL,
     "userId" TEXT NOT NULL,
     "buyCurrency" TEXT NOT NULL DEFAULT 'INR',
-    "type" TEXT NOT NULL,
+    "category" TEXT NOT NULL,
     "exchange" TEXT,
     "currentPrice" TEXT,
-    "isManualEntry" BOOLEAN NOT NULL DEFAULT false,
+    "source" "AssetSource" NOT NULL DEFAULT 'twelvedata',
     "manualCategoryId" TEXT,
 
     CONSTRAINT "Asset_pkey" PRIMARY KEY ("id")
@@ -77,7 +86,9 @@ CREATE TABLE "Preference" (
     "numberSystem" TEXT NOT NULL DEFAULT 'Indian',
     "showHoldingsInPublic" BOOLEAN NOT NULL DEFAULT false,
     "showMetricsInPublic" BOOLEAN NOT NULL DEFAULT false,
-    "performanceBarOrder" TEXT NOT NULL DEFAULT 'Ascending',
+    "performanceBarOrder" "PerformanceBarOrder" NOT NULL DEFAULT 'Ascending',
+    "performanceBarParameter" "PerformanceBarParameter" NOT NULL DEFAULT 'percentageChange',
+    "dashboardAmountVisibility" BOOLEAN NOT NULL DEFAULT true,
 
     CONSTRAINT "Preference_pkey" PRIMARY KEY ("id")
 );
@@ -128,7 +139,7 @@ CREATE TABLE "InviteCode" (
 CREATE TABLE "InvitedUser" (
     "id" TEXT NOT NULL,
     "inviteCodeId" TEXT NOT NULL,
-    "email" TEXT NOT NULL,
+    "userId" TEXT NOT NULL,
 
     CONSTRAINT "InvitedUser_pkey" PRIMARY KEY ("id")
 );
@@ -161,7 +172,7 @@ CREATE UNIQUE INDEX "InviteCode_code_key" ON "InviteCode"("code");
 CREATE UNIQUE INDEX "InviteCode_senderEmail_key" ON "InviteCode"("senderEmail");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "InvitedUser_email_key" ON "InvitedUser"("email");
+CREATE UNIQUE INDEX "InvitedUser_userId_key" ON "InvitedUser"("userId");
 
 -- AddForeignKey
 ALTER TABLE "Account" ADD CONSTRAINT "Account_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;

@@ -106,7 +106,7 @@ function CryptoForm({ defaultCurrency }: { defaultCurrency: string }) {
               {results.length > 0 ? (
                 <>
                   <SearchResults
-                    source="twelveData"
+                    source="twelvedata"
                     results={results}
                     handleModalState={setOpen}
                     defaultCurrency={defaultCurrency}
