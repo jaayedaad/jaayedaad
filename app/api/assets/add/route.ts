@@ -13,20 +13,15 @@ import {
   encryptDataValue,
   encryptObjectValues,
 } from "@/lib/dataSecurity";
-import {
-  DATABASE_URL,
-  ENCRYPTION_KEY,
-  SIA_ADMIN_PASSWORD,
-  SIA_ADMIN_USERNAME,
-  SIA_API_URL,
-  USE_SIA,
-} from "@/constants/env";
+import { DATABASE_URL, ENCRYPTION_KEY, USE_SIA } from "@/constants/env";
 import { defaultCategories } from "@/constants/category";
+import { uploadToSia } from "@/services/thirdParty/sia";
 
 export async function POST(req: Request) {
   const assetId = createId();
   const transactionId = createId();
   const assetPriceUpdateId = createId();
+  const manualCategoryId = createId();
 
   let { icon, ...body } = await req.json();
 
@@ -68,199 +63,145 @@ export async function POST(req: Request) {
         body.name,
         body.source
       );
-      const username = SIA_ADMIN_USERNAME;
-      const password = SIA_ADMIN_PASSWORD;
-      const basicAuth =
-        "Basic " + Buffer.from(username + ":" + password).toString("base64");
 
-      const res = await fetch(
-        `${SIA_API_URL}/workers/object/${user.id}/assets`,
-        {
-          method: "GET",
-        }
-      );
       const existingCategoryId = await findExistingCategoryFromSia(
         user.id,
         body.category
       );
+
       if (!existingAsset) {
         const belongsToDefaultCategory = defaultCategories.includes(
           body.category.toLowerCase()
         );
-        if (body.soure === "manual") {
+        if (body.source === "manual") {
           if (!belongsToDefaultCategory) {
             if (existingCategoryId) {
               // add asset to sia
-              fetch(
-                `${SIA_API_URL}/worker/objects/${user.id}/assets/${assetId}/data`,
-                {
-                  method: "PUT",
-                  headers: {
-                    Authorization: basicAuth,
-                  },
-                  body: JSON.stringify({
-                    data: CryptoJS.AES.encrypt(
-                      JSON.stringify({
-                        ...body,
-                        id: assetId,
-                        userId: user.id,
-                        symbol: null,
-                        manualCategoryId: existingCategoryId,
-                      }),
-                      encryptionKey
-                    ).toString(),
-                  }),
-                }
-              ).then((response) => {
-                if (!response.ok) {
-                  throw new Error(`HTTP error! Status: ${response.status}`);
-                }
-              });
-            } else {
-              // create a new category
-              const manualCategoryId = createId();
-              await fetch(
-                `${SIA_API_URL}/worker/objects/${user.id}/usersManualCategories/${manualCategoryId}/data`,
-                {
-                  method: "PUT",
-                  headers: {
-                    Authorization: basicAuth,
-                  },
-                  body: JSON.stringify({
-                    data: CryptoJS.AES.encrypt(
-                      JSON.stringify({
-                        id: manualCategoryId,
-                        icon: icon,
-                        name: body.category,
-                        userId: user.id,
-                      }),
-                      encryptionKey
-                    ).toString(),
-                  }),
-                }
-              );
-
-              // add asset to sia
-              await fetch(
-                `${SIA_API_URL}/worker/objects/${user.id}/assets/${assetId}/data`,
-                {
-                  method: "PUT",
-                  headers: {
-                    Authorization: basicAuth,
-                  },
-                  body: JSON.stringify({
-                    data: CryptoJS.AES.encrypt(
-                      JSON.stringify({
-                        ...body,
-                        id: assetId,
-                        userId: user.id,
-                        symbol: null,
-                        manualCategoryId: manualCategoryId,
-                      }),
-                      encryptionKey
-                    ).toString(),
-                  }),
-                }
-              );
-            }
-          } else {
-            // add asset to sia
-            fetch(
-              `${SIA_API_URL}/worker/objects/${user.id}/assets/${assetId}/data`,
-              {
-                method: "PUT",
-                headers: {
-                  Authorization: basicAuth,
-                },
-                body: JSON.stringify({
-                  data: CryptoJS.AES.encrypt(
-                    JSON.stringify({
-                      ...body,
-                      id: assetId,
-                      userId: user.id,
-                    }),
-                    encryptionKey
-                  ).toString(),
-                }),
-              }
-            ).then((response) => {
-              if (!response.ok) {
-                throw new Error(`HTTP error! Status: ${response.status}`);
-              }
-            });
-          }
-          await fetch(
-            `${SIA_API_URL}/worker/objects/${user.id}/assets/${assetId}/assetPriceUpdates/${assetPriceUpdateId}`,
-            {
-              method: "PUT",
-              headers: {
-                Authorization: basicAuth,
-              },
-              body: JSON.stringify({
-                data: CryptoJS.AES.encrypt(
-                  JSON.stringify({
-                    id: assetPriceUpdateId,
-                    assetId: assetId,
-                    price: body.currentPrice,
-                    date: body.buyDate,
-                  }),
-                  encryptionKey
-                ).toString(),
-              }),
-            }
-          );
-        } else {
-          // add asset to sia
-          fetch(
-            `${SIA_API_URL}/worker/objects/${user.id}/assets/${assetId}/data`,
-            {
-              method: "PUT",
-              headers: {
-                Authorization: basicAuth,
-              },
-              body: JSON.stringify({
+              const data = JSON.stringify({
                 data: CryptoJS.AES.encrypt(
                   JSON.stringify({
                     ...body,
                     id: assetId,
                     userId: user.id,
+                    symbol: null,
+                    manualCategoryId: existingCategoryId,
                   }),
                   encryptionKey
                 ).toString(),
-              }),
+              });
+
+              await uploadToSia({
+                data: data,
+                path: `${user.id}/assets/${assetId}/data`,
+              });
+            } else {
+              // create a new category
+              const manualCategory = JSON.stringify({
+                data: CryptoJS.AES.encrypt(
+                  JSON.stringify({
+                    id: manualCategoryId,
+                    icon: icon,
+                    name: body.category,
+                    userId: user.id,
+                  }),
+                  encryptionKey
+                ).toString(),
+              });
+
+              await uploadToSia({
+                data: manualCategory,
+                path: `${user.id}/usersManualCategories/${manualCategoryId}/data`,
+              });
+
+              // add asset to sia
+              const data = JSON.stringify({
+                data: CryptoJS.AES.encrypt(
+                  JSON.stringify({
+                    ...body,
+                    id: assetId,
+                    userId: user.id,
+                    symbol: null,
+                    manualCategoryId: manualCategoryId,
+                  }),
+                  encryptionKey
+                ).toString(),
+              });
+
+              await uploadToSia({
+                data: data,
+                path: `${user.id}/assets/${assetId}/data`,
+              });
             }
-          ).then((response) => {
-            if (!response.ok) {
-              throw new Error(`HTTP error! Status: ${response.status}`);
-            }
-          });
-        }
-        // add asset's transaction to sia
-        fetch(
-          `${SIA_API_URL}/worker/objects/${user.id}/assets/${assetId}/transactions/${transactionId}`,
-          {
-            method: "PUT",
-            headers: {
-              Authorization: basicAuth,
-            },
-            body: JSON.stringify({
+          } else {
+            // add asset to sia
+            const data = JSON.stringify({
               data: CryptoJS.AES.encrypt(
                 JSON.stringify({
-                  id: transactionId,
-                  date: body.buyDate,
-                  quantity: body.quantity,
-                  price: body.buyPrice,
-                  type: "buy",
-                  assetId: assetId,
+                  ...body,
+                  id: assetId,
+                  userId: user.id,
                 }),
                 encryptionKey
               ).toString(),
+            });
+
+            await uploadToSia({
+              data: data,
+              path: `${user.id}/assets/${assetId}/data`,
+            });
+          }
+          const priceUpdate = JSON.stringify({
+            data: CryptoJS.AES.encrypt(
+              JSON.stringify({
+                id: assetPriceUpdateId,
+                assetId: assetId,
+                price: body.currentPrice,
+                date: body.buyDate,
+              }),
+              encryptionKey
+            ).toString(),
+          });
+
+          await uploadToSia({
+            data: priceUpdate,
+            path: `${user.id}/assets/${assetId}/assetPriceUpdates/${assetPriceUpdateId}`,
+          });
+        } else {
+          // add asset to sia
+          const data = JSON.stringify({
+            data: CryptoJS.AES.encrypt(
+              JSON.stringify({
+                ...body,
+                id: assetId,
+                userId: user.id,
+              }),
+              encryptionKey
+            ).toString(),
+          });
+
+          await uploadToSia({
+            data: data,
+            path: `${user.id}/assets/${assetId}/data`,
+          });
+        }
+        // add asset's transaction to sia
+        const data = JSON.stringify({
+          data: CryptoJS.AES.encrypt(
+            JSON.stringify({
+              id: transactionId,
+              date: body.buyDate,
+              quantity: body.quantity,
+              price: body.buyPrice,
+              type: "buy",
+              assetId: assetId,
             }),
-          }
-        ).then((response) => {
-          if (!response.ok) {
-            throw new Error(`HTTP error! Status: ${response.status}`);
-          }
+            encryptionKey
+          ).toString(),
+        });
+
+        await uploadToSia({
+          data: data,
+          path: `${user.id}/assets/${assetId}/transactions/${transactionId}`,
         });
       } else {
         const updatedQuantity = +existingAsset.quantity + +body.quantity;
@@ -273,24 +214,16 @@ export async function POST(req: Request) {
           assetId: existingAsset.id,
         };
         // add asset's transaction to sia
-        fetch(
-          `${SIA_API_URL}/worker/objects/${user.id}/assets/${existingAsset.id}/transactions/${transactionId}`,
-          {
-            method: "PUT",
-            headers: {
-              Authorization: basicAuth,
-            },
-            body: JSON.stringify({
-              data: CryptoJS.AES.encrypt(
-                JSON.stringify(transaction),
-                encryptionKey
-              ).toString(),
-            }),
-          }
-        ).then((response) => {
-          if (!response.ok) {
-            throw new Error(`HTTP error! Status: ${response.status}`);
-          }
+        const data = JSON.stringify({
+          data: CryptoJS.AES.encrypt(
+            JSON.stringify(transaction),
+            encryptionKey
+          ).toString(),
+        });
+
+        await uploadToSia({
+          data: data,
+          path: `${user.id}/assets/${existingAsset.id}/transactions/${transactionId}`,
         });
 
         const existingAssetTransactions = await getAllTransactions(
@@ -302,96 +235,56 @@ export async function POST(req: Request) {
           const avgBuyPrice = calculateAvgBuyPrice(existingAssetTransactions);
           if (body.source !== "manual") {
             // add asset to sia
-            fetch(
-              `${SIA_API_URL}/worker/objects/${user.id}/assets/${existingAsset.id}/data`,
-              {
-                method: "PUT",
-                headers: {
-                  Authorization: basicAuth,
-                },
-                body: JSON.stringify({
-                  data: CryptoJS.AES.encrypt(
-                    JSON.stringify({
-                      ...existingAsset,
-                      quantity: updatedQuantity.toString(),
-                      buyPrice: avgBuyPrice.toString(),
-                    }),
-                    encryptionKey
-                  ).toString(),
+            const data = JSON.stringify({
+              data: CryptoJS.AES.encrypt(
+                JSON.stringify({
+                  ...existingAsset,
+                  quantity: updatedQuantity.toString(),
+                  buyPrice: avgBuyPrice.toString(),
                 }),
-              }
-            ).then((response) => {
-              if (!response.ok) {
-                throw new Error(`HTTP error! Status: ${response.status}`);
-              }
+                encryptionKey
+              ).toString(),
+            });
+
+            await uploadToSia({
+              data: data,
+              path: `${user.id}/assets/${existingAsset.id}/data`,
             });
           } else {
             // add asset to sia
-            fetch(
-              `${SIA_API_URL}/worker/objects/${user.id}/assets/${existingAsset.id}/data`,
-              {
-                method: "PUT",
-                headers: {
-                  Authorization: basicAuth,
-                },
-                body: JSON.stringify({
-                  data: CryptoJS.AES.encrypt(
-                    JSON.stringify({
-                      ...existingAsset,
-                      quantity: updatedQuantity.toString(),
-                      buyPrice: avgBuyPrice.toString(),
-                      currentPrice: body.currentPrice.toString(),
-                    }),
-                    encryptionKey
-                  ).toString(),
+            const data = JSON.stringify({
+              data: CryptoJS.AES.encrypt(
+                JSON.stringify({
+                  ...existingAsset,
+                  quantity: updatedQuantity.toString(),
+                  buyPrice: avgBuyPrice.toString(),
+                  currentPrice: body.currentPrice.toString(),
                 }),
-              }
-            ).then((response) => {
-              if (!response.ok) {
-                throw new Error(`HTTP error! Status: ${response.status}`);
-              }
+                encryptionKey
+              ).toString(),
             });
 
-            await fetch(
-              `${SIA_API_URL}/worker/objects/${user.id}/assets/${existingAsset.id}/assetPriceUpdates/${assetPriceUpdateId}`,
-              {
-                method: "PUT",
-                headers: {
-                  Authorization: basicAuth,
-                },
-                body: JSON.stringify({
-                  data: CryptoJS.AES.encrypt(
-                    JSON.stringify({
-                      id: assetPriceUpdateId,
-                      assetId: assetId,
-                      price: body.currentPrice,
-                      date: body.buyDate,
-                    }),
-                    encryptionKey
-                  ).toString(),
+            await uploadToSia({
+              data: data,
+              path: `${user.id}/assets/${existingAsset.id}/data`,
+            });
+
+            const priceUpdate = JSON.stringify({
+              data: CryptoJS.AES.encrypt(
+                JSON.stringify({
+                  id: assetPriceUpdateId,
+                  assetId: assetId,
+                  price: body.currentPrice,
+                  date: body.buyDate,
                 }),
-              }
-            );
-            await fetch(
-              `${SIA_API_URL}/worker/objects/${user.id}/assets/${existingAsset.id}/assetPriceUpdates/${assetPriceUpdateId}`,
-              {
-                method: "PUT",
-                headers: {
-                  Authorization: basicAuth,
-                },
-                body: JSON.stringify({
-                  data: CryptoJS.AES.encrypt(
-                    JSON.stringify({
-                      id: assetPriceUpdateId,
-                      assetId: existingAsset.id,
-                      price: body.currentPrice,
-                      date: body.buyDate,
-                    }),
-                    encryptionKey
-                  ).toString(),
-                }),
-              }
-            );
+                encryptionKey
+              ).toString(),
+            });
+
+            await uploadToSia({
+              data: priceUpdate,
+              path: `${user.id}/assets/${existingAsset.id}/assetPriceUpdates/${assetPriceUpdateId}`,
+            });
           }
         }
       }
@@ -429,7 +322,6 @@ export async function POST(req: Request) {
                 },
               });
             } else {
-              const manualCategoryId = createId();
               const usersManualCategory =
                 await prisma.usersManualCategory.create({
                   data: {

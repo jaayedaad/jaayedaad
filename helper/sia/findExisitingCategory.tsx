@@ -19,7 +19,7 @@ export default async function findExistingCategoryFromSia(
   const encryptionKey = userId.slice(0, 4) + ENCRYPTION_KEY + userId.slice(-4);
 
   const res = await fetch(
-    `${SIA_API_URL}/workers/object/${userId}/usersManualCategories/`,
+    `${SIA_API_URL}/worker/objects/${userId}/usersManualCategories/`,
     {
       method: "GET",
       headers: {
@@ -49,6 +49,7 @@ export default async function findExistingCategoryFromSia(
 
       // Parsing decrypted data
       const decryptedObject = JSON.parse(decryptedData);
+      console.log(decryptedObject);
       if (decryptedObject.name === categoryName) {
         categoryId = decryptedObject.id;
       }

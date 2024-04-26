@@ -4,14 +4,8 @@ import { authOptions } from "@/lib/authOptions";
 import { createId } from "@paralleldrive/cuid2";
 import CryptoJS from "crypto-js";
 import { encryptObjectValues } from "@/lib/dataSecurity";
-import {
-  DATABASE_URL,
-  ENCRYPTION_KEY,
-  SIA_ADMIN_PASSWORD,
-  SIA_ADMIN_USERNAME,
-  SIA_API_URL,
-  USE_SIA,
-} from "@/constants/env";
+import { DATABASE_URL, ENCRYPTION_KEY, USE_SIA } from "@/constants/env";
+import { uploadToSia } from "@/services/thirdParty/sia";
 
 export async function POST(req: Request) {
   const body: {
@@ -35,36 +29,27 @@ export async function POST(req: Request) {
   });
 
   if (user) {
-    const username = SIA_ADMIN_USERNAME;
-    const password = SIA_ADMIN_PASSWORD;
-    const basicAuth =
-      "Basic " + Buffer.from(username + ":" + password).toString("base64");
-
     const encryptionKey =
       user.id.slice(0, 4) + ENCRYPTION_KEY + user.id.slice(-4);
 
     const assetPriceUpdateId = createId();
     if (USE_SIA) {
-      await fetch(
-        `${SIA_API_URL}/worker/objects/${user.id}/assets/${body.assetId}/assetPriceUpdates/${assetPriceUpdateId}`,
-        {
-          method: "PUT",
-          headers: {
-            Authorization: basicAuth,
-          },
-          body: JSON.stringify({
-            data: CryptoJS.AES.encrypt(
-              JSON.stringify({
-                id: assetPriceUpdateId,
-                price: body.price,
-                date: body.date,
-                assetId: body.assetId,
-              }),
-              encryptionKey
-            ).toString(),
+      const priceUpdate = JSON.stringify({
+        data: CryptoJS.AES.encrypt(
+          JSON.stringify({
+            id: assetPriceUpdateId,
+            price: body.price,
+            date: body.date,
+            assetId: body.assetId,
           }),
-        }
-      );
+          encryptionKey
+        ).toString(),
+      });
+
+      await uploadToSia({
+        data: priceUpdate,
+        path: `${user.id}/assets/${body.assetId}/assetPriceUpdates/${assetPriceUpdateId}`,
+      });
     }
     if (DATABASE_URL) {
       // encrypt data
