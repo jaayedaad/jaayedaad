@@ -38,6 +38,11 @@ const instrumentNameMappings: Record<string, string> = {
   // Add other mappings here
 };
 
+const investmentByArray: { label: string; value: "quantity" | "amount" }[] = [
+  { label: "By Qty.", value: "quantity" },
+  { label: "By Amt.", value: "amount" },
+];
+
 function TransactionForm({
   source,
   previousClose,
@@ -48,7 +53,12 @@ function TransactionForm({
   const [buying, setBuying] = useState(false);
   const [selling, setSelling] = useState(false);
   const [assetQuantity, setAssetQuantity] = useState<string>("0");
-  const [assetPrice, setAssetPrice] = useState(previousClose);
+  const [investmentBy, setInvestmentBy] = useState<"quantity" | "amount">(
+    "quantity"
+  );
+  const [assetPrice, setAssetPrice] = useState(
+    previousClose ? previousClose : "0"
+  );
   const [currentPrice, setCurrentPrice] = useState<string>();
   const [date, setDate] = useState<string>("");
   const [currency, setCurrency] = useState(
@@ -65,7 +75,10 @@ function TransactionForm({
     const asset = {
       name: name,
       symbol: (symbol.length && symbol) || null,
-      quantity: assetQuantity,
+      quantity:
+        investmentBy === "quantity"
+          ? assetQuantity
+          : (+assetQuantity / +assetPrice).toFixed(2),
       buyPrice: assetPrice,
       currentPrice: (currentPrice && currentPrice) || null,
       buyDate: date,
@@ -97,7 +110,10 @@ function TransactionForm({
     setSelling(true);
     const asset = {
       name: instrument_name,
-      quantity: assetQuantity,
+      quantity:
+        investmentBy === "quantity"
+          ? assetQuantity
+          : (+assetQuantity / +assetPrice).toFixed(2),
       price: assetPrice,
       date: date,
     };
@@ -170,17 +186,43 @@ function TransactionForm({
             disabled
           />
           <div className="text-base col-span-1 after:content-['*'] after:ml-0.5 after:text-red-500">
-            Quantity
+            {investmentBy === "quantity" ? "Quantity" : "Amount"}
           </div>
           <Input
-            placeholder="Quantity"
-            className="col-span-3 no-spinner"
+            placeholder={
+              investmentBy === "quantity" ? "Quantity" : "Amount Invested"
+            }
+            className="col-span-2 no-spinner"
             type="number"
             value={assetQuantity}
             onChange={(e) => {
               handleAssetQuantiy(e.target.value);
             }}
           />
+          <div className="col-span-1">
+            <Select
+              onValueChange={(value: "quantity" | "amount") => {
+                setInvestmentBy(value);
+              }}
+              defaultValue={investmentBy}
+            >
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="" />
+              </SelectTrigger>
+              <SelectContent>
+                {investmentByArray.map((investmentBy) => {
+                  return (
+                    <SelectItem
+                      key={investmentBy.label}
+                      value={investmentBy.value}
+                    >
+                      {investmentBy.label}
+                    </SelectItem>
+                  );
+                })}
+              </SelectContent>
+            </Select>
+          </div>
           <div className="col-span-1 text-base after:content-['*'] after:ml-0.5 after:text-red-500">
             Date
           </div>

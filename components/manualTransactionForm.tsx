@@ -39,6 +39,11 @@ interface ManualTransactionFormPropsType {
   defaultCurrency: string;
 }
 
+const investmentByArray: { label: string; value: "quantity" | "amount" }[] = [
+  { label: "By Qty.", value: "quantity" },
+  { label: "By Amt.", value: "amount" },
+];
+
 function ManualTransactionForm({
   usersManualCategories,
   modalOpen,
@@ -79,6 +84,9 @@ function ManualTransactionForm({
     currentPrice: "",
     date: "",
   });
+  const [investmentBy, setInvestmentBy] = useState<"quantity" | "amount">(
+    "quantity"
+  );
 
   const [open, setOpen] = useState(false);
   const [value, setValue] = useState("common stock");
@@ -96,10 +104,14 @@ function ManualTransactionForm({
   async function handleManualBuyTransaction() {
     setBuying(true);
 
-    const { price, date, ...data } = manualTransaction;
+    const { price, date, quantity, ...data } = manualTransaction;
     const asset = {
       ...data,
       icon: icon,
+      quantity:
+        investmentBy === "quantity"
+          ? quantity
+          : (+quantity / +price).toFixed(2),
       buyPrice: price,
       buyDate: date,
       source: "manual",
@@ -133,7 +145,10 @@ function ManualTransactionForm({
 
     const asset = {
       name: manualTransaction.name,
-      quantity: manualTransaction.quantity,
+      quantity:
+        investmentBy === "quantity"
+          ? manualTransaction.quantity
+          : (+manualTransaction.quantity / +manualTransaction.price).toFixed(2),
       price: manualTransaction.price,
       date: manualTransaction.date,
     };
@@ -349,7 +364,9 @@ function ManualTransactionForm({
       <div className="col-span-1 self-center after:content-['*'] after:ml-0.5 after:text-red-500">
         {manualTransaction.category === "Deposits"
           ? "Interest rate"
-          : "Quantity"}
+          : investmentBy === "quantity"
+          ? "Quantity"
+          : "Amount"}
       </div>
       <Input
         className="col-span-2 no-spinner"
@@ -364,31 +381,32 @@ function ManualTransactionForm({
         placeholder={
           manualTransaction.category === "Deposits"
             ? "Interest rate (p.a)"
-            : "Quantity"
+            : investmentBy === "quantity"
+            ? "Quantity"
+            : "Amount Invested"
         }
       />
-      <Select
-        onValueChange={(value) => {
-          setManualTransaction((prev) => ({
-            ...prev,
-            buyCurrency: value,
-          }));
-        }}
-        defaultValue={defaultCurrency.toUpperCase()}
-      >
-        <SelectTrigger className="w-full">
-          <SelectValue placeholder="" />
-        </SelectTrigger>
-        <SelectContent>
-          {currencies.map((currency) => {
-            return (
-              <SelectItem key={currency.label} value={currency.label}>
-                {currency.value}
-              </SelectItem>
-            );
-          })}
-        </SelectContent>
-      </Select>
+      <div className="col-span-1">
+        <Select
+          onValueChange={(value: "quantity" | "amount") => {
+            setInvestmentBy(value);
+          }}
+          defaultValue={investmentBy}
+        >
+          <SelectTrigger className="w-full">
+            <SelectValue placeholder="" />
+          </SelectTrigger>
+          <SelectContent>
+            {investmentByArray.map((investmentBy) => {
+              return (
+                <SelectItem key={investmentBy.label} value={investmentBy.value}>
+                  {investmentBy.label}
+                </SelectItem>
+              );
+            })}
+          </SelectContent>
+        </Select>
+      </div>
       <div className="col-span-1 self-center after:content-['*'] after:ml-0.5 after:text-red-500">
         Date
       </div>
@@ -401,7 +419,7 @@ function ManualTransactionForm({
           : "Your price"}
       </div>
       <Input
-        className="col-span-3 no-spinner"
+        className="col-span-2 no-spinner"
         type="number"
         value={manualTransaction.price}
         onChange={(e) =>
@@ -416,6 +434,30 @@ function ManualTransactionForm({
             : "Unit price"
         }
       />
+      <div className="col-span-1">
+        <Select
+          onValueChange={(value) => {
+            setManualTransaction((prev) => ({
+              ...prev,
+              buyCurrency: value,
+            }));
+          }}
+          defaultValue={defaultCurrency.toUpperCase()}
+        >
+          <SelectTrigger className="w-full">
+            <SelectValue placeholder="" />
+          </SelectTrigger>
+          <SelectContent>
+            {currencies.map((currency) => {
+              return (
+                <SelectItem key={currency.label} value={currency.label}>
+                  {currency.value}
+                </SelectItem>
+              );
+            })}
+          </SelectContent>
+        </Select>
+      </div>
       <div
         className={cn(
           "col-span-1 self-center after:content-['*'] after:ml-0.5 after:text-red-500",
