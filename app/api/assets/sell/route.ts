@@ -2,7 +2,10 @@ import { getServerSession } from "next-auth";
 import { prisma } from "@/lib/prisma";
 import { authOptions } from "@/lib/authOptions";
 import { canSellAssets } from "@/helper/canSellAssets";
-import { getDecryptedAssetsFromSia } from "@/services/thirdParty/sia";
+import {
+  getDecryptedAssetsFromSia,
+  uploadToSia,
+} from "@/services/thirdParty/sia";
 import {
   Asset as PrismaAsset,
   AssetPriceUpdate,
@@ -17,14 +20,7 @@ import {
   encryptDataValue,
   encryptObjectValues,
 } from "@/lib/dataSecurity";
-import {
-  DATABASE_URL,
-  ENCRYPTION_KEY,
-  SIA_ADMIN_PASSWORD,
-  SIA_ADMIN_USERNAME,
-  SIA_API_URL,
-  USE_SIA,
-} from "@/constants/env";
+import { DATABASE_URL, ENCRYPTION_KEY, USE_SIA } from "@/constants/env";
 
 interface AssetWithTransaction extends PrismaAsset {
   transactions: Transaction[];
@@ -124,31 +120,22 @@ async function updateAssetQuantity(
   encryptionKey: string
 ) {
   if (USE_SIA) {
-    const basicAuth =
-      "Basic " +
-      Buffer.from(`${SIA_ADMIN_USERNAME}:${SIA_ADMIN_PASSWORD}`).toString(
-        "base64"
-      );
     const assetToSell = await getAssetById(userId, assetId);
     // update asset's quantity
-    await fetch(
-      `${SIA_API_URL}/worker/objects/${userId}/assets/${assetToSell.id}/data`,
-      {
-        method: "PUT",
-        headers: {
-          Authorization: basicAuth,
-        },
-        body: JSON.stringify({
-          data: CryptoJS.AES.encrypt(
-            JSON.stringify({
-              ...assetToSell,
-              quantity: newQuantity,
-            }),
-            encryptionKey
-          ).toString(),
+    const updatedData = JSON.stringify({
+      data: CryptoJS.AES.encrypt(
+        JSON.stringify({
+          ...assetToSell,
+          quantity: newQuantity,
         }),
-      }
-    );
+        encryptionKey
+      ).toString(),
+    });
+
+    await uploadToSia({
+      data: updatedData,
+      path: `${userId}/assets/${assetToSell.id}/data`,
+    });
   }
   if (DATABASE_URL) {
     // update asset's quantity
@@ -176,35 +163,26 @@ async function makeTransaction(
   encryptionKey: string
 ) {
   if (USE_SIA) {
-    const basicAuth =
-      "Basic " +
-      Buffer.from(`${SIA_ADMIN_USERNAME}:${SIA_ADMIN_PASSWORD}`).toString(
-        "base64"
-      );
     const assetToSell = await getAssetById(userId, assetId);
     // make transaction
-    await fetch(
-      `${SIA_API_URL}/worker/objects/${userId}/assets/${assetToSell.id}/transactions/${transactionId}`,
-      {
-        method: "PUT",
-        headers: {
-          Authorization: basicAuth,
-        },
-        body: JSON.stringify({
-          data: CryptoJS.AES.encrypt(
-            JSON.stringify({
-              id: transactionId,
-              date: sellRequest.date,
-              quantity: sellRequest.quantity,
-              price: sellRequest.price,
-              type: "sell",
-              assetId: assetToSell.id,
-            }),
-            encryptionKey
-          ).toString(),
+    const transaction = JSON.stringify({
+      data: CryptoJS.AES.encrypt(
+        JSON.stringify({
+          id: transactionId,
+          date: sellRequest.date,
+          quantity: sellRequest.quantity,
+          price: sellRequest.price,
+          type: "sell",
+          assetId: assetToSell.id,
         }),
-      }
-    );
+        encryptionKey
+      ).toString(),
+    });
+
+    await uploadToSia({
+      data: transaction,
+      path: `${userId}/assets/${assetToSell.id}/transactions/${transactionId}`,
+    });
   }
   if (DATABASE_URL) {
     // encrypt data

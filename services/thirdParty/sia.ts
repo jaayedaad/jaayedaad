@@ -3,6 +3,7 @@ import { authOptions } from "@/lib/authOptions";
 import { getServerSession } from "next-auth";
 import getAllTransactions from "@/helper/sia/getAllTransactions";
 import CryptoJS from "crypto-js";
+import { Worker } from "@siafoundation/renterd-js";
 import getAllPriceUpdates from "@/helper/sia/findAllPriceUpdates";
 import { TAsset, TSiaObject } from "@/types/types";
 import {
@@ -133,5 +134,50 @@ export const deleteAssetForUserInSia = async (
   } catch (err) {
     console.error("Error deleting asset from Sia: ", err);
     return false;
+  }
+};
+
+export const uploadToSia = async ({
+  data,
+  path,
+}: {
+  data: string;
+  path: string;
+}) => {
+  if (SIA_API_URL) {
+    const worker = Worker({
+      api: SIA_API_URL,
+      password: SIA_ADMIN_PASSWORD,
+    });
+
+    await worker.objectUpload({
+      params: {
+        key: path,
+        bucket: "default",
+      },
+      data: data,
+    });
+  }
+};
+
+export const downloadFromSia = async ({ path }: { path: string }) => {
+  if (SIA_API_URL) {
+    const worker = Worker({
+      api: SIA_API_URL,
+      password: SIA_ADMIN_PASSWORD,
+    });
+
+    const res = await worker.objectDownload({
+      params: {
+        key: path,
+        bucket: "default",
+      },
+    });
+
+    const downloadedObject = res.data as unknown as
+      | TSiaObject[]
+      | { data: string };
+
+    return downloadedObject;
   }
 };

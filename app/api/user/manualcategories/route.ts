@@ -5,14 +5,8 @@ import CryptoJS from "crypto-js";
 import { createId } from "@paralleldrive/cuid2";
 import dynamicIconImports from "lucide-react/dynamicIconImports";
 import { encryptObjectValues } from "@/lib/dataSecurity";
-import {
-  DATABASE_URL,
-  ENCRYPTION_KEY,
-  SIA_ADMIN_PASSWORD,
-  SIA_ADMIN_USERNAME,
-  SIA_API_URL,
-  USE_SIA,
-} from "@/constants/env";
+import { DATABASE_URL, ENCRYPTION_KEY, USE_SIA } from "@/constants/env";
+import { uploadToSia } from "@/services/thirdParty/sia";
 
 export async function POST(req: Request) {
   const session = await getServerSession(authOptions);
@@ -36,37 +30,28 @@ export async function POST(req: Request) {
     });
 
     if (user) {
-      const username = SIA_ADMIN_USERNAME;
-      const password = SIA_ADMIN_PASSWORD;
-      const basicAuth =
-        "Basic " + Buffer.from(username + ":" + password).toString("base64");
-
       const encryptionKey =
         user.id.slice(0, 4) + ENCRYPTION_KEY + user.id.slice(-4);
 
       // create a new category
       const manualCategoryId = createId();
       if (USE_SIA) {
-        await fetch(
-          `${SIA_API_URL}/worker/objects/${user.id}/usersManualCategories/${manualCategoryId}/data`,
-          {
-            method: "PUT",
-            headers: {
-              Authorization: basicAuth,
-            },
-            body: JSON.stringify({
-              data: CryptoJS.AES.encrypt(
-                JSON.stringify({
-                  id: manualCategoryId,
-                  icon: body.icon,
-                  name: body.name,
-                  userId: user.id,
-                }),
-                encryptionKey
-              ).toString(),
+        const category = JSON.stringify({
+          data: CryptoJS.AES.encrypt(
+            JSON.stringify({
+              id: manualCategoryId,
+              icon: body.icon,
+              name: body.name,
+              userId: user.id,
             }),
-          }
-        );
+            encryptionKey
+          ).toString(),
+        });
+
+        await uploadToSia({
+          data: category,
+          path: `${user.id}/usersManualCategories/${manualCategoryId}/data`,
+        });
       }
       if (DATABASE_URL) {
         // encrypt data

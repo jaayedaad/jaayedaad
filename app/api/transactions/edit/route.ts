@@ -10,14 +10,8 @@ import { isValidTransactions } from "@/helper/canSellAssets";
 import CryptoJS from "crypto-js";
 import { getAssetById } from "@/helper/sia/getAssetById";
 import { encryptDataValue, encryptObjectValues } from "@/lib/dataSecurity";
-import {
-  DATABASE_URL,
-  ENCRYPTION_KEY,
-  SIA_ADMIN_PASSWORD,
-  SIA_ADMIN_USERNAME,
-  SIA_API_URL,
-  USE_SIA,
-} from "@/constants/env";
+import { DATABASE_URL, ENCRYPTION_KEY, USE_SIA } from "@/constants/env";
+import { uploadToSia } from "@/services/thirdParty/sia";
 
 interface requestBody {
   transactionToEdit: Transaction;
@@ -31,56 +25,44 @@ async function updateTransaction(
   currentQuantity: number,
   futureQuantity: number
 ) {
-  const username = SIA_ADMIN_USERNAME;
-  const password = SIA_ADMIN_PASSWORD;
-  const basicAuth =
-    "Basic " + Buffer.from(username + ":" + password).toString("base64");
-
   const encryptionKey = userId.slice(0, 4) + ENCRYPTION_KEY + userId.slice(-4);
   const avgBuyPrice = calculateAvgBuyPrice(transactionList);
   if (USE_SIA) {
     // update transaction
-    await fetch(
-      `${SIA_API_URL}/worker/objects/${userId}/assets/${transactionToEdit.assetId}/transactions/${transactionToEdit.id}`,
-      {
-        method: "PUT",
-        headers: {
-          Authorization: basicAuth,
-        },
-        body: JSON.stringify({
-          data: CryptoJS.AES.encrypt(
-            JSON.stringify({
-              ...transactionToEdit,
-              quantity: transactionToEdit.quantity,
-              price: transactionToEdit.price,
-              date: transactionToEdit.date,
-            }),
-            encryptionKey
-          ).toString(),
+    const updatedTransaction = JSON.stringify({
+      data: CryptoJS.AES.encrypt(
+        JSON.stringify({
+          ...transactionToEdit,
+          quantity: transactionToEdit.quantity,
+          price: transactionToEdit.price,
+          date: transactionToEdit.date,
         }),
-      }
-    );
+        encryptionKey
+      ).toString(),
+    });
+
+    await uploadToSia({
+      data: updatedTransaction,
+      path: `${userId}/assets/${transactionToEdit.assetId}/transactions/${transactionToEdit.id}`,
+    });
+
     // update asset price and quantity
     const assetToUpdate = await getAssetById(userId, transactionToEdit.assetId);
-    await fetch(
-      `${SIA_API_URL}/worker/objects/${userId}/assets/${assetToUpdate.id}/data`,
-      {
-        method: "PUT",
-        headers: {
-          Authorization: basicAuth,
-        },
-        body: JSON.stringify({
-          data: CryptoJS.AES.encrypt(
-            JSON.stringify({
-              ...assetToUpdate,
-              quantity: (futureQuantity + currentQuantity).toString(),
-              buyPrice: avgBuyPrice.toString(),
-            }),
-            encryptionKey
-          ).toString(),
+    const updatedAsset = JSON.stringify({
+      data: CryptoJS.AES.encrypt(
+        JSON.stringify({
+          ...assetToUpdate,
+          quantity: (futureQuantity + currentQuantity).toString(),
+          buyPrice: avgBuyPrice.toString(),
         }),
-      }
-    );
+        encryptionKey
+      ).toString(),
+    });
+
+    await uploadToSia({
+      data: updatedAsset,
+      path: `${userId}/assets/${assetToUpdate.id}/data`,
+    });
   }
   if (DATABASE_URL) {
     // encrypt data
