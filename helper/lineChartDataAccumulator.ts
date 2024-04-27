@@ -134,6 +134,7 @@ export function accumulateLineChartData(historicalData: THistoricalData[]) {
   const result = Object.keys(finalAggregatedAmounts).map((date) => ({
     name: date,
     amt: finalAggregatedAmounts[date],
+    timestamp: new Date(date).getTime(),
   }));
 
   return result;

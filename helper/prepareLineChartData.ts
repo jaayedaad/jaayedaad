@@ -85,6 +85,7 @@ export const getLineChartData = async (
     data: {
       name: string;
       amt: number;
+      timestamp: number;
     }[];
   }[]
 > => {

@@ -2,6 +2,7 @@ import {
   formatIndianNumber,
   formatInternationalNumber,
 } from "@/helper/indianNumberingFormatter";
+import { unixTimestampToDate } from "@/lib/helper";
 import React from "react";
 import {
   Area,
@@ -20,6 +21,7 @@ function AssetLineChart({
   dataToShow: {
     name: string;
     amt: number;
+    timestamp: number;
   }[];
   numberSystem: string;
   defaultCurrency: string;
@@ -100,7 +102,9 @@ function AssetLineChart({
                     <span className="font-bold text-muted-foreground flex items-center">
                       {formatter.format(parseFloat(value!))}
                     </span>
-                    <span>{payload[0].payload.name}</span>
+                    <span>
+                      {unixTimestampToDate(payload[0].payload.timestamp)}
+                    </span>
                   </div>
                 </div>
               );

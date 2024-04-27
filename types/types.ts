@@ -127,6 +127,7 @@ export type TLineChartData = {
   data: {
     name: string;
     amt: number;
+    timestamp: number;
   }[];
 }[];
 

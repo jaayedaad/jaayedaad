@@ -13,7 +13,8 @@ import {
   formatIndianNumber,
   formatInternationalNumber,
 } from "@/helper/indianNumberingFormatter";
-import { TInterval } from "@/types/types";
+import { TInterval, TLineChartData } from "@/types/types";
+import { unixTimestampToDate } from "@/lib/helper";
 
 function PortfolioLineChart({
   timeInterval,
@@ -23,13 +24,7 @@ function PortfolioLineChart({
   defaultCurrency,
 }: {
   timeInterval?: TInterval;
-  chartData: {
-    interval: string;
-    data: {
-      name: string;
-      amt: number;
-    }[];
-  }[];
+  chartData: TLineChartData;
   dashboardAmountVisibility: boolean;
   numberSystem: string;
   defaultCurrency: string;
@@ -135,7 +130,9 @@ function PortfolioLineChart({
                               ? formatter.format(parseFloat(value!))
                               : "* ".repeat(5)}
                           </span>
-                          <span>{payload[0].payload.name}</span>
+                          <span>
+                            {unixTimestampToDate(payload[0].payload.timestamp)}
+                          </span>
                         </div>
                       </div>
                     );
