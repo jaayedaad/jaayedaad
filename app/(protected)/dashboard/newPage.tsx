@@ -17,6 +17,7 @@ import {
   TUnrealisedProfitLoss,
   TGroupedAssets,
   THistoricalData,
+  TLineChartData,
 } from "@/types/types";
 import WhitelistingModal from "@/components/onboarding/whitelistingModal";
 import MockLineChart from "@/components/mock/mockLineChart";
@@ -52,13 +53,7 @@ export function Dashboard({
     interval: string;
     data: TGroupedAssets;
   }[];
-  lineChartData: {
-    interval: string;
-    data: {
-      name: string;
-      amt: number;
-    }[];
-  }[];
+  lineChartData: TLineChartData;
   unrealisedResults: TUnrealisedProfitLoss[];
   realisedResults: TProfitLoss[];
 }) {

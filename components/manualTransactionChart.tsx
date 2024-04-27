@@ -1,5 +1,10 @@
 "use client";
-import { TAsset, TConversionRates, TInterval } from "@/types/types";
+import {
+  TAsset,
+  TConversionRates,
+  TInterval,
+  TLineChartData,
+} from "@/types/types";
 import {
   formatIndianNumber,
   formatInternationalNumber,
@@ -14,19 +19,14 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
+import { unixTimestampToDate } from "@/lib/helper";
 
 interface ManualTransactionChartProps {
   timeInterval?: TInterval | undefined;
   dashboardAmountVisibility: boolean;
   numberSystem: string;
   defaultCurrency: string;
-  chartData: {
-    interval: string;
-    data: {
-      name: string;
-      amt: number;
-    }[];
-  }[];
+  chartData: TLineChartData;
 }
 
 function ManualTransactionChart({
@@ -51,21 +51,6 @@ function ManualTransactionChart({
       amt: number;
     }[]
   >(chartData.filter((data) => data.interval === "All")[0].data);
-
-  // const lineChartData = accumulateLineChartData(historicalData);
-
-  // const seen: Record<string, boolean> = {};
-  // const uniqueData = lineChartData.filter((item) => {
-  //   if (!seen[item.name]) {
-  //     seen[item.name] = true;
-  //     return true;
-  //   }
-  //   return false;
-  // });
-
-  // uniqueData.sort(
-  //   (a, b) => new Date(b.name).getTime() - new Date(a.name).getTime()
-  // );
 
   useEffect(() => {
     timeInterval &&
@@ -156,7 +141,9 @@ function ManualTransactionChart({
                               ? formatter.format(parseFloat(value!))
                               : "* ".repeat(5)}
                           </span>
-                          <span>{payload[0].payload.name}</span>
+                          <span>
+                            {unixTimestampToDate(payload[0].payload.timestamp)}
+                          </span>
                         </div>
                       </div>
                     );

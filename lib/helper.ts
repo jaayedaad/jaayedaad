@@ -71,3 +71,14 @@ export function transformToResultFormat(
 export const formatToLocaleString = (value: string | number) => {
   return Number(value).toLocaleString("en-IN");
 };
+
+export const unixTimestampToDate = (unixTimestamp: number): string => {
+  let dateObject = new Date(unixTimestamp);
+  // Extract day, month, and year from the Date object
+  let day = dateObject.getDate();
+  let month = dateObject.getMonth() + 1; // Month is zero-based, so we add 1
+  let year = dateObject.getFullYear();
+  // Format the date as desired
+  let formattedDate = `${day}-${month < 10 ? "0" : ""}${month}-${year}`;
+  return formattedDate;
+};

@@ -8,6 +8,7 @@ import TransactionHistory from "./transactionHistory";
 import {
   TAsset,
   TInterval,
+  TLineChartData,
   TProfitLoss,
   TUnrealisedProfitLoss,
 } from "@/types/types";
@@ -26,13 +27,7 @@ interface ViewAssetProps {
   };
   numberSystem: string;
   defaultCurrency: string;
-  chartData: {
-    interval: string;
-    data: {
-      name: string;
-      amt: number;
-    }[];
-  }[];
+  chartData: TLineChartData;
 }
 
 function ViewAsset({
@@ -51,6 +46,7 @@ function ViewAsset({
     {
       name: string;
       amt: number;
+      timestamp: number;
     }[]
   >(chartData.filter((data) => data.interval === "All")[0].data);
   const [currentValue, setCurrentValue] = useState(

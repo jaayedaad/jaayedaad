@@ -49,7 +49,6 @@ export default async function findExistingCategoryFromSia(
 
       // Parsing decrypted data
       const decryptedObject = JSON.parse(decryptedData);
-      console.log(decryptedObject);
       if (decryptedObject.name === categoryName) {
         categoryId = decryptedObject.id;
       }
