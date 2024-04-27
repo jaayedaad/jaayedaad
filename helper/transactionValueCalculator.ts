@@ -39,11 +39,19 @@ export function calculateTotalQuantity(transactions: Transaction[]) {
   transactions.sort(
     (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
   );
-  const totalQuantity = transactions.reduce((total, transaction) => {
+
+  let seenBuyTypeTransaction = false;
+
+  const totalQuantity = transactions.reduce((total, transaction, index) => {
     if (transaction.type === "buy") {
+      seenBuyTypeTransaction = true;
       return total + parseFloat(transaction.quantity);
     } else if (transaction.type === "sell") {
-      return total - parseFloat(transaction.quantity);
+      if (!seenBuyTypeTransaction) {
+        return 0;
+      } else {
+        return total - parseFloat(transaction.quantity);
+      }
     }
     return total;
   }, 0);

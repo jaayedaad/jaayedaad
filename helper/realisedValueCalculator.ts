@@ -29,7 +29,11 @@ export function calculateRealisedProfitLoss(
   intervals.forEach(({ label, days }) => {
     const currentDate = new Date();
     const pastDate = new Date(currentDate);
-    pastDate.setDate(currentDate.getDate() - (isFinite(days) ? days : 0));
+    if (days !== Infinity) {
+      pastDate.setDate(currentDate.getDate() - days);
+    } else {
+      pastDate.setTime(0);
+    }
 
     let realisedProfitLoss = 0;
 
