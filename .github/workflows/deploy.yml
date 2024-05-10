@@ -59,6 +59,7 @@ jobs:
 
       - name: Push env variables to Kamal
         run: |
+          kamal lock release
           kamal env push
 
       - name: Run deploy command
